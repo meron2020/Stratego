@@ -1,8 +1,9 @@
 class Piece:
-    def __init__(self, piece_strength, color):
+    def __init__(self, piece_strength, color, name):
         self._position = None
         self._strength = piece_strength
         self._color = color
+        self._name = name
 
     # Property method for piece position
     @property
@@ -18,6 +19,10 @@ class Piece:
     @property
     def strength(self):
         return self._strength
+
+    @property
+    def name(self):
+        return self._name
 
     # Function to update piece position after move
     def move_piece(self, new_position):
