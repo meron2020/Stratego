@@ -1,29 +1,26 @@
+from PieceSprite import PieceSprite
+from board import Board
 import pygame
 
 color = (255, 255, 255)
 pygame.init()
 
-screen = pygame.display.set_mode((255, 255))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
+board = Board(screen)
+board.create_board(color)
 
-class Board:
-    def __init__(self):
-        self.width = 20
-        self.height = 20
-        self.margin = 5
+soldier_image = "Sprite_Images/soldier.png"
 
-    def create_board(self):
-        for column in range(10):
-            for row in range(10):
-                pygame.draw.rect(screen, color,
-                                 pygame.Rect(column * (self.width + self.margin) + self.margin,
-                                             row * (self.height + self.margin) +
-                                             self.margin, self.width, self.height))
+# Create piece instances
+soldier = PieceSprite(soldier_image, 4, 4, board)
 
+# Create sprite group
+all_sprites = pygame.sprite.Group(soldier)
+all_sprites.draw(screen)
 
-board = Board()
-board.create_board()
 pygame.display.flip()
+
 running = True
 while running:
     for event in pygame.event.get():
