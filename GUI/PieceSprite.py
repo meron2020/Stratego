@@ -2,13 +2,14 @@ import pygame
 
 
 class PieceSprite(pygame.sprite.Sprite):
-    def __init__(self, image, row, column, board):
+    def __init__(self, image, row, column, board, screen):
         super().__init__()
         self.board = board
         self.image = pygame.transform.scale(pygame.image.load(image),
                                             (int(self.board.cell_size), int(self.board.cell_size)))
         self.rect = self.image.get_rect()
         self.rect.topleft = self.calculate_exact_position(row, column)
+        self.screen = screen
 
     def calculate_exact_position(self, row, column):
         start_x = (pygame.display.get_window_size()[0] - 10 * (self.board.cell_size + self.board.margin)) // 2
@@ -19,3 +20,15 @@ class PieceSprite(pygame.sprite.Sprite):
 
     def set_new_pos(self, row, column):
         self.rect.topleft = self.calculate_exact_position(row, column)
+
+    def moveRight(self, cells):
+        self.rect.x += cells * (self.board.cell_size + self.board.margin)
+
+    def moveLeft(self, cells):
+        self.rect.x -= cells * (self.board.cell_size + self.board.margin)
+
+    def moveUp(self, cells):
+        self.rect.y += cells * (self.board.cell_size + self.board.margin)
+
+    def moveDown(self, cells):
+        self.rect.y -= cells * (self.board.cell_size + self.board.margin)
