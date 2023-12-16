@@ -10,7 +10,8 @@ class Game:
     def __init__(self):
         self.board = GameBoard()
         self.pieces_dict = Game.create_pieces_dict()
-        self.turn = "red"
+        self.turn = 0
+        self.turn_color = "red"
         self.board_set = False
 
     # Function takes a color as a parameter and returns the initial list of pieces set with that color.
@@ -34,42 +35,63 @@ class Game:
     def get_piece_by_id(self, piece_id):
         return self.pieces_dict[piece_id]
 
-    # Takes a dictionary of piece objects to their positions and sets the board object accordingly.
-    def set_board(self, piece_to_position_dict):
-        for piece, position in piece_to_position_dict.items():
-            self.board.set_new_piece_position(piece, position)
-
-        self.board_set = True
+    def set_piece_new_pos_by_id(self, piece_id, new_pos):
+        piece = self.get_piece_by_id(piece_id)
+        piece.set_new_piece_position(new_pos)
 
     # Function takes piece object and position as parameters. If position is free, the piece will move.
     # If not, the piece will attack the defending piece. The function returns a boolean that represents whether the
     # action was successful.
-    def piece_act(self, piece, new_position):
-        piece_in_new_position = self.board.get_piece_in_position(new_position)
-        if not piece_in_new_position:
-            self.board.set_new_piece_position(piece, new_position)
+    def piece_act(self, piece_id, new_position):
+        piece_id_in_new_position = self.board.get_piece_id_in_position(new_position)
+        if self.turn_color == "red":
+            self.turn_color = "blue"
+        else:
+            self.turn_color = "red"
+            self.turn += 1
+        if not piece_id_in_new_position:
+            self.board.set_new_piece_id_position(piece_id, new_position)
+            self.set_piece_new_pos_by_id(piece_id, new_position)
             return True
 
         else:
-            self.piece_attack(piece, piece_in_new_position, new_position)
+            piece_in_new_position = self.get_piece_by_id(piece_id_in_new_position)
+            return self.piece_attack(piece_id, piece_in_new_position, new_position)
+
+    # Deletes piece if lost a battle.
+    def delete_piece(self, piece_id):
+        self.board.delete_piece(self.pieces_dict[piece_id].position)
+        self.pieces_dict.pop(piece_id)
 
     # Checks which piece is stronger and returns True if the attacker won, False otherwise.
-    def piece_attack(self, piece, piece_to_attack, new_position):
+    def piece_attack(self, piece_id, piece_to_attack, new_position):
+        piece = self.get_piece_by_id(piece_id)
         winner = AttackingRules.check_battle_winner(piece, piece_to_attack)
         if winner == piece:
-            self.board.set_new_piece_position(piece, new_position)
+            self.board.set_new_piece_id_position(piece_id, new_position)
             return True
+        else:
+            self.delete_piece(piece_id)
         return False
 
     # Takes a piece id as a parameter and returns a list of the possible positions that the piece can move to.
     def return_piece_options(self, piece_id):
-        piece = self.get_piece_by_id(piece_id)
-        return MovementRules.calculate_possible_moves(piece, self.board)
+        return MovementRules.calculate_possible_moves(piece_id, self.board)
 
-    # Takes the set and
+    # Takes dictionary of piece id to position and sets it to the board. If the piece amount on the board is 40, set
+    # the board as ready to play.
     def set_color_pieces(self, id_to_pos_dict):
         for piece_id, position in id_to_pos_dict.items():
             piece = self.get_piece_by_id(piece_id)
-            self.board.set_new_piece_position(piece, position)
+            piece.set_new_piece_position(position)
+            self.board.set_new_piece_id_position(piece_id, position)
         if self.board.get_piece_count() == 40:
             self.board_set = True
+
+    # Getter method that returns the board object.
+    def get_board(self):
+        return self.board
+
+    # Getter method that returns True if board is ready to play and False otherwise based on the board_set variable.
+    def get_board_ready_to_play(self):
+        return self.board_set
