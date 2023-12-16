@@ -26,5 +26,5 @@ class Piece:
         return self._name
 
     # Function to update piece position after move
-    def move_piece(self, new_position):
+    def set_new_piece_position(self, new_position):
         self._position = new_position
