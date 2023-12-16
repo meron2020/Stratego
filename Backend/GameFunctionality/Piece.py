@@ -1,5 +1,6 @@
 class Piece:
-    def __init__(self, piece_strength, color, name):
+    def __init__(self, piece_strength, color, name, piece_id):
+        self.piece_id = piece_id
         self._position = None
         self._strength = piece_strength
         self._color = color
@@ -25,5 +26,5 @@ class Piece:
         return self._name
 
     # Function to update piece position after move
-    def move_piece(self, new_position):
+    def set_new_piece_position(self, new_position):
         self._position = new_position
