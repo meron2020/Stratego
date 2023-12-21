@@ -7,7 +7,8 @@ from universals import strength_to_name_and_number_dict as s_to_n_and_n
 
 # Game class is responsible for running the game.
 class Game:
-    def __init__(self):
+    def __init__(self, game_id):
+        self.game_id = game_id
         self.board = GameBoard()
         self.pieces_dict = Game.create_pieces_dict()
         self.turn = 0
