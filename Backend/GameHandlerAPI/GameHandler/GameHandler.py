@@ -12,4 +12,10 @@ class GameHandler:
         self.games.append(game)
         return game_id
 
+    def piece_action(self, game_id, data):
+        game = self.games[game_id]
+        game.piece_act(data["piece_id"], data["new_pos"])
+
+
+
     
