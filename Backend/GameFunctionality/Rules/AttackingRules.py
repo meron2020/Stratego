@@ -18,6 +18,9 @@ class AttackingRules:
             else:
                 return defender
 
+        elif AttackingRules.check_tie(attacker, defender):
+            return None
+
         # If a spy attacks the marshall,the spy wins.
         # Note: This is only the case if the spy is attacking and not vice versa
         elif attacker.strength == 1 and defender.strength == 10:
