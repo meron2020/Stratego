@@ -21,6 +21,7 @@ class Piece:
     def strength(self):
         return self._strength
 
+    # Property method for name
     @property
     def name(self):
         return self._name
