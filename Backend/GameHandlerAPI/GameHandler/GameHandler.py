@@ -24,4 +24,8 @@ class GameHandler:
 
     def quit_game(self, player_id, game_id):
         game = self.games[game_id]
-        
+        result_dict = game.end_game()
+        return result_dict
+
+    def set_color_pieces(self, player_id, game_id):
+

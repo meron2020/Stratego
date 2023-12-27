@@ -33,9 +33,12 @@ class Game:
 
         return pieces_dict
 
-    # Takes id as a parameter and returns the piece object
-    def get_piece_by_id(self, piece_id):
-        return self.pieces_dict[piece_id]
+    @classmethod
+    def get_opposite_color(cls, color):
+        if color == "red":
+            return "blue"
+        else:
+            return "red"
 
     def set_piece_new_pos_by_id(self, piece_id, new_pos):
         piece = self.get_piece_by_id(piece_id)
@@ -97,5 +100,14 @@ class Game:
     def get_board_ready_to_play(self):
         return self.board_set
 
+    # Takes id as a parameter and returns the piece object
+    def get_piece_by_id(self, piece_id):
+        return self.pieces_dict[piece_id]
+
     def get_player_id_by_turn(self):
         return self.color_to_player_dict[self.turn_color]
+
+    def end_game(self, color):
+        return {"winner": self.color_to_player_dict[color],
+                "loser": self.color_to_player_dict[Game.get_opposite_color(color)]}
+
