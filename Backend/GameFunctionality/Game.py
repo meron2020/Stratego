@@ -12,7 +12,7 @@ class Game:
         self.board = GameBoard()
         self.pieces_dict = Game.create_pieces_dict()
         self.turn = 0
-        self.color_to_player_dict = {}
+        self.player_to_color_dict = {}
         self.turn_color = "red"
         self.board_set = False
 
@@ -33,12 +33,10 @@ class Game:
 
         return pieces_dict
 
-    @classmethod
-    def get_opposite_color(cls, color):
-        if color == "red":
-            return "blue"
-        else:
-            return "red"
+    def get_opposite_player(self, player_id):
+        for player in self.player_to_color_dict.keys():
+            if player != player_id:
+                return player
 
     def set_piece_new_pos_by_id(self, piece_id, new_pos):
         piece = self.get_piece_by_id(piece_id)
@@ -105,9 +103,9 @@ class Game:
         return self.pieces_dict[piece_id]
 
     def get_player_id_by_turn(self):
-        return self.color_to_player_dict[self.turn_color]
+        return self.player_to_color_dict[self.turn_color]
 
-    def end_game(self, color):
-        return {"winner": self.color_to_player_dict[color],
-                "loser": self.color_to_player_dict[Game.get_opposite_color(color)]}
+    def end_game(self, player_id):
+        return {"winner": self.get_opposite_player(player_id),
+                "loser": player_id}
 

@@ -22,10 +22,12 @@ class GameHandler:
         game = self.games[game_id]
         return game.get_board()
 
-    def quit_game(self, player_id, game_id):
+    def quit_game(self, color, game_id):
         game = self.games[game_id]
-        result_dict = game.end_game()
+        result_dict = game.end_game(color)
         return result_dict
 
-    def set_color_pieces(self, player_id, game_id):
-
+    def set_color_pieces(self, game_id, pieces_to_pos_dict):
+        game = self.games[game_id]
+        game.set_color_pieces(pieces_to_pos_dict)
+        return True
