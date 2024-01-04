@@ -20,14 +20,40 @@ class GameHandler:
 
     def get_board(self, game_id):
         game = self.games[game_id]
-        return game.get_board()
+        return {"pieces_dict": game.pieces_dict, "board": game.get_board()}
 
-    def quit_game(self, color, game_id):
-        game = self.games[game_id]
+    @staticmethod
+    def quit_game(color, game):
         result_dict = game.end_game(color)
         return result_dict
 
-    def set_color_pieces(self, game_id, pieces_to_pos_dict):
-        game = self.games[game_id]
+    @staticmethod
+    def set_color_pieces(game, pieces_to_pos_dict):
         game.set_color_pieces(pieces_to_pos_dict)
         return True
+
+    @staticmethod
+    def check_if_player_turn(game, player_id):
+
+
+    def return_piece_options(self, game_id, piece_id):
+        game = self.games[game_id]
+        return {"piece_id": piece_id, "possible_options": game.return_piece_options(piece_id)}
+
+    def execute_request(self):
+        request = self.request_queue.get()
+        game = self.games[request.game_id]
+        data_to_return = None
+        if request.request_type[0] == "POST":
+            
+        if request.request_type[0] == "PUT":
+            if request.request_type[1] == 1:
+                data_to_return = game.set_color_pieces(request.data["pieces_to_pos_dict"])
+            elif request.request_type[1] == 2:
+                data_to_return = game.piece_act(request.data["piece_id", request.data["new_pos"]])
+
+        if request.request_type[0] == "GET":
+            if request.request_type[1] == 1:
+                data_to_return = {"pieces_dict": game.pieces_dict, "board": game.get_board()}
+            elif request.request_type[1] == 2:
+                data_to_return =

@@ -13,8 +13,9 @@ class Game:
         self.pieces_dict = Game.create_pieces_dict()
         self.turn = 0
         self.player_to_color_dict = {}
-        self.turn_color = "red"
+        self.turn_id = "red"
         self.board_set = False
+        self.two_players_connected = False
 
     # Function takes a color as a parameter and returns the initial list of pieces set with that color.
     @staticmethod
@@ -30,8 +31,10 @@ class Game:
                     pieces_dict[player_id + i + j + 1] = Piece(i, color, s_to_n_and_n[i][0], player_id + i + j + 1)
             for i in range(1, 4):
                 pieces_dict[player_id + 37 + i] = Piece('B', color, "Bomb", player_id + 37 + i)
-
         return pieces_dict
+
+    def get_pieces_dict(self):
+        return self.pieces_dict
 
     def get_opposite_player(self, player_id):
         for player in self.player_to_color_dict.keys():
@@ -94,8 +97,17 @@ class Game:
     def get_board(self):
         return self.board.get_board_matrix()
 
+    def connect_to_game(self, player_id):
+        if len(self.player_to_color_dict.keys()) == 0:
+            self.player_to_color_dict[player_id] = "red"
+        elif len(self.player_to_color_dict.keys()) == 1:
+            self.player_to_color_dict[player_id] = "blue"
+            self.two_players_connected = True
+        else:
+            return False
+
     # Getter method that returns True if board is ready to play and False otherwise based on the board_set variable.
-    def get_board_ready_to_play(self):
+    def board_ready_to_play(self):
         return self.board_set
 
     # Takes id as a parameter and returns the piece object
@@ -108,4 +120,5 @@ class Game:
     def end_game(self, player_id):
         return {"winner": self.get_opposite_player(player_id),
                 "loser": player_id}
+
 
