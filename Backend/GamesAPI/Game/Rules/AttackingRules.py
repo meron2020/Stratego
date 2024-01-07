@@ -1,4 +1,4 @@
-from Backend.GameFunctionality.Piece import Piece
+from Backend.GamesAPI.Game.Piece import Piece
 
 
 # Class that defines the rules for who wins in attack scenarios.
