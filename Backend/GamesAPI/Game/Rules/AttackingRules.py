@@ -1,4 +1,4 @@
-from Backend.GameFunctionality.Piece import Piece
+from Backend.GamesAPI.Game.Piece import Piece
 
 
 # Class that defines the rules for who wins in attack scenarios.
@@ -17,6 +17,9 @@ class AttackingRules:
                 return attacker
             else:
                 return defender
+
+        elif AttackingRules.check_tie(attacker, defender):
+            return None
 
         # If a spy attacks the marshall,the spy wins.
         # Note: This is only the case if the spy is attacking and not vice versa
