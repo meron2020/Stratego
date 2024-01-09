@@ -1,5 +1,5 @@
 class RequestPacket:
-    def __init__(self, game_id, request_type, data, client_address, player_id):
+    def __init__(self, request_type, player_id, client_address, game_id=None, data=None):
         self.game_id = game_id
         self.return_address = client_address
         self.data = data
