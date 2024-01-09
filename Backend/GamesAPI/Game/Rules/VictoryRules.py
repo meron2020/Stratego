@@ -2,7 +2,7 @@ class VictoryRules:
     # Function checks if the opposing players flag still exists.
     @staticmethod
     def _check_flag_exists(player_id, pieces_dict):
-        if pieces_dict.has_key(player_id * 100 +1):
+        if pieces_dict.has_key(player_id * 100 + 1):
             return True
         return False
 
@@ -23,3 +23,11 @@ class VictoryRules:
                 return False
             return True
         return True
+
+    @staticmethod
+    def check_tie(player, opposing_player, pieces_dict):
+        if not VictoryRules._check_has_movable_pieces(player,
+                                                      pieces_dict) and not VictoryRules._check_has_movable_pieces(
+                opposing_player, pieces_dict):
+            return True
+        return False

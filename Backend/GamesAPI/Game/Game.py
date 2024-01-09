@@ -2,8 +2,8 @@ from GameBoard import GameBoard
 from Piece import Piece
 from Rules.AttackingRules import AttackingRules
 from Rules.MovementRules import MovementRules
-from universals import strength_to_name_and_number_dict as s_to_n_and_n
 from Rules.VictoryRules import VictoryRules
+from universals import strength_to_name_and_number_dict as s_to_n_and_n
 
 
 # Game class is responsible for running the game.
@@ -11,17 +11,17 @@ class Game:
     def __init__(self, game_id):
         self.game_id = game_id
         self.board = GameBoard()
-        self.pieces_dict = Game.create_pieces_dict()
+        self.pieces_dict = self.create_pieces_dict()
         self.turn = 0
         self.player_to_color_dict = {}
         self.players = []
         self.turn_id = None
         self.turn_color = "red"
-        self.board_set = False
+        self.game_state = False
         self.two_players_connected = False
 
     # Function takes a color as a parameter and returns the initial list of pieces set with that color.
-    def create_pieces_dict(self, ):
+    def create_pieces_dict(self):
         colors = ["red", "blue"]
         pieces_dict = {}
         for n in range(len(colors)):
@@ -63,6 +63,8 @@ class Game:
                 piece_in_new_position = self.get_piece_by_id(piece_id_in_new_position)
                 self.piece_attack(piece_id, piece_in_new_position, new_position)
             winner = VictoryRules.check_player_is_winner(self.get_opposite_player(self.turn_id), self.pieces_dict)
+            if VictoryRules.check_tie(self.turn_id, self.get_opposite_player(self.turn_id), self.pieces_dict):
+                return {"return_type": 2, "player_ids": self.players}
             if not winner:
                 if self.turn_color == "red":
                     self.turn_color = "blue"
@@ -99,7 +101,7 @@ class Game:
             piece.set_new_piece_position(position)
             self.board.set_new_piece_id_position(piece_id, position)
         if self.board.get_piece_count() == 40:
-            self.board_set = True
+            self.game_state = True
 
         return True
 
@@ -122,7 +124,7 @@ class Game:
 
     # Getter method that returns True if board is ready to play and False otherwise based on the board_set variable.
     def board_ready_to_play(self):
-        return self.board_set
+        return self.game_state == "Started"
 
     # Takes id as a parameter and returns the piece object
     def get_piece_by_id(self, piece_id):
@@ -131,6 +133,12 @@ class Game:
     def get_player_id_by_turn(self):
         return self.player_to_color_dict[self.turn_color]
 
+    def check_game_still_running(self):
+        if self.game_state == "Started":
+            return True
+
     def end_game(self, player_id):
+        self.players.remove(player_id)
+        self.game_state = "Awaiting opponent disconnect"
         return {"winner": self.get_opposite_player(player_id),
-                "loser": player_id}
+                "loser": player_id, "game_status": self.game_state}

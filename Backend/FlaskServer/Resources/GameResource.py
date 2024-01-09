@@ -1,12 +1,14 @@
-from flask_restful import Resource, reqparse
-from flask import Flask, request
-from werkzeug.exceptions import BadRequest
-from Backend.Queues.ResponsePacket import ResponsePacket
-from Backend.Queues.RequestPacket import RequestPacket
 import time
 
+from flask import request
+from flask_restful import Resource, reqparse
+from werkzeug.exceptions import BadRequest
 
-class StrategoResource(Resource):
+from Backend.FlaskServer.Models.user import UserModel
+from Backend.Queues.RequestPacket import RequestPacket
+
+
+class GameResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("data", type=dict)
     parser.add_argument("request_type_num", type=int)
@@ -18,7 +20,7 @@ class StrategoResource(Resource):
         self.response_queue = response_queue
 
     def create_and_send_request_packet(self, request_type):
-        http_request_data = StrategoResource.parser.parse_args()
+        http_request_data = GameResource.parser.parse_args()
         try:
             game_id = http_request_data.game_id
         except BadRequest:
@@ -62,8 +64,33 @@ class StrategoResource(Resource):
 
     def put(self):
         response = self.create_and_send_request_packet("PUT")
-        if response.data["return_type"] == 1:
-            # Need to add here code to add victory and losses to players acount.
+        if response.data.has_key("return_type"):
+            if response.data["return_type"] == 1:
+                winner = UserModel.find_by_id(response.data["winner"])
+                winner.add_win()
+                loser = UserModel.find_by_id(response.data["loser"])
+                loser.add_loss()
+            elif response.data["return_type"] == 2:
+                for player_id in response.data["player_ids"]:
+                    player = UserModel.find_by_id(player_id)
+                    player.add_tie()
+        else:
+            if response.data.has_key("game_status"):
+                return {"game_status": "Ended. You have won."}
+
+            else:
+                return {"game_status": "Ended. You have lost."}
+            return response
+
+    def delete(self):
+        response = self.create_and_send_request_packet("DELETE")
+        winner = UserModel.find_by_id(response.data["winner"])
+        winner.add_win()
+        loser = UserModel.find_by_id(response.data["loser"])
+        loser.add_loss()
+
+        if response.data.has_key("game_status"):
+            return {"game_status": "Ended. You have won."}
 
         else:
-            return response
+            return {"game_status": "Ended. You have lost."}
