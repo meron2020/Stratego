@@ -2,6 +2,9 @@ class GameBoard:
     def __init__(self):
         self._board_matrix = []
 
+    def __init__(self, board_matrix):
+        self._board_matrix = board_matrix
+
     # Creates a 2d matrix that represents the board.
     def set_up_board(self):
         for i in range(10):

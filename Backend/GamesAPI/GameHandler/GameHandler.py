@@ -1,18 +1,17 @@
+import os
+
 from Backend.GamesAPI.Game.Game import Game
 from Backend.Queues.ResponsePacket import ResponsePacket
+from Backend.GamesAPI.Game.GameBoard import GameBoard
 import time
+import json
 
 
 class GameHandler:
-    def __init__(self, request_queue, response_queue):
-        self.games = []
-        self.request_queue = request_queue
-        self.response_queue = response_queue
-
-    def create_game(self):
-        game_id = len(self.games)
+    @staticmethod
+    def create_game(game_id):
         game = Game(game_id)
-        self.games.append(game)
+        GameHandler.turn_to_json(game)
         return game_id
 
     def execute_request(self):
@@ -66,3 +65,27 @@ class GameHandler:
             else:
                 time.sleep(1)
                 continue
+
+    @staticmethod
+    def turn_to_json(game):
+        object_string = json.dumps(game)
+        with open("GamesJson/" + str(game.game_id) + ".json", "w") as outfile:
+            outfile.write(object_string)
+
+        outfile.close()
+
+    @staticmethod
+    def get_from_json(game_id):
+        with open("GamesJson/" + str(game_id) + ".json", 'r') as openfile:
+            # Reading from json file
+            json_object = json.load(openfile)
+            game_board = GameBoard(json_object["board"]["_board_matrix"])
+            openfile.close()
+            return Game(json_object["game_id"], game_board, json_object["pieces_dict"], json_object["turn"],
+                        json_object["player_to_color_dict"], json_object["players"], json_object["turn_id"],
+                        json_object["turn_color"], json_object["game_state"], json_object["two_players_connected"])
+
+    @staticmethod
+    def delete_game(game_id):
+        os.remove("GamesJson/" + str(game_id) + ".json")
+        return True

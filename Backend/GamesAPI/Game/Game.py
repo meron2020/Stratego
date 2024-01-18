@@ -1,3 +1,6 @@
+import json
+import os
+
 from GameBoard import GameBoard
 from Piece import Piece
 from Rules.AttackingRules import AttackingRules
@@ -19,6 +22,19 @@ class Game:
         self.turn_color = "red"
         self.game_state = False
         self.two_players_connected = False
+
+    def __init__(self, game_id, board, pieces_dict, turn, player_to_color_dict, players, turn_id, turn_color,
+                 game_state, two_players_connected):
+        self.game_id = game_id
+        self.board = board
+        self.pieces_dict = pieces_dict
+        self.turn = turn
+        self.player_to_color_dict = player_to_color_dict
+        self.players = players
+        self.turn_id = turn_id
+        self.turn_color = turn_color
+        self.game_state = game_state
+        self.two_players_connected = two_players_connected
 
     # Function takes a color as a parameter and returns the initial list of pieces set with that color.
     def create_pieces_dict(self):
@@ -142,3 +158,10 @@ class Game:
         self.game_state = "Awaiting opponent disconnect"
         return {"winner": self.get_opposite_player(player_id),
                 "loser": player_id, "game_status": self.game_state}
+
+    def turn_to_json(self):
+        object_string = json.dumps(self)
+        with open("GamesJson/" + str(self.game_id) + ".json", "w") as outfile:
+            outfile.write(object_string)
+
+        outfile.close()
