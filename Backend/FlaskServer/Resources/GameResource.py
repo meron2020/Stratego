@@ -105,17 +105,10 @@ class GameResource(Resource):
         self.create_and_send_request_packet("POST")
         return self.await_response()
 
-    def put(self):
+    @classmethod
+    def put(cls):
         http_request_data = GameResource.parser.parse_args()
-        game = GameHandler.get_from_json(http_request_data["game_id"])
-        if http_request_data["request_type_num"] == 1:
-            data_to_return = {"pieces_set": game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])}
-        elif http_request_data["request_type_num"] == 2:
-            action_response = game.piece_act(http_request_data["data"]["piece_id", http_request_data["data"]["new_pos"]])
-            if not action_response:
-                data_to_return = {"pieces_dict": game.pieces_dict, "board": game.get_board(), "return_type": 0}
-            else:
-                data_to_return = action_response.update({"return_type": 1})
+        response = GameHandler.put(http_request_data, game)
         if response.data.has_key("return_type"):
             if response.data["return_type"] == 1:
                 winner = UserModel.find_by_id(response.data["winner"])
@@ -132,7 +125,7 @@ class GameResource(Resource):
 
             else:
                 return {"game_status": "Ended. You have lost."}
-            return response
+        return response
 
     def delete(self):
         response = self.create_and_send_request_packet("DELETE")

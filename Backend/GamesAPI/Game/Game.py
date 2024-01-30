@@ -1,5 +1,4 @@
 import json
-import os
 
 from GameBoard import GameBoard
 from Piece import Piece
@@ -152,6 +151,8 @@ class Game:
     def check_game_still_running(self):
         if self.game_state == "Started":
             return True
+        else:
+            return False
 
     def end_game(self, player_id):
         self.players.remove(player_id)
