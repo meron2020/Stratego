@@ -10,6 +10,7 @@ from universals import strength_to_name_and_number_dict as s_to_n_and_n
 
 # Game class is responsible for running the game.
 class Game:
+    # Constructor for newly created game.
     def __init__(self, game_id):
         self.game_id = game_id
         self.board = GameBoard()
@@ -19,9 +20,10 @@ class Game:
         self.players = []
         self.turn_id = None
         self.turn_color = "red"
-        self.game_state = False
+        self.game_state = "Awaiting Opponent Player Connect"
         self.two_players_connected = False
 
+    # Game object constructor for game extracted from json.
     def __init__(self, game_id, board, pieces_dict, turn, player_to_color_dict, players, turn_id, turn_color,
                  game_state, two_players_connected):
         self.game_id = game_id
@@ -124,42 +126,48 @@ class Game:
     def get_board(self):
         return self.board.get_board_matrix()
 
+    # Function adds player to game, and assigns them their relevant values depending on whether they are the first or
+    # the second player to connect. Returns true if connection successful, false otherwise.
     def connect_to_game(self, player_id):
         if len(self.player_to_color_dict.keys()) == 0:
             self.player_to_color_dict[player_id] = "red"
             self.players.append(player_id)
+            self.game_state = "Awaiting Opponent Player Connect"
             return True
         elif len(self.player_to_color_dict.keys()) == 1:
             self.player_to_color_dict[player_id] = "blue"
             self.two_players_connected = True
             self.players.append(player_id)
+            self.game_state = "Running"
             return True
         else:
             return False
 
     # Getter method that returns True if board is ready to play and False otherwise based on the board_set variable.
-    def board_ready_to_play(self):
-        return self.game_state == "Started"
+    def get_state(self):
+        return self.game_state
 
     # Takes id as a parameter and returns the piece object
     def get_piece_by_id(self, piece_id):
         return self.pieces_dict[piece_id]
 
+    # Returns the player id of the player who has the current turn color.
     def get_player_id_by_turn(self):
         return self.player_to_color_dict[self.turn_color]
 
+    # Function returns true if game is running and false otherwise.
     def check_game_still_running(self):
-        if self.game_state == "Started":
-            return True
-        else:
-            return False
+        return self.game_state == "Running"
 
+    # Function ends the game. Removes the player that ended the game from the player list.
+    # Updates the game state, and returns to the player that ended the game the result.
     def end_game(self, player_id):
         self.players.remove(player_id)
         self.game_state = "Awaiting opponent disconnect"
         return {"winner": self.get_opposite_player(player_id),
                 "loser": player_id, "game_status": self.game_state}
 
+    # Function takes the game object, turns it into a json dictionary and stores it in a json file on the database.
     def turn_to_json(self):
         object_string = json.dumps(self)
         with open("GamesJson/" + str(self.game_id) + ".json", "w") as outfile:
