@@ -1,16 +1,17 @@
 import json
 import os
-import time
 
 from Backend.GamesAPI.Game.Game import Game
 from Backend.GamesAPI.Game.GameBoard import GameBoard
 
 
-class GameHandler:
+# GameHandler class handles communication between game objects and the flask resource.
+class GamesHandler:
 
+    # Put method updates the game object depending on request.
     @classmethod
     def put(cls, http_request_data):
-        game = GameHandler.get_from_json(http_request_data["game_id"])
+        game = GamesHandler.get_from_json(http_request_data["game_id"])
 
         if game is not None and game.check_game_still_running():
             if http_request_data["request_type_num"] == 1:
@@ -24,30 +25,39 @@ class GameHandler:
                     return action_response.update({"return_type": 1})
         return {"game_status": "Ended"}
 
+    # Delete method ends game. This game is ended by forfeit and so it awaits opponent player checking the game state
+    # to update him.
     @classmethod
     def delete(cls, game_id, player_id):
-        game = GameHandler.get_from_json(game_id)
+        game = GamesHandler.get_from_json(game_id)
+        # If game is still running, the player is forfeiting.
         if game.check_game_still_running():
             data_to_return = game.end_game(player_id)
-            GameHandler.delete_game(game_id)
             return data_to_return
-        return {"game_status": "Ended"}
+        # This is in case the player has forfeited after the opposing player, so he still wins.
+        else:
+            GamesHandler.delete_game(game_id)
+            return {"game_status": "Ended", "player_status": "Won by forfeit"}
 
+    # Post method checks if there is a game that can be connected to. If so, it connects the requesting player to
+    # that game. If not, it creates a new game and connects the player to it.
     @classmethod
     def post(cls, player_id):
-        game_amount = GameHandler.current_game_amount()
-        last_game = GameHandler.get_from_json(game_amount)
+        game_amount = GamesHandler.current_game_amount()
+        last_game = GamesHandler.get_from_json(game_amount)
         connected = last_game.connect_to_game(player_id)
         if not connected:
-            game = GameHandler.create_game(game_amount + 1)
+
+            game = GamesHandler.create_game(game_amount + 1)
             game.connect_to_game(player_id)
             return {"status": "awaiting opposing player connection"}
         else:
             return {"status": "game ready to play"}
 
+    # Get method runs checks get type and returns the answer accordingly.
     @classmethod
     def get(cls, game_id, request_type, player_id, data):
-        game = GameHandler.get_from_json(game_id)
+        game = GamesHandler.get_from_json(game_id)
 
         if game.check_game_still_running():
             if request_type[1] == 1:
@@ -57,59 +67,13 @@ class GameHandler:
             elif request_type[1] == 3:
                 return {"piece_options": game.return_piece_options(data["piece_id"])}
             elif request_type[1] == 4:
-                return {"board_ready": game.board_ready_to_play()}
+                if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
+                    return {"game_state": game.get_state()}
+                else:
+                    GamesHandler.delete_game(game_id)
+                    return {"game_status": "Ended", "player_status": "Won by forfeit"}
 
-    def execute_request(self):
-        data_to_return = None
-        if request.request_type[0] == "POST":
-            connected = self.games[-1].connect_to_game(request.player_id)
-            if not connected:
-                game = self.games[self.create_game()]
-                game.connect_to_game(request.player_id)
-                data_to_return = {"status": "awaiting opposing player connection"}
-            else:
-                data_to_return = {"status": "game ready to play"}
-
-        game = self.games[request.game_id]
-        if game.check_game_still_running():
-            if request.request_type[0] == "PUT":
-                if request.request_type[1] == 1:
-                    data_to_return = {"pieces_set": game.set_color_pieces(request.data["pieces_to_pos_dict"])}
-                elif request.request_type[1] == 2:
-                    action_response = game.piece_act(request.data["piece_id", request.data["new_pos"]])
-                    if not action_response:
-                        data_to_return = {"pieces_dict": game.pieces_dict, "board": game.get_board(), "return_type": 0}
-                    else:
-                        data_to_return = action_response.update({"return_type": 1})
-
-            elif request.request_type[0] == "GET":
-                if request.request_type[1] == 1:
-                    data_to_return = {"pieces_dict": game.pieces_dict, "board": game.get_board()}
-                elif request.request_type[1] == 2:
-                    data_to_return = {"request_owner_turn": game.turn_id == request.player_id}
-                elif request.request_type[1] == 3:
-                    data_to_return = {"piece_options": game.return_piece_options(request.data["piece_id"])}
-                elif request.request_type[1] == 4:
-                    data_to_return = {"board_ready": game.board_ready_to_play()}
-
-            elif request.request_type[0] == "DELETE":
-                data_to_return = game.end_game(request.player_id)
-                self.games.remove(game)
-        else:
-            data_to_return = {"game_status": "Ended"}
-
-        return_packet = ResponsePacket(data_to_return, request.return_address)
-        self.response_queue.put(return_packet)
-
-    def run_handler(self):
-        while True:
-            if not self.request_queue.empty():
-                self.execute_request()
-                continue
-            else:
-                time.sleep(1)
-                continue
-
+    # Turns game object to json and writes it to database.
     @staticmethod
     def turn_to_json(game):
         object_string = json.dumps(game)
@@ -118,6 +82,7 @@ class GameHandler:
 
         outfile.close()
 
+    # Returns game file with parameter game_id as Game object.
     @staticmethod
     def get_from_json(game_id):
         try:
@@ -132,18 +97,20 @@ class GameHandler:
         except OSError:
             return False
 
+    # Function removes game file with parameter number.
     @staticmethod
     def delete_game(game_id):
         os.remove("GamesJson/" + str(game_id) + ".json")
         return True
 
+    # Function returns the amount of games currently running.
     @classmethod
     def current_game_amount(cls):
         json_files_count = 0
 
         # Iterate over all files in the directory
-        for filename in os.listdir("Backend/FlaskServer/GameDB"):
-            file_path = os.path.join("Backend/FlaskServer/GameDB", filename)
+        for filename in os.listdir("Backend\\FlaskServer\\GameDB"):
+            file_path = os.path.join("Backend\\FlaskServer\\ GameDB", filename)
 
             # Check if it's a file and has a '.json' extension
             if os.path.isfile(file_path) and filename.endswith('.json'):
@@ -151,8 +118,26 @@ class GameHandler:
 
         return json_files_count
 
+    # Creates game object and stores it in database. Returns the new game's id
     @staticmethod
     def create_game(game_id):
         game = Game(game_id)
-        GameHandler.turn_to_json(game)
+        GamesHandler.turn_to_json(game)
         return game_id
+
+    # Function iterates over database and checks for open name slot numbers.
+    @staticmethod
+    def check_for_open_game_slots(game_amount):
+        try:
+            file_number = 1
+            for i in range(game_amount):
+                file_name = "Backend\\FlaskServer\\GameDB\\game" + str(file_number) + ".json"
+
+                if not os.path.exists(file_name):
+                    return file_number
+
+                file_number += 1
+        except FileNotFoundError:
+            print(f"Error: Directory not found at Backend\\FlaskServer\\GameDB")
+            return None
+
