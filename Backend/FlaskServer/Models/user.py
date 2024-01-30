@@ -18,9 +18,6 @@ class UserModel(db.Model):
         self.losses = 0
         self.ties = 0
 
-    def json(self):
-        return {"name": self.name, "wins": self.wins, "losses": self.losses, "ties": self.ties}
-
     @classmethod
     def find_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
@@ -48,3 +45,18 @@ class UserModel(db.Model):
     def add_tie(self):
         self.losses += 1
         db.session.commit()
+
+    @classmethod
+    def get_stats(cls, username):
+        user = cls.find_by_name(username)
+        return {"user": user.name, "wins": user.wins, "losses": user.losses, "ties": user.ties}
+
+    @classmethod
+    def create_new_user(cls, name, password_hash):
+        user = UserModel(name, password_hash)
+        user.save_to_db()
+
+    @classmethod
+    def delete_user(cls, username):
+        user = cls.find_by_name(username)
+        user.delete_from_db()
