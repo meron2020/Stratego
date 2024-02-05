@@ -29,10 +29,9 @@ class GameResource(Resource):
         return response
 
     # HTTP PUT Method. Updates the relevant game depending on the request and if needed the UserDB.
-    @classmethod
-    def put(cls):
+    def put(self):
         http_request_data = GameResource.parser.parse_args()
-        response = GamesHandler.put(http_request_data)
+        response = self.game_handler.put(http_request_data)
         if response.data.has_key("return_type"):
             if response.data["return_type"] == 1:
                 winner = UserModel.find_by_id(response.data["winner"])

@@ -1,4 +1,4 @@
-from RunnerRules import RunnerRules
+from Backend.GamesAPI.Game.Rules.RunnerRules import RunnerRules
 
 
 class MovementRules:

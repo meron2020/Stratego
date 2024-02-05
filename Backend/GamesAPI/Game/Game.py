@@ -1,37 +1,29 @@
 import json
 
-from GameBoard import GameBoard
-from Piece import Piece
-from Rules.AttackingRules import AttackingRules
-from Rules.MovementRules import MovementRules
-from Rules.VictoryRules import VictoryRules
+from Backend.GamesAPI.Game.GameBoard import GameBoard
+from Backend.GamesAPI.Game.Piece import Piece
+from Backend.GamesAPI.Game.Rules.AttackingRules import AttackingRules
+from Backend.GamesAPI.Game.Rules.MovementRules import MovementRules
+from Backend.GamesAPI.Game.Rules.VictoryRules import VictoryRules
 from universals import strength_to_name_and_number_dict as s_to_n_and_n
 
 
 # Game class is responsible for running the game.
 class Game:
-    # Constructor for newly created game.
-    def __init__(self, game_id):
-        self.game_id = game_id
-        self.board = GameBoard()
-        self.pieces_dict = self.create_pieces_dict()
-        self.turn = 0
-        self.player_to_color_dict = {}
-        self.players = []
-        self.turn_id = None
-        self.turn_color = "red"
-        self.game_state = "Awaiting Opponent Player Connect"
-        self.two_players_connected = False
+    # Game object constructor
+    def __init__(self, game_id, players=[], board=GameBoard(), pieces_dict=None, turn=0, player_to_color_dict={},
+                 turn_id=None, turn_color="red", game_state="Awaiting Opponent Player Connect",
+                 two_players_connected=False):
 
-    # Game object constructor for game extracted from json.
-    def __init__(self, game_id, board, pieces_dict, turn, player_to_color_dict, players, turn_id, turn_color,
-                 game_state, two_players_connected):
         self.game_id = game_id
         self.board = board
-        self.pieces_dict = pieces_dict
         self.turn = turn
         self.player_to_color_dict = player_to_color_dict
         self.players = players
+        if not pieces_dict:
+            self.pieces_dict = self.create_pieces_dict()
+        else:
+            self.pieces_dict = pieces_dict
         self.turn_id = turn_id
         self.turn_color = turn_color
         self.game_state = game_state
