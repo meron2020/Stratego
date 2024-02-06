@@ -20,9 +20,7 @@ class Game:
         self.turn = turn
         self.player_to_color_dict = player_to_color_dict
         self.players = players
-        if not pieces_dict:
-            self.pieces_dict = self.create_pieces_dict()
-        else:
+        if pieces_dict:
             self.pieces_dict = pieces_dict
         self.turn_id = turn_id
         self.turn_color = turn_color
@@ -130,6 +128,7 @@ class Game:
             self.player_to_color_dict[player_id] = "blue"
             self.two_players_connected = True
             self.players.append(player_id)
+            self.pieces_dict = self.create_pieces_dict()
             self.game_state = "Running"
             return True
         else:
@@ -166,3 +165,15 @@ class Game:
             outfile.write(object_string)
 
         outfile.close()
+
+    @staticmethod
+    def object_to_dict(obj):
+        if isinstance(obj, list):
+            return [Game.object_to_dict(item) for item in obj]
+        elif isinstance(obj, dict):
+            return {key: Game.object_to_dict(value) for key, value in obj.items()}
+        elif hasattr(obj, '__dict__'):
+            return {key: Game.object_to_dict(value) for key, value in obj.__dict__.items() if not callable(value)}
+        else:
+            return obj
+

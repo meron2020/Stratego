@@ -23,7 +23,7 @@ class Piece(pygame.sprite.Sprite):
 
 
 # Define piece images
-soldier_image = "soldier.png"
+soldier_image = "Sprite_Images\\soldier.png"
 
 # Create piece instances
 soldier = Piece(soldier_image, 100, 100)

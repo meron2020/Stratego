@@ -5,6 +5,7 @@ from Backend.GamesAPI.Game.Game import Game
 from Backend.GamesAPI.Game.GameBoard import GameBoard
 from Backend.GamesAPI.Game.Piece import Piece
 
+
 # GameHandler class handles communication between game objects and the flask resource.
 class GamesHandler:
 
@@ -45,14 +46,20 @@ class GamesHandler:
     def post(cls, player_id):
         game_amount = GamesHandler.current_game_amount()
         last_game = GamesHandler.get_from_json(game_amount)
-        connected = last_game.connect_to_game(player_id)
-        if not connected:
-
+        if not last_game:
             game = GamesHandler.create_game(game_amount + 1)
             game.connect_to_game(player_id)
+            GamesHandler.turn_to_json(game)
             return {"status": "awaiting opposing player connection"}
         else:
-            return {"status": "game ready to play"}
+            connected = last_game.connect_to_game(player_id)
+            if not connected:
+                game = GamesHandler.create_game(game_amount + 1)
+                game.connect_to_game(player_id)
+                GamesHandler.turn_to_json(game)
+                return {"status": "awaiting opposing player connection"}
+            else:
+                return {"status": "game ready to play"}
 
     # Get method runs checks get type and returns the answer accordingly.
     @classmethod
@@ -77,23 +84,39 @@ class GamesHandler:
     @staticmethod
     def turn_to_json(game):
         object_string = json.dumps(game, default=lambda obj: obj.__dict__)
-        with open("C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Backend\\FlaskServer\\GameDB\\game" + str(game.game_id) + ".json", "w") as outfile:
+        file_path = GamesHandler.create_game_db_paths("f", game.game_id)
+        with open(file_path, "w") as outfile:
             outfile.write(object_string)
 
         outfile.close()
 
-    # Returns game file with parameter game_id as Game object.
+    @staticmethod
+    def create_game_db_paths(path_type, game_id=None):
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Go up three levels to reach the project directory
+        project_directory = os.path.abspath(os.path.join(script_directory, '../../..'))
+        if path_type == "f":
+            relative_path = "Backend\\FlaskServer\\GameDB\\game" + str(game_id) + ".json"
+        else:
+            relative_path = "Backend\\FlaskServer\\GameDB"
+        return os.path.join(project_directory, relative_path)
+
+    # Returns game file with parameter game_id as Game object
+
     @staticmethod
     def get_from_json(game_id):
         try:
-            with open("C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Backend\\FlaskServer\\GameDB\\game" + str(game_id) + ".json", 'r') as openfile:
+
+            with open(GamesHandler.create_game_db_paths("f", game_id), 'r') as openfile:
                 # Reading from json file
                 json_object = json.load(openfile)
                 game_board = GameBoard(json_object["board"]["_board_matrix"])
                 pieces_dict = {}
-                for piece_num, pieceDict in json_object["pieces_dict"].items():
-                    pieces_dict[piece_num] = Piece.create_piece_from_dict(pieceDict)
-                openfile.close()
+                if "pieces_dict" in json_object:
+                    for piece_num, pieceDict in json_object["pieces_dict"].items():
+                        pieces_dict[piece_num] = Piece.create_piece_from_dict(pieceDict)
+                    openfile.close()
                 return Game(json_object["game_id"], json_object["players"], game_board, pieces_dict,
                             json_object["turn"], json_object["player_to_color_dict"], json_object["turn_id"],
                             json_object["turn_color"], json_object["game_state"], json_object["two_players_connected"])
@@ -103,7 +126,7 @@ class GamesHandler:
     # Function removes game file with parameter number.
     @staticmethod
     def delete_game(game_id):
-        os.remove("GamesJson/" + str(game_id) + ".json")
+        os.remove(GamesHandler.create_game_db_paths("f", game_id))
         return True
 
     # Function returns the amount of games currently running.
@@ -112,8 +135,8 @@ class GamesHandler:
         json_files_count = 0
 
         # Iterate over all files in the directory
-        for filename in os.listdir("Backend\\FlaskServer\\GameDB"):
-            file_path = os.path.join("Backend\\FlaskServer\\ GameDB", filename)
+        for filename in os.listdir(GamesHandler.create_game_db_paths("d")):
+            file_path = os.path.join(GamesHandler.create_game_db_paths("d"), filename)
 
             # Check if it's a file and has a '.json' extension
             if os.path.isfile(file_path) and filename.endswith('.json'):
@@ -125,8 +148,7 @@ class GamesHandler:
     @staticmethod
     def create_game(game_id):
         game = Game(game_id)
-        GamesHandler.turn_to_json(game)
-        return game_id
+        return game
 
     # Function iterates over database and checks for open name slot numbers.
     @staticmethod
@@ -134,7 +156,7 @@ class GamesHandler:
         try:
             file_number = 1
             for i in range(game_amount):
-                file_name = "Backend\\FlaskServer\\GameDB\\game" + str(file_number) + ".json"
+                file_name = GamesHandler.create_game_db_paths("f", file_number)
 
                 if not os.path.exists(file_name):
                     return file_number
