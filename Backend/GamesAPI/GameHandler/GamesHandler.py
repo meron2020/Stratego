@@ -19,11 +19,13 @@ class GamesHandler:
                 return {"pieces_set": game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])}
             elif http_request_data["request_type_num"] == 2:
                 action_response = game.piece_act(
-                    http_request_data["data"]["piece_id", http_request_data["data"]["new_pos"]])
+                    http_request_data["data"]["piece_id"], http_request_data["data"]["new_pos"])
                 if not action_response:
                     return {"pieces_dict": game.pieces_dict, "board": game.get_board(), "return_type": 0}
                 else:
-                    return action_response.update({"return_type": 1})
+                    if "return_type" not in action_response:
+                        return action_response.update({"return_type": 1})
+                    return action_response
         return {"game_status": "Ended"}
 
     # Delete method ends game. This game is ended by forfeit and so it awaits opponent player checking the game state

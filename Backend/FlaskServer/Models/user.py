@@ -31,8 +31,12 @@ class UserModel(db.Model):
         db.session.commit()
 
     def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception:
+            return False
 
     def add_win(self):
         self.wins += 1
@@ -53,10 +57,15 @@ class UserModel(db.Model):
 
     @classmethod
     def create_new_user(cls, name, password_hash):
-        user = UserModel(name, password_hash)
-        user.save_to_db()
+        try:
+            user = UserModel(name, password_hash)
+            user.save_to_db()
+            return {"user_created": True}
+        except Exception:
+            return {"user_created": False}
 
     @classmethod
     def delete_user(cls, username):
         user = cls.find_by_name(username)
-        user.delete_from_db()
+        deleted = user.delete_from_db()
+        return {"deleted": deleted}
