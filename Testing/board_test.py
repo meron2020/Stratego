@@ -1,6 +1,6 @@
 import pygame
 
-from Frontend.GUI.PieceSprite import PieceSprite
+from Testing.sprite_testing import PieceSprite
 
 
 class Board:
@@ -21,10 +21,19 @@ class Board:
         self.black = (0, 0, 0)
         self.blue = (0, 0, 255)
         self.pieces = []  # List to store PieceSprite instances
+        self.board_matrix = [[[] for i in range(10)] for j in range(10)]
 
-    def add_piece(self, image_path, row, col):
-        piece = PieceSprite(image_path, row, col, self)
+    def is_bottom_rows_filled(self):
+        bottom_rows = self.board_matrix[-4:]  # Select the bottom four rows
+        for row in bottom_rows:
+            for cell in row:
+                if not cell:
+                    return False
+        return True
+
+    def add_piece(self, row, col, piece):
         self.pieces.append(piece)
+        self.board_matrix[row - 1][col-5] = True
 
     def calculate_dimensions(self):
         min_dimension = min(self.screen.get_width(), self.screen.get_height())

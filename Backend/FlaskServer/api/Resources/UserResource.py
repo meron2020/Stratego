@@ -1,6 +1,6 @@
 from flask_restful import reqparse, Resource
 
-from Backend.FlaskServer.Models.user import UserModel
+from Backend.FlaskServer.api.Models.user import UserModel
 
 
 class UserResource(Resource):

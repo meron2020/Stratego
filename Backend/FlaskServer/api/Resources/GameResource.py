@@ -1,8 +1,5 @@
-from flask import request
 from flask_restful import Resource, reqparse
-from werkzeug.exceptions import BadRequest
-from Backend.GamesAPI.GameHandler.GamesHandler import GamesHandler
-from Backend.FlaskServer.Models.user import UserModel
+from Backend.FlaskServer.api.Models.user import UserModel
 
 
 class GameResource(Resource):

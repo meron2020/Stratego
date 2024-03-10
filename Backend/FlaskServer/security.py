@@ -1,4 +1,4 @@
-from Backend.FlaskServer.Models.user import UserModel
+from Backend.FlaskServer.api.Models.user import UserModel
 
 
 def authenticate(username, password):
