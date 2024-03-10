@@ -24,7 +24,7 @@ class Board:
         self.board_matrix = [[[] for i in range(10)] for j in range(10)]
 
     def is_bottom_rows_filled(self):
-        bottom_rows = self.board_matrix[-4:]  # Select the bottom four rows
+        bottom_rows = self.board_matrix[-1:]  # Select the bottom four rows
         for row in bottom_rows:
             for cell in row:
                 if not cell:
@@ -33,7 +33,7 @@ class Board:
 
     def add_piece(self, row, col, piece):
         self.pieces.append(piece)
-        self.board_matrix[row - 1][col-5] = True
+        self.board_matrix[row - 1][col - 5] = piece.piece_id
 
     def calculate_dimensions(self):
         min_dimension = min(self.screen.get_width(), self.screen.get_height())
@@ -49,7 +49,7 @@ class Board:
 
         # Draw background
         background = pygame.image.load(
-            "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png")  # Replace with your actual file path
+            "D:\\YoavMeron\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png")  # Replace with your actual file path
         background = pygame.transform.scale(background, (self.screen.get_width(), self.screen.get_height()))
         self.screen.blit(background, (0, 0))
 
@@ -77,3 +77,15 @@ class Board:
 
         for piece in self.pieces:
             self.screen.blit(piece.image, piece.rect.topleft)
+
+    def check_square_filled(self, row, col):
+        return self.board_matrix[row - 1][col - 5] != []
+
+    def create_piece_to_pos_dict(self):
+        piece_to_pos_dict = {}
+        for row in self.board_matrix:
+            for col in row:
+                piece_id = col[0]
+                piece_to_pos_dict[piece_id] = (row, col)
+
+        return piece_to_pos_dict

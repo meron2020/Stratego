@@ -1,3 +1,4 @@
+import os
 import sys
 
 import pygame
@@ -20,14 +21,19 @@ board = Board(screen, margin_percentage=0.05)
 
 # Create a DraggableSquare instance
 square_size = board.square_size
-image = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
+current_script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Navigate up the directory structure four times to get to the desired directory
+four_levels_up = os.path.abspath(os.path.join(current_script_directory, '../../'))
+image_path = "D:\\YoavMeron\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
+
 square_color = (255, 0, 0)  # Red
 # sprite = PieceSprite(image, 1, 2, board)
 sprite_group = pygame.sprite.Group()
 
 for i in range(10):
     for j in range(4):
-        sprite_group.add(PieceSprite(image, i, j - 4, board, screen))
+        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, 1))
 
 # sprite_group.add(sprite)
 # Game loop
@@ -47,6 +53,14 @@ while running:
                     clicked_sprite = sprite
                     clicked_sprite.start_drag(event.pos)
 
+            finish_button_rect = pygame.Rect(
+                pygame.display.get_window_size()[0] - 300,
+                pygame.display.get_window_size()[1] - 150,
+                175, 50
+            )
+            if finish_button_rect.collidepoint(event.pos):
+                print("sent")
+
         elif event.type == pygame.MOUSEBUTTONUP:
             if clicked_sprite:
                 clicked_sprite.stop_drag()
@@ -63,16 +77,19 @@ while running:
 
     # Check if bottom four rows are filled
     if board.is_bottom_rows_filled():
+        print("Bottom row filled")
         # Display "Finish set up" button in the bottom right corner
         finish_button_rect = pygame.Rect(
-            pygame.display.get_window_size()[0] - 150,
-            pygame.display.get_window_size()[1] - 50,
-            150, 50
+            pygame.display.get_window_size()[0] - 300,
+            pygame.display.get_window_size()[1] - 150,
+            175, 50
         )
+
         pygame.draw.rect(screen, (0, 0, 255), finish_button_rect)
         font = pygame.font.Font(None, 36)
         text = font.render("Finish set up", True, (255, 255, 255))
         screen.blit(text, finish_button_rect.move(10, 5))
+        pygame.display.flip()
 
     # sprite.drag(pygame.mouse.get_pos())
     screen.fill((255, 255, 255))

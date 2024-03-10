@@ -2,7 +2,7 @@ import pygame
 
 
 class PieceSprite(pygame.sprite.Sprite):
-    def __init__(self, image, row, column, board, screen):
+    def __init__(self, image, row, column, board, screen,piece_id):
         super().__init__()
         self.setup_mode = True
         self.board = board
@@ -13,6 +13,7 @@ class PieceSprite(pygame.sprite.Sprite):
         self.is_dragging = False
         self.offset = (0, 0)
         self.screen = screen
+        self.piece_id = piece_id
 
         self.cur_row = None
         self.cur_col = None
@@ -75,6 +76,9 @@ class PieceSprite(pygame.sprite.Sprite):
             row, col = self.cur_row, self.cur_col
         
         elif self.setup_mode and not PieceSprite.check_setup_viable(row):
+            row, col = self.cur_row, self.cur_col
+
+        elif self.board.check_square_filled(row, col):
             row, col = self.cur_row, self.cur_col
 
         # Ensure the row and col are within the board bounds
