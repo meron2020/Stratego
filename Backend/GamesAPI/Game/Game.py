@@ -107,8 +107,8 @@ class Game:
             piece = self.get_piece_by_id(piece_id)
             piece.set_new_piece_position(position)
             self.board.set_new_piece_id_position(piece_id, position)
-        if self.board.get_piece_count() == 40:
-            self.game_state = True
+        if self.board.get_piece_count() == 80:
+            self.game_state = "Running"
 
         return True
 
@@ -129,7 +129,7 @@ class Game:
             self.two_players_connected = True
             self.players.append(player_id)
             self.pieces_dict = self.create_pieces_dict()
-            self.game_state = "Running"
+            self.game_state = "Awaiting setups"
             return True
         else:
             return False

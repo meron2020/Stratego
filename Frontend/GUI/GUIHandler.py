@@ -1,5 +1,5 @@
 from PieceSprite import PieceSprite
-from board import Board
+from Board import Board
 import pygame
 
 

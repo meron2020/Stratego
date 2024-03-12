@@ -68,3 +68,28 @@ class Board:
 
         for piece in self.pieces:
             self.screen.blit(piece.image, piece.rect.topleft)
+
+    def check_square_filled(self, row, col):
+        return self.board_matrix[row - 1][col - 5] != []
+
+    def create_piece_to_pos_dict(self):
+        piece_to_pos_dict = {}
+        for row in self.board_matrix:
+            for col in row:
+                piece_id = col[0]
+                piece_to_pos_dict[piece_id] = (row, col)
+
+        return piece_to_pos_dict
+
+    def color_square(self, position, color):
+        row, col = position[0], position[1]
+        rect = pygame.Rect(
+            self.start_x + col * self.square_size + self.margin,
+            self.start_y + row * self.square_size + self.margin,
+            self.square_size - 2 * self.margin,
+            self.square_size - 2 * self.margin
+        )
+        pygame.draw.rect(self.screen, color, rect)
+        pygame.display.flip()
+
+

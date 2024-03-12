@@ -89,3 +89,15 @@ class Board:
                 piece_to_pos_dict[piece_id] = (row, col)
 
         return piece_to_pos_dict
+
+    def color_square(self, position, color):
+        row, col = position[0], position[1]
+        rect = pygame.Rect(
+            self.start_x + col * self.square_size + self.margin,
+            self.start_y + row * self.square_size + self.margin,
+            self.square_size - 2 * self.margin,
+            self.square_size - 2 * self.margin
+        )
+        pygame.draw.rect(self.screen, color, rect)
+        pygame.display.flip()
+

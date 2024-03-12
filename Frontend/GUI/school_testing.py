@@ -3,7 +3,7 @@ import sys
 import pygame
 
 from PieceSprite import PieceSprite
-from board import Board
+from Board import Board
 
 # Initialize Pygame
 pygame.init()

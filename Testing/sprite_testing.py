@@ -2,7 +2,7 @@ import pygame
 
 
 class PieceSprite(pygame.sprite.Sprite):
-    def __init__(self, image, row, column, board, screen,piece_id):
+    def __init__(self, image, row, column, board, screen, piece_id):
         super().__init__()
         self.setup_mode = True
         self.board = board
@@ -56,14 +56,14 @@ class PieceSprite(pygame.sprite.Sprite):
 
         return row, col
 
-    def stop_drag(self):
+    def stop_drag(self, options=None):
         self.is_dragging = False
         # Snap to the closest square
-        row, col = self.find_closest_square()
+        row, col = self.find_closest_square(options)
         self.rect.topleft = self.calculate_square_position(row, col)
         self.board.add_piece(row, col, self)
 
-    def find_closest_square(self):
+    def find_closest_square(self, options=None):
         # Calculate the center coordinates of the current position
         center_x = self.rect.x + self.rect.width / 2
         center_y = self.rect.y + self.rect.height / 2
@@ -72,18 +72,26 @@ class PieceSprite(pygame.sprite.Sprite):
         row = int((center_y - self.board.margin) / self.board.square_size)
         col = int((center_x - self.board.margin) / self.board.square_size)
 
-        if PieceSprite.is_over_lake(row, col):
-            row, col = self.cur_row, self.cur_col
-        
-        elif self.setup_mode and not PieceSprite.check_setup_viable(row):
-            row, col = self.cur_row, self.cur_col
+        # If the function is called for checkin piece options.
+        if options is not None:
+            if (row, col) in options:
+                return row, col
+            else:
+                return self.cur_row, self.cur_col
+        # If function is called for setting up.
+        else:
+            if PieceSprite.is_over_lake(row, col):
+                row, col = self.cur_row, self.cur_col
 
-        elif self.board.check_square_filled(row, col):
-            row, col = self.cur_row, self.cur_col
+            elif self.setup_mode and not PieceSprite.check_setup_viable(row):
+                row, col = self.cur_row, self.cur_col
 
-        # Ensure the row and col are within the board bounds
-        row = max(1, min(row, self.board.board_size))
-        col = max(0, min(col, self.board.board_size + 4))
+            elif self.board.check_square_filled(row, col):
+                row, col = self.cur_row, self.cur_col
+
+            # Ensure the row and col are within the board bounds
+            row = max(1, min(row, self.board.board_size))
+            col = max(0, min(col, self.board.board_size + 4))
 
         return row, col
 
