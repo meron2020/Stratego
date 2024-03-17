@@ -61,6 +61,7 @@ class GamesHandler:
                 GamesHandler.turn_to_json(game)
                 return {"status": "awaiting opposing player connection"}
             else:
+                GamesHandler.turn_to_json(last_game)
                 return {"status": "game ready to play"}
 
     # Get method runs checks get type and returns the answer accordingly.
@@ -99,9 +100,9 @@ class GamesHandler:
         # Go up three levels to reach the project directory
         project_directory = os.path.abspath(os.path.join(script_directory, '../../..'))
         if path_type == "f":
-            relative_path = "Backend\\FlaskServer\\GameDB\\game" + str(game_id) + ".json"
+            relative_path = "Backend\\GamesAPI\\GamesJson\\" + str(game_id) + ".json"
         else:
-            relative_path = "Backend\\FlaskServer\\GameDB"
+            relative_path = "Backend\\GamesAPI\\GamesJson\\"
         return os.path.join(project_directory, relative_path)
 
     # Returns game file with parameter game_id as Game object

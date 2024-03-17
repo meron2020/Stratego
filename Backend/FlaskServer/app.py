@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from flask import Flask
-from flask_cors import CORS
 from flask_restful import Api
 
 from Backend.FlaskServer.api.Resources.AuthResource import Auth
