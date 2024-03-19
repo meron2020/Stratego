@@ -6,17 +6,17 @@ class GameHTTPHandler:
         self.server_address = server_address
         self.headers = {"Content-Type": "application/json"}
 
-    def send_request(self, params, req_type=None):
+    def send_request(self, json, req_type=None):
         address = self.server_address + "/games"
         try:
             if req_type == "g":
-                response = requests.get(address, params=params, headers=self.headers)
+                response = requests.get(address, json=json, headers=self.headers)
             elif req_type == "p":
-                response = requests.post(address, params=params, headers=self.headers)
+                response = requests.post(address, json=json)
             elif req_type == "d":
-                response = requests.delete(address, params=params, headers=self.headers)
+                response = requests.delete(address, json=json, headers=self.headers)
             else:
-                response = requests.put(address, params=params, headers=self.headers)
+                response = requests.put(address, json=json, headers=self.headers)
             response.raise_for_status()  # Raises HTTPError for bad responses
             return response.json()
         except requests.exceptions.RequestException as e:
@@ -39,18 +39,21 @@ class GameHTTPHandler:
         params = {"game_id": game_id, "request_type": 4}
         return self.send_request(params, "g")
 
-    def join_game(self, game_id, player_id):
-        params = {"game_id": game_id, "player_id": player_id}
-        return self.send_request(params, "p")
+    def join_game(self, player_id):
+        json = {"player_id": player_id}
+        return self.send_request(json, "p")
 
     def quit_game(self, game_id, player_id):
         params = {"game_id": game_id, "player_id": player_id}
         return self.send_request(params, "d")
 
-    def send_starting_positions(self, game_id, pieces_to_pos_dict):
-        params = {"game_id": game_id, "data": {"pieces_to_pos_dict": pieces_to_pos_dict}}
+    def send_starting_positions(self, game_id, pieces_to_pos_dict, player_id):
+        params = {"game_id": game_id, "data": {"pieces_to_pos_dict": pieces_to_pos_dict}, "player_id": player_id,
+                  "request_type_num": 1}
         return self.send_request(params)
 
     def piece_act(self, game_id, piece_id, new_pos):
         params = {"game_id": game_id, "data": {"piece_id": piece_id, "new_pos": new_pos}}
         return self.send_request(params)
+
+

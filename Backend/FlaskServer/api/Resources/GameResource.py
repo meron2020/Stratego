@@ -1,16 +1,17 @@
 from flask_restful import Resource, reqparse
 from Backend.FlaskServer.api.Models.user import UserModel
+from Backend.GamesAPI.GameHandler.GamesHandler import GamesHandler
 
 
 class GameResource(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument("data", type=dict)
-    parser.add_argument("request_type_num", type=int)
-    parser.add_argument("game_id", type=int)
+    parser.add_argument("data", type=dict, required=False)
+    parser.add_argument("request_type_num", type=int, required=False)
+    parser.add_argument("game_id", type=int, required=False)
     parser.add_argument("player_id", type=int)
 
-    def __init__(self, game_handler):
-        self.game_handler = game_handler
+    def __init__(self):
+        self.game_handler = GamesHandler()
 
     # HTTP Get method. According to request, uses the GameHandler to return the relevant response.
     def get(self):
@@ -28,6 +29,7 @@ class GameResource(Resource):
     # HTTP PUT Method. Updates the relevant game depending on the request and if needed the UserDB.
     def put(self):
         http_request_data = GameResource.parser.parse_args()
+        print("arrived here")
         response = self.game_handler.put(http_request_data)
         if response.data.has_key("return_type"):
             if response.data["return_type"] == 1:

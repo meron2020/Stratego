@@ -15,9 +15,9 @@ class GameHandler:
         self.board = Board(self.screen, margin_percentage=0.05)
         self.http_handler = GameHTTPHandler(self.server_address)
 
-    def send_setup(self):
+    def send_setup(self, player_id):
         piece_to_pos_dict = self.board.create_piece_to_pos_dict()
-        response = self.http_handler.send_starting_positions(self.game_id, piece_to_pos_dict)
+        response = self.http_handler.send_starting_positions(self.game_id, piece_to_pos_dict, player_id)
         print(response)
 
     def await_other_player_finish_setup(self):
@@ -51,7 +51,5 @@ class GameHandler:
 
     def get_game_board(self):
         return self.http_handler.get_board(self.game_id)
-
-
 
 

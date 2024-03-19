@@ -1,6 +1,6 @@
 import os
 import sys
-
+from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
 import pygame
 
 from Testing.sprite_testing import PieceSprite
@@ -30,15 +30,18 @@ image_path = "D:\\YoavMeron\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png
 square_color = (255, 0, 0)  # Red
 # sprite = PieceSprite(image, 1, 2, board)
 sprite_group = pygame.sprite.Group()
-
 for i in range(10):
     for j in range(4):
-        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, 1))
+        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, j*10 + i))
 
 # sprite_group.add(sprite)
 # Game loop
 running = True
 clicked_sprite = None
+
+httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
+game_id = httpHandler.join_game(1)
+httpHandler.join_game(2)
 
 while running:
     for event in pygame.event.get():
@@ -59,7 +62,9 @@ while running:
                 175, 50
             )
             if finish_button_rect.collidepoint(event.pos):
-                print("sent")
+                piece_to_pos_dict = board.create_piece_to_pos_dict()
+                response = httpHandler.send_starting_positions(game_id, piece_to_pos_dict, 1)
+                print(response)
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if clicked_sprite:
