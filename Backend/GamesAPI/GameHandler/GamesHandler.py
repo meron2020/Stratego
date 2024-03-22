@@ -8,12 +8,11 @@ from Backend.GamesAPI.Game.Piece import Piece
 
 # GameHandler class handles communication between game objects and the flask resource.
 class GamesHandler:
-
     # Put method updates the game object depending on request.
     @classmethod
     def put(cls, http_request_data):
+        print("Game ID >> " + str(http_request_data["game_id"]))
         game = GamesHandler.get_from_json(http_request_data["game_id"])
-
         if game is not None and game.check_game_still_running():
             if http_request_data["request_type_num"] == 1:
                 return {"pieces_set": game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])}
@@ -52,17 +51,17 @@ class GamesHandler:
             game = GamesHandler.create_game(game_amount + 1)
             game.connect_to_game(player_id)
             GamesHandler.turn_to_json(game)
-            return {"status": "awaiting opposing player connection"}
+            return {"status": "awaiting opposing player connection", "game_id": game_amount + 1}
         else:
             connected = last_game.connect_to_game(player_id)
             if not connected:
                 game = GamesHandler.create_game(game_amount + 1)
                 game.connect_to_game(player_id)
                 GamesHandler.turn_to_json(game)
-                return {"status": "awaiting opposing player connection"}
+                return {"status": "awaiting opposing player connection", "game_id": game_amount + 1}
             else:
                 GamesHandler.turn_to_json(last_game)
-                return {"status": "game ready to play"}
+                return {"status": "game ready to play", "game_id": game_amount}
 
     # Get method runs checks get type and returns the answer accordingly.
     @classmethod
@@ -110,7 +109,7 @@ class GamesHandler:
     @staticmethod
     def get_from_json(game_id):
         try:
-
+            print(game_id)
             with open(GamesHandler.create_game_db_paths("f", game_id), 'r') as openfile:
                 # Reading from json file
                 json_object = json.load(openfile)
@@ -124,6 +123,7 @@ class GamesHandler:
                             json_object["turn"], json_object["player_to_color_dict"], json_object["turn_id"],
                             json_object["turn_color"], json_object["game_state"], json_object["two_players_connected"])
         except OSError:
+            print("Os Error")
             return False
 
     # Function removes game file with parameter number.

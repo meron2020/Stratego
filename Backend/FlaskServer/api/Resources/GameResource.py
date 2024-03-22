@@ -31,18 +31,18 @@ class GameResource(Resource):
         http_request_data = GameResource.parser.parse_args()
         print("arrived here")
         response = self.game_handler.put(http_request_data)
-        if response.data.has_key("return_type"):
-            if response.data["return_type"] == 1:
+        if "return_type" in response:
+            if response["data"]["return_type"] == 1:
                 winner = UserModel.find_by_id(response.data["winner"])
                 winner.add_win()
                 loser = UserModel.find_by_id(response.data["loser"])
                 loser.add_loss()
-            elif response.data["return_type"] == 2:
-                for player_id in response.data["player_ids"]:
+            elif response["return_type"] == 2:
+                for player_id in response["data"]["player_ids"]:
                     player = UserModel.find_by_id(player_id)
                     player.add_tie()
         else:
-            if response.data.has_key("game_status"):
+            if "game_status" in response:
                 return {"game_status": "Ended. You have won."}
 
             else:

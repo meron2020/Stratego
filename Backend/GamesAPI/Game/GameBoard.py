@@ -1,7 +1,10 @@
 class GameBoard:
     # GameBoard constructor.
     def __init__(self, board_matrix=None):
-        self._board_matrix = board_matrix
+        if board_matrix is None:
+            self._board_matrix = [[[] for i in range(10)] for j in range(10)]
+        else:
+            self._board_matrix = board_matrix
 
     # Creates a 2d matrix that represents the board.
     def set_up_board(self):

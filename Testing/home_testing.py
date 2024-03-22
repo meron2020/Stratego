@@ -25,14 +25,13 @@ current_script_directory = os.path.dirname(os.path.abspath(__file__))
 
 # Navigate up the directory structure four times to get to the desired directory
 four_levels_up = os.path.abspath(os.path.join(current_script_directory, '../../'))
-image_path = "D:\\YoavMeron\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
-
+image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
 square_color = (255, 0, 0)  # Red
 # sprite = PieceSprite(image, 1, 2, board)
 sprite_group = pygame.sprite.Group()
 for i in range(10):
     for j in range(4):
-        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, j*10 + i))
+        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, 100 + j*10 + i))
 
 # sprite_group.add(sprite)
 # Game loop
@@ -40,7 +39,7 @@ running = True
 clicked_sprite = None
 
 httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
-game_id = httpHandler.join_game(1)
+game_id = httpHandler.join_game(1)["game_id"]
 httpHandler.join_game(2)
 
 while running:

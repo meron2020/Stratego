@@ -48,12 +48,10 @@ class GameHTTPHandler:
         return self.send_request(params, "d")
 
     def send_starting_positions(self, game_id, pieces_to_pos_dict, player_id):
-        params = {"game_id": game_id, "data": {"pieces_to_pos_dict": pieces_to_pos_dict}, "player_id": player_id,
-                  "request_type_num": 1}
-        return self.send_request(params)
+        json = {"player_id": player_id, "request_type_num": 1, "data": {"pieces_to_pos_dict": pieces_to_pos_dict},
+                "game_id": game_id}
+        return self.send_request(json)
 
     def piece_act(self, game_id, piece_id, new_pos):
         params = {"game_id": game_id, "data": {"piece_id": piece_id, "new_pos": new_pos}}
         return self.send_request(params)
-
-
