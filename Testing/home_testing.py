@@ -31,7 +31,7 @@ square_color = (255, 0, 0)  # Red
 sprite_group = pygame.sprite.Group()
 for i in range(10):
     for j in range(4):
-        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, 100 + j*10 + i))
+        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, 101 + j*10 + i))
 
 # sprite_group.add(sprite)
 # Game loop
@@ -80,8 +80,7 @@ while running:
             sprite.update()
 
     # Check if bottom four rows are filled
-    if board.is_bottom_rows_filled():
-        print("Bottom row filled")
+    if board.setup_rows_filled(1):
         # Display "Finish set up" button in the bottom right corner
         finish_button_rect = pygame.Rect(
             pygame.display.get_window_size()[0] - 300,

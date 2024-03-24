@@ -23,13 +23,21 @@ class Board:
         self.pieces = []  # List to store PieceSprite instances
         self.board_matrix = [[[] for i in range(10)] for j in range(10)]
 
-    def is_bottom_rows_filled(self):
-        bottom_rows = self.board_matrix[-1:]  # Select the bottom four rows
-        for row in bottom_rows:
-            for cell in row:
-                if not cell:
-                    return False
-        return True
+    def setup_rows_filled(self, player_id):
+        if player_id == 1:
+            bottom_rows = self.board_matrix[-4:]  # Select the bottom four rows
+            for row in bottom_rows:
+                for cell in row:
+                    if not cell:
+                        return False
+            return True
+        else:
+            top_rows = self.board_matrix[:4]  # Select the top four rows
+            for row in top_rows:
+                for cell in row:
+                    if not cell:
+                        return False
+            return True
 
     def add_piece(self, row, col, piece):
         self.pieces.append(piece)
@@ -88,7 +96,7 @@ class Board:
             for col in row:
                 if len(col) != 0:
                     piece_id = col[0]
-                    piece_to_pos_dict[piece_id] = (row, col)
+                    piece_to_pos_dict[piece_id] = (self.board_matrix.index(row), row.index(col))
 
         return piece_to_pos_dict
 

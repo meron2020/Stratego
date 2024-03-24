@@ -1,7 +1,5 @@
 import pygame
 
-from Frontend.GUI.PieceSprite import PieceSprite
-
 
 class Board:
     def __init__(self, screen, board_size=10, margin_percentage=0.1):
@@ -21,10 +19,27 @@ class Board:
         self.black = (0, 0, 0)
         self.blue = (0, 0, 255)
         self.pieces = []  # List to store PieceSprite instances
+        self.board_matrix = [[[] for i in range(10)] for j in range(10)]
 
-    def add_piece(self, image_path, row, col):
-        piece = PieceSprite(image_path, row, col, self)
+    def setup_rows_filled(self, player_id):
+        if player_id == 1:
+            bottom_rows = self.board_matrix[-4:]  # Select the bottom four rows
+            for row in bottom_rows:
+                for cell in row:
+                    if not cell:
+                        return False
+            return True
+        else:
+            top_rows = self.board_matrix[:4]  # Select the top four rows
+            for row in top_rows:
+                for cell in row:
+                    if not cell:
+                        return False
+            return True
+
+    def add_piece(self, row, col, piece):
         self.pieces.append(piece)
+        self.board_matrix[row - 1][col - 5] =[piece.piece_id]
 
     def calculate_dimensions(self):
         min_dimension = min(self.screen.get_width(), self.screen.get_height())
@@ -74,10 +89,12 @@ class Board:
 
     def create_piece_to_pos_dict(self):
         piece_to_pos_dict = {}
+        print(self.board_matrix)
         for row in self.board_matrix:
             for col in row:
-                piece_id = col[0]
-                piece_to_pos_dict[piece_id] = (row, col)
+                if len(col) != 0:
+                    piece_id = col[0]
+                    piece_to_pos_dict[piece_id] = (self.board_matrix.index(row), row.index(col))
 
         return piece_to_pos_dict
 
@@ -91,5 +108,3 @@ class Board:
         )
         pygame.draw.rect(self.screen, color, rect)
         pygame.display.flip()
-
-

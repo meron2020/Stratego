@@ -26,11 +26,11 @@ class GameBoard:
         # Finds piece position and changes it, only if game has already started.
         if piece.position:
             piece_pos = piece.position
-            self._board_matrix[piece_pos[0]][piece_pos[1]] = None
+            self._board_matrix[piece_pos[0]][piece_pos[1]] = []
 
         # Sets piece position to new position and changes board matrix accordingly.
         piece.position = new_position
-        self._board_matrix[new_position[0]][new_position[1]] = piece.id
+        self._board_matrix[new_position[0]][new_position[1]] = [piece.piece_id]
         return True
 
     # Takes a position and deletes the piece in that position.

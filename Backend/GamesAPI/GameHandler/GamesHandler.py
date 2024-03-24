@@ -15,7 +15,9 @@ class GamesHandler:
         game = GamesHandler.get_from_json(http_request_data["game_id"])
         if game is not None and game.check_game_still_running():
             if http_request_data["request_type_num"] == 1:
-                return {"pieces_set": game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])}
+                pieces_set = game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])
+                GamesHandler.turn_to_json(game)
+                return {"pieces_set": pieces_set}
             elif http_request_data["request_type_num"] == 2:
                 action_response = game.piece_act(
                     http_request_data["data"]["piece_id"], http_request_data["data"]["new_pos"])

@@ -34,15 +34,16 @@ class Game:
         for n in range(len(colors)):
             player_id = self.players[n] * 100
             color = colors[n]
-            pieces_dict[player_id + 1] = Piece('F', color, "Flag", player_id + 1)
+            pieces_dict[player_id + n * 100 + 1] = Piece('F', color, "Flag", player_id + 1)
+            counter = 102 + n * 100
             for i in range(1, 11):
                 for j in range(s_to_n_and_n[i][1]):
-                    print(s_to_n_and_n[i][1])
-                    pieces_dict[player_id + i + j + 1] = Piece(i, color, s_to_n_and_n[i][0], player_id + i + j + 1)
-            for i in range(1, 4):
-                pieces_dict[player_id + 37 + i] = Piece('B', color, "Bomb", player_id + 37 + i)
+                    pieces_dict[counter] = Piece(i, color, s_to_n_and_n[i][0], counter)
+                    counter += 1
+            for i in range(6):
+                pieces_dict[counter] = Piece('B', color, "Bomb", counter)
+                counter += 1
 
-        print(pieces_dict)
         return pieces_dict
 
     def get_pieces_dict(self):
@@ -108,7 +109,7 @@ class Game:
         for piece_id, position in id_to_pos_dict.items():
             piece = self.get_piece_by_id(piece_id)
             piece.set_new_piece_position(position)
-            self.board.set_new_piece_id_position(piece_id, position)
+            self.board.set_new_piece_id_position(piece, position)
         if self.board.get_piece_count() == 80:
             self.game_state = "Running"
 
@@ -142,8 +143,7 @@ class Game:
 
     # Takes id as a parameter and returns the piece object
     def get_piece_by_id(self, piece_id):
-        print(self.pieces_dict)
-        return self.pieces_dict[str(piece_id)]
+        return self.pieces_dict[piece_id]
 
     # Returns the player id of the player who has the current turn color.
     def get_player_id_by_turn(self):
@@ -179,4 +179,3 @@ class Game:
             return {key: Game.object_to_dict(value) for key, value in obj.__dict__.items() if not callable(value)}
         else:
             return obj
-
