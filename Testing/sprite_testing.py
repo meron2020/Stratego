@@ -56,14 +56,14 @@ class PieceSprite(pygame.sprite.Sprite):
 
         return row, col
 
-    def stop_drag(self, options=None):
+    def stop_drag(self, player_id, options=None):
         self.is_dragging = False
         # Snap to the closest square
-        row, col = self.find_closest_square(options)
+        row, col = self.find_closest_square(player_id, options)
         self.rect.topleft = self.calculate_square_position(row, col)
         self.board.add_piece(row, col, self)
 
-    def find_closest_square(self, options=None):
+    def find_closest_square(self, player_id, options=None):
         # Calculate the center coordinates of the current position
         center_x = self.rect.x + self.rect.width / 2
         center_y = self.rect.y + self.rect.height / 2
@@ -83,7 +83,7 @@ class PieceSprite(pygame.sprite.Sprite):
             if PieceSprite.is_over_lake(row, col):
                 row, col = self.cur_row, self.cur_col
 
-            elif self.setup_mode and not PieceSprite.check_setup_viable(row):
+            elif self.setup_mode and not PieceSprite.check_setup_viable(row, player_id):
                 row, col = self.cur_row, self.cur_col
 
             elif self.board.check_square_filled(row, col):
@@ -106,10 +106,15 @@ class PieceSprite(pygame.sprite.Sprite):
         return x, y
 
     @classmethod
-    def check_setup_viable(cls, row):
-        if row in range(7, 11):
-            return True
-        return False
+    def check_setup_viable(cls, row, player_id):
+        if player_id == 1:
+            if row in range(7, 11):
+                return True
+            return False
+        else:
+            if row in range(1, 5):
+                return True
+            return False
 
     @classmethod
     def is_over_lake(cls, row, col):

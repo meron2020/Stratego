@@ -34,7 +34,7 @@ class Game:
         for n in range(len(colors)):
             player_id = self.players[n] * 100
             color = colors[n]
-            pieces_dict[player_id + n * 100 + 1] = Piece('F', color, "Flag", player_id + 1)
+            pieces_dict[player_id + 1] = Piece('F', color, "Flag", player_id + 1)
             counter = 102 + n * 100
             for i in range(1, 11):
                 for j in range(s_to_n_and_n[i][1]):
@@ -65,7 +65,6 @@ class Game:
         winner = VictoryRules.check_player_is_winner(self.get_opposite_player(self.turn_id), self.pieces_dict)
         if not winner:
             piece_id_in_new_position = self.board.get_piece_id_in_position(new_position)
-
             if not piece_id_in_new_position:
                 self.board.set_new_piece_id_position(piece_id, new_position)
                 self.set_piece_new_pos_by_id(piece_id, new_position)
@@ -101,7 +100,8 @@ class Game:
 
     # Takes a piece id as a parameter and returns a list of the possible positions that the piece can move to.
     def return_piece_options(self, piece_id):
-        return MovementRules.calculate_possible_moves(piece_id, self.board.get_board_matrix())
+        piece = self.pieces_dict[str(piece_id)]
+        return MovementRules.calculate_possible_moves(piece, self.board.get_board_matrix(), self.pieces_dict)
 
     # Takes dictionary of piece id to position and sets it to the board. If the piece amount on the board is 40, set
     # the board as ready to play.
@@ -112,6 +112,7 @@ class Game:
             self.board.set_new_piece_id_position(piece, position)
         if self.board.get_piece_count() == 80:
             self.game_state = "Running"
+            self.turn_id = 1
 
         return True
 

@@ -24,16 +24,16 @@ class GameHTTPHandler:
             return None
 
     def get_board(self, game_id):
-        params = {"game_id": game_id, "request_type": 1}
-        return self.send_request(params, "g")
+        json = {"game_id": game_id, "request_type_num": 1}
+        return self.send_request(json, "g")
 
     def check_if_my_turn(self, game_id, player_id):
         params = {"game_id": game_id, "request_type": 2, "player_id": player_id}
         return self.send_request(params, "g")
 
     def check_piece_options(self, game_id, piece_id):
-        params = {"game_id": game_id, "request_type": 3, "piece_id": piece_id}
-        return self.send_request(params, "g")
+        json = {"game_id": game_id, "request_type_num": 3, "data": {"piece_id": piece_id}}
+        return self.send_request(json, "g")
 
     def get_game_state(self, game_id):
         params = {"game_id": game_id, "request_type": 4}
@@ -53,5 +53,5 @@ class GameHTTPHandler:
         return self.send_request(json)
 
     def piece_act(self, game_id, piece_id, new_pos):
-        params = {"game_id": game_id, "data": {"piece_id": piece_id, "new_pos": new_pos}}
-        return self.send_request(params)
+        json = {"game_id": game_id, "data": {"piece_id": piece_id, "new_pos": new_pos}}
+        return self.send_request(json)

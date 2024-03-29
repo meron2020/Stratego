@@ -67,17 +67,20 @@ class GamesHandler:
 
     # Get method runs checks get type and returns the answer accordingly.
     @classmethod
-    def get(cls, game_id, request_type, player_id, data):
+    def get(cls, game_id, request_type, player_id=None, data=None):
         game = GamesHandler.get_from_json(game_id)
 
         if game.check_game_still_running():
-            if request_type[1] == 1:
-                return {"pieces_dict": game.pieces_dict, "board": game.get_board()}
-            elif request_type[1] == 2:
+            if request_type == 1:
+                pieces_dict = {}
+                for piece_id, piece in game.pieces_dict.items():
+                    pieces_dict[piece_id] = json.dumps(piece, default=lambda obj: obj.__dict__)
+                return {"pieces_dict": pieces_dict, "board": game.get_board()}
+            elif request_type == 2:
                 return {"request_owner_turn": game.turn_id == player_id}
-            elif request_type[1] == 3:
+            elif request_type == 3:
                 return {"piece_options": game.return_piece_options(data["piece_id"])}
-            elif request_type[1] == 4:
+            elif request_type == 4:
                 if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
                     return {"game_state": game.get_state()}
                 else:

@@ -68,7 +68,7 @@ while running:
 
                     for col in range(BOARD_SIZE):
 
-                        if board.board_matrix[row][col].colliderect(dragging_piece.rect):
+                        if board.piece_id_matrix[row][col].colliderect(dragging_piece.rect):
                             # You may add additional logic here based on your game rules
 
                             dragging_piece.set_new_pos(row, col)

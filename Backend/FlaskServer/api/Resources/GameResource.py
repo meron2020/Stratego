@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+
 from Backend.FlaskServer.api.Models.user import UserModel
 from Backend.GamesAPI.GameHandler.GamesHandler import GamesHandler
 
@@ -16,8 +17,8 @@ class GameResource(Resource):
     # HTTP Get method. According to request, uses the GameHandler to return the relevant response.
     def get(self):
         http_request_data = GameResource.parser.parse_args()
-        response = self.game_handler.get(http_request_data["game_id"], http_request_data["request_type"],
-                                         http_request_data["player_id", http_request_data["data"]])
+        response = GamesHandler.get(http_request_data["game_id"], http_request_data["request_type_num"],
+                                    http_request_data["player_id"], http_request_data["data"])
         return response
 
     # HTTP Post method. Uses the GameHandler to connect to an existing game or create a new game and returns response.
@@ -29,7 +30,6 @@ class GameResource(Resource):
     # HTTP PUT Method. Updates the relevant game depending on the request and if needed the UserDB.
     def put(self):
         http_request_data = GameResource.parser.parse_args()
-        print("arrived here")
         response = self.game_handler.put(http_request_data)
         if "return_type" in response:
             if response["data"]["return_type"] == 1:

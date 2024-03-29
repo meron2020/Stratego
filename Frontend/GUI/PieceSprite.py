@@ -2,8 +2,9 @@ import pygame
 
 
 class PieceSprite(pygame.sprite.Sprite):
-    def __init__(self, image, row, column, board, screen):
+    def __init__(self, image, row, column, board, screen, piece_id, in_set_up_mode):
         super().__init__()
+        self.setup_mode = in_set_up_mode
         self.board = board
         self.image = pygame.transform.scale(pygame.image.load(image),
                                             (int(self.board.square_size), int(self.board.square_size)))
@@ -12,9 +13,13 @@ class PieceSprite(pygame.sprite.Sprite):
         self.is_dragging = False
         self.offset = (0, 0)
         self.screen = screen
+        self.piece_id = piece_id
 
         self.cur_row = None
         self.cur_col = None
+
+    def set_setup_mode(self, setup_mode):
+        self.setup_mode = setup_mode
 
     def calculate_exact_position(self, row, column):
         start_x = (self.board.screen.get_width() - self.board.board_size * (
@@ -51,13 +56,14 @@ class PieceSprite(pygame.sprite.Sprite):
 
         return row, col
 
-    def stop_drag(self):
+    def stop_drag(self, player_id, options=None):
         self.is_dragging = False
         # Snap to the closest square
-        row, col = self.find_closest_square()
+        row, col = self.find_closest_square(player_id, options)
         self.rect.topleft = self.calculate_square_position(row, col)
+        self.board.add_piece(row, col, self)
 
-    def find_closest_square(self):
+    def find_closest_square(self, player_id, options=None):
         # Calculate the center coordinates of the current position
         center_x = self.rect.x + self.rect.width / 2
         center_y = self.rect.y + self.rect.height / 2
@@ -66,12 +72,26 @@ class PieceSprite(pygame.sprite.Sprite):
         row = int((center_y - self.board.margin) / self.board.square_size)
         col = int((center_x - self.board.margin) / self.board.square_size)
 
-        if PieceSprite.is_over_lake(row, col):
-            row, col = self.cur_row, self.cur_col
+        # If the function is called for checkin piece options.
+        if options is not None:
+            if (row, col) in options:
+                return row, col
+            else:
+                return self.cur_row, self.cur_col
+        # If function is called for setting up.
+        else:
+            if PieceSprite.is_over_lake(row, col):
+                row, col = self.cur_row, self.cur_col
 
-        # Ensure the row and col are within the board bounds
-        row = max(1, min(row, self.board.board_size))
-        col = max(5, min(col, self.board.board_size + 4))
+            elif self.setup_mode and not PieceSprite.check_setup_viable(row, player_id):
+                row, col = self.cur_row, self.cur_col
+
+            elif self.board.check_square_filled(row, col):
+                row, col = self.cur_row, self.cur_col
+
+            # Ensure the row and col are within the board bounds
+            row = max(1, min(row, self.board.board_size))
+            col = max(0, min(col, self.board.board_size + 4))
 
         return row, col
 
@@ -84,6 +104,17 @@ class PieceSprite(pygame.sprite.Sprite):
         x = col * self.board.square_size + self.board.margin * 8
         y = row * self.board.square_size - 4 * self.board.margin
         return x, y
+
+    @classmethod
+    def check_setup_viable(cls, row, player_id):
+        if player_id == 1:
+            if row in range(7, 11):
+                return True
+            return False
+        else:
+            if row in range(1, 5):
+                return True
+            return False
 
     @classmethod
     def is_over_lake(cls, row, col):

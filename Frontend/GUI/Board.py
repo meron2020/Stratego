@@ -19,18 +19,19 @@ class Board:
         self.black = (0, 0, 0)
         self.blue = (0, 0, 255)
         self.pieces = []  # List to store PieceSprite instances
-        self.board_matrix = [[[] for i in range(10)] for j in range(10)]
+        self.piece_id_matrix = [[[] for i in range(10)] for j in range(10)]
+        self.rect_matrix = [[] for i in range(10)]
 
     def setup_rows_filled(self, player_id):
         if player_id == 1:
-            bottom_rows = self.board_matrix[-4:]  # Select the bottom four rows
+            bottom_rows = self.piece_id_matrix[-4:]  # Select the bottom four rows
             for row in bottom_rows:
                 for cell in row:
                     if not cell:
                         return False
             return True
         else:
-            top_rows = self.board_matrix[:4]  # Select the top four rows
+            top_rows = self.piece_id_matrix[:4]  # Select the top four rows
             for row in top_rows:
                 for cell in row:
                     if not cell:
@@ -39,7 +40,7 @@ class Board:
 
     def add_piece(self, row, col, piece):
         self.pieces.append(piece)
-        self.board_matrix[row - 1][col - 5] =[piece.piece_id]
+        self.piece_id_matrix[row - 1][col - 5] = [piece.piece_id]
 
     def calculate_dimensions(self):
         min_dimension = min(self.screen.get_width(), self.screen.get_height())
@@ -61,12 +62,8 @@ class Board:
 
         for row in range(self.board_size):
             for col in range(self.board_size):
-                rect = pygame.Rect(
-                    self.start_x + col * self.square_size + self.margin,
-                    self.start_y + row * self.square_size + self.margin,
-                    self.square_size - 2 * self.margin,
-                    self.square_size - 2 * self.margin
-                )
+                rect = self.create_square_by_row_and_column(row, col)
+                self.rect_matrix[row].append(rect)
                 if (row, col) in [(4, 2), (4, 3), (5, 2), (5, 3), (4, 6), (4, 7), (5, 6), (5, 7)]:
                     # Draw lake (4 squares)
                     pygame.draw.rect(self.screen, self.blue, rect)
@@ -85,16 +82,25 @@ class Board:
             self.screen.blit(piece.image, piece.rect.topleft)
 
     def check_square_filled(self, row, col):
-        return self.board_matrix[row - 1][col - 5] != []
+        return self.piece_id_matrix[row - 1][col - 5] != []
+
+    def create_square_by_row_and_column(self, row, col):
+        rect = pygame.Rect(
+            self.start_x + col * self.square_size + self.margin,
+            self.start_y + row * self.square_size + self.margin,
+            self.square_size - 2 * self.margin,
+            self.square_size - 2 * self.margin
+        )
+        return rect
 
     def create_piece_to_pos_dict(self):
         piece_to_pos_dict = {}
-        print(self.board_matrix)
-        for row in self.board_matrix:
+        print(self.piece_id_matrix)
+        for row in self.piece_id_matrix:
             for col in row:
                 if len(col) != 0:
                     piece_id = col[0]
-                    piece_to_pos_dict[piece_id] = (self.board_matrix.index(row), row.index(col))
+                    piece_to_pos_dict[piece_id] = (self.piece_id_matrix.index(row), row.index(col))
 
         return piece_to_pos_dict
 
@@ -108,3 +114,10 @@ class Board:
         )
         pygame.draw.rect(self.screen, color, rect)
         pygame.display.flip()
+
+    @classmethod
+    def get_clicked_sprite_and_position(cls, sprite_group, mouse_pos):
+        for sprite in sprite_group:
+            if sprite.rect.collidepoint(mouse_pos):
+                return sprite
+        return None
