@@ -68,7 +68,8 @@ class MyTestCase(unittest.TestCase):
         guiHandler = GUIHandler(1)
         guiHandler.game_id = 1
         sprite_group = guiHandler.create_pieces_sprites_from_get_request(response_dict["pieces_dict"])
-        guiHandler.run_game_loop(sprite_group)
+        guiHandler.sprite_group = sprite_group
+        guiHandler.run_game_loop()
 
 
 if __name__ == '__main__':

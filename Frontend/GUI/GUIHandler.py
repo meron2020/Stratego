@@ -97,8 +97,10 @@ class GUIHandler:
         pygame.quit()
         sys.exit()
 
-    def run_game_loop(self, sprite_group):
+    def run_game_loop(self):
         running = True
+        possible_options = None
+        clicked_piece = None
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -106,28 +108,29 @@ class GUIHandler:
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    clicked_piece = Board.get_clicked_sprite_and_position(sprite_group, event.pos)
-                    while True:
-                        return_dict = self.display_piece_options(clicked_piece)
-                        if "sprite" in return_dict:
-                            clicked_piece = return_dict["sprite"]
+                    selected_square = self.board.get_clicked_square(
+                        event.pos)  # Implement this method to get the square position
+                    if not possible_options:
+                        clicked_piece = Board.get_clicked_sprite_and_position(self.sprite_group, event.pos)
+                    else:
+                        if selected_square in possible_options:
+                            self.httpHandler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
+                            response = self.httpHandler.get_board(self.game_id)
+                            self.board.piece_id_matrix = response["board"]
+                            self.sprite_group = self.create_pieces_sprites_from_get_request(response["pieces_dict"])
                         else:
-                            # sprite.drag(pygame.mouse.get_pos())
-                            self.screen.fill((255, 255, 255))
+                            clicked_piece = Board.get_clicked_sprite_and_position(self.sprite_group, event.pos)
 
-                            # Draw the board and pieces
-                            self.board.draw_board()
-                            sprite_group.draw(self.screen)
-
-                            # Update the display
-                            pygame.display.flip()
             self.screen.fill((255, 255, 255))
-
-            # Draw the board and pieces
             self.board.draw_board()
-            sprite_group.draw(self.screen)
 
-            # Update the display
+            # Draw the pieces
+            self.sprite_group.draw(self.screen)
+
+            # Highlight possible moves if a piece is selected
+            if clicked_piece:
+                possible_options = self.display_piece_options(clicked_piece)
+
             pygame.display.flip()
 
     def setup_ui(self):
@@ -145,7 +148,7 @@ class GUIHandler:
         # sprite = PieceSprite(image, 1, 2, board)
 
     def create_player_sprites(self, player_id):
-        image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
+        image_path = "C:\\Users\\user1\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
         sprite_group = pygame.sprite.Group()
         for i in range(10):
             for j in range(4):
@@ -160,7 +163,7 @@ class GUIHandler:
         return sprite_group
 
     def create_pieces_sprites_from_get_request(self, pieces_dict):
-        image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
+        image_path = "C:\\Users\\user1\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
         sprite_group = pygame.sprite.Group()
         for piece_id, piece_object in pieces_dict.items():
             piece_object = json.loads(piece_object)
@@ -175,7 +178,7 @@ class GUIHandler:
         options = response["piece_options"]
         for option in options:
             self.board.color_square(option, (0, 255, 0))
-        self.get_user_piece_act(options, self.sprite_group, piece)
+        # self.get_user_piece_act(options, self.sprite_group, piece)
         return options
 
     def get_user_piece_act(self, options, sprite_group, piece):

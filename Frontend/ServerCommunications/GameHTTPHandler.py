@@ -53,5 +53,5 @@ class GameHTTPHandler:
         return self.send_request(json)
 
     def piece_act(self, game_id, piece_id, new_pos):
-        json = {"game_id": game_id, "data": {"piece_id": piece_id, "new_pos": new_pos}}
+        json = {"game_id": game_id, "data": {"piece_id": piece_id, "new_pos": new_pos}, "request_type_num": 2}
         return self.send_request(json)

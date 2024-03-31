@@ -51,7 +51,7 @@ class Game:
 
     def get_opposite_player(self, player_id):
         for player in self.player_to_color_dict.keys():
-            if player != player_id:
+            if player != str(player_id):
                 return player
 
     def set_piece_new_pos_by_id(self, piece_id, new_pos):
@@ -65,8 +65,8 @@ class Game:
         winner = VictoryRules.check_player_is_winner(self.get_opposite_player(self.turn_id), self.pieces_dict)
         if not winner:
             piece_id_in_new_position = self.board.get_piece_id_in_position(new_position)
-            if not piece_id_in_new_position:
-                self.board.set_new_piece_id_position(piece_id, new_position)
+            if piece_id_in_new_position == []:
+                self.board.set_new_piece_id_position(self.pieces_dict[str(piece_id)], new_position)
                 self.set_piece_new_pos_by_id(piece_id, new_position)
             else:
                 piece_in_new_position = self.get_piece_by_id(piece_id_in_new_position)
@@ -144,7 +144,7 @@ class Game:
 
     # Takes id as a parameter and returns the piece object
     def get_piece_by_id(self, piece_id):
-        return self.pieces_dict[piece_id]
+        return self.pieces_dict[str(piece_id)]
 
     # Returns the player id of the player who has the current turn color.
     def get_player_id_by_turn(self):
