@@ -29,15 +29,9 @@ class MyTestCase(unittest.TestCase):
         httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
         game_id = httpHandler.join_game(1)["game_id"]
         httpHandler.join_game(2)
-        print(httpHandler.send_starting_positions(game_id,
-                                                  {138: (6, 0), 137: (6, 1), 128: (6, 2), 126: (6, 3), 123: (6, 4),
-                                                   111: (6, 5), 115: (6, 6), 101: (6, 7), 102: (6, 8), 103: (6, 9),
-                                                   139: (7, 0), 136: (7, 1), 127: (7, 2), 125: (7, 3), 122: (7, 4),
-                                                   112: (7, 5), 116: (7, 6), 104: (7, 7), 105: (7, 8), 106: (7, 9),
-                                                   135: (8, 0), 140: (8, 1), 129: (8, 2), 124: (8, 3), 121: (8, 4),
-                                                   113: (8, 5), 117: (8, 6), 107: (8, 7), 118: (8, 8), 119: (8, 9),
-                                                   131: (9, 0), 132: (9, 1), 133: (9, 2), 134: (9, 3), 114: (9, 4),
-                                                   130: (9, 5), 120: (9, 6), 108: (9, 7), 110: (9, 8), 109: (9, 9)}, 1))
+        handler = GUIHandler()
+        handler.game_id = game_id
+        handler.run_setup_loop()
 
     def test_put_action(self):
         httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
@@ -65,7 +59,7 @@ class MyTestCase(unittest.TestCase):
     def test_get_board(self):
         httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
         response_dict = httpHandler.get_board(1)
-        guiHandler = GUIHandler(1)
+        guiHandler = GUIHandler()
         guiHandler.game_id = 1
         sprite_group = guiHandler.create_pieces_sprites_from_get_request(response_dict["pieces_dict"])
         guiHandler.sprite_group = sprite_group
