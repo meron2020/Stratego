@@ -1,5 +1,6 @@
 import json
 import sys
+import time
 
 import pygame
 
@@ -14,7 +15,7 @@ class GUIHandler:
         self.screen = None
         self.board = None
         self.color = (255, 255, 255)
-
+        self.player_id = None
         self.in_setup_mode = True
         self.sprite_group = None
         self.game_id = None
@@ -49,6 +50,10 @@ class GUIHandler:
         # Quit Pygame
         pygame.quit()
         sys.exit()
+
+    def game_loop(self):
+        self.httpHandler.get_board(self.game_id)
+        self.player_one_handler.user_act()
 
     def run_game_loop(self):
         running = True
@@ -171,6 +176,14 @@ class GUIHandler:
             # Update the display
             pygame.display.flip()
 
+    def await_my_turn(self):
+        while True:
+            my_turn = self.httpHandler.check_if_my_turn(self.game_id, self.player_id)
+            if my_turn:
+                return
+            else:
+                time.sleep(1)
+
     def create_player_sprites(self, player_id):
         image_path = "C:\\Users\\user1\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
         sprite_group = pygame.sprite.Group()
@@ -211,10 +224,6 @@ class GUIHandler:
         response = self.httpHandler.get_board(self.game_id)
         self.board.piece_id_matrix = response["board"]
         return self.create_pieces_sprites_from_get_request(response["pieces_dict"])
-
-
-    pygame.quit()
-    sys.exit()
 
 
 if __name__ == "__main__":
