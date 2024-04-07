@@ -57,13 +57,9 @@ class MyTestCase(unittest.TestCase):
                                              230: (3, 5), 220: (3, 6), 208: (3, 7), 210: (3, 8), 209: (3, 9)}, 2)
 
     def test_get_board(self):
-        httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
-        response_dict = httpHandler.get_board(1)
         guiHandler = GUIHandler()
         guiHandler.game_id = 1
-        sprite_group = guiHandler.create_pieces_sprites_from_get_request(response_dict["pieces_dict"])
-        guiHandler.sprite_group = sprite_group
-        guiHandler.run_game_loop()
+        guiHandler.game_loop()
 
 
 if __name__ == '__main__':
@@ -76,5 +72,5 @@ def test_get_board():
     guiHandler = GUIHandler(1)
     guiHandler.game_id = 1
     sprite_group = guiHandler.create_pieces_sprites_from_get_request(response_dict["pieces_dict"])
-    guiHandler.run_game_loop(sprite_group)
+    guiHandler.game_loop()
 

@@ -28,7 +28,7 @@ class GameHTTPHandler:
         return self.send_request(json, "g")
 
     def check_if_my_turn(self, game_id, player_id):
-        params = {"game_id": game_id, "request_type": 2, "player_id": player_id}
+        params = {"game_id": game_id, "request_type_num": 2, "player_id": player_id}
         return self.send_request(params, "g")
 
     def check_piece_options(self, game_id, piece_id):
@@ -36,7 +36,7 @@ class GameHTTPHandler:
         return self.send_request(json, "g")
 
     def get_game_state(self, game_id):
-        params = {"game_id": game_id, "request_type": 4}
+        params = {"game_id": game_id, "request_type_num": 4}
         return self.send_request(params, "g")
 
     def join_game(self, player_id):

@@ -1,5 +1,6 @@
 import json
 import sys
+import threading
 import time
 
 import pygame
@@ -16,13 +17,14 @@ class GUIHandler:
         self.board = None
         self.color = (255, 255, 255)
         self.player_id = None
+        self.running_thread = False
         self.in_setup_mode = True
         self.sprite_group = None
         self.game_id = None
         self.httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
         self.create_game_infrastructure()
-        self.player_one_handler = PlayerHandler(1, self.board, self.screen)
-        self.player_two_handler = PlayerHandler(2, self.board, self.screen)
+        self.player_handler = PlayerHandler(1, self.board, self.screen, self.httpHandler, self.game_id)
+        # self.player_two_handler = PlayerHandler(2, self.board, self.screen)
         # self.setup_ui()
         # self.run_game_loop(self.create_player_sprites(2))
 
@@ -42,7 +44,7 @@ class GUIHandler:
     def run_setup_loop(self):
         sprite_group = self.create_player_sprites(1)
         # Game loop
-        self.player_one_handler.player_set_pieces(sprite_group)
+        self.player_handler.player_set_pieces(sprite_group)
 
         piece_to_pos_dict = self.board.create_piece_to_pos_dict()
         response = self.httpHandler.send_starting_positions(self.game_id, piece_to_pos_dict, 1)
@@ -51,9 +53,23 @@ class GUIHandler:
         pygame.quit()
         sys.exit()
 
+    def display_board(self):
+        response = self.httpHandler.get_board(self.game_id)
+        self.board.piece_id_matrix = response["board"]
+        sprite_group = self.create_pieces_sprites_from_get_request(response["pieces_dict"])
+        self.screen.fill((255, 255, 255))
+        self.board.draw_board()
+        sprite_group.draw(self.screen)
+
+        pygame.display.flip()
+        return sprite_group
+
     def game_loop(self):
-        self.httpHandler.get_board(self.game_id)
-        self.player_one_handler.user_act()
+        while True:
+            self.display_board()
+            self.await_my_turn()
+            sprite_group = self.display_board()
+            self.player_handler.user_act(sprite_group)
 
     def run_game_loop(self):
         running = True
@@ -176,10 +192,25 @@ class GUIHandler:
             # Update the display
             pygame.display.flip()
 
+    def await_turn_event_handling(self):
+        while self.running_thread:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    continue
+        return
+
     def await_my_turn(self):
+        self.running_thread = True
+        event_handling_thread = threading.Thread(target=self.await_turn_event_handling, daemon=True)
+        event_handling_thread.start()
         while True:
-            my_turn = self.httpHandler.check_if_my_turn(self.game_id, self.player_id)
+            my_turn = self.httpHandler.check_if_my_turn(self.game_id, self.player_id)["request_owner_turn"]
             if my_turn:
+                self.running_thread = False
+                event_handling_thread.join()
                 return
             else:
                 time.sleep(1)
@@ -219,7 +250,7 @@ class GUIHandler:
         return options
 
     def get_user_piece_act(self, options, sprite_group, piece):
-        move_option = self.player_one_handler.get_user_piece_act(options, sprite_group, piece)
+        move_option = self.player_handler.get_user_piece_act(options, sprite_group, piece)
         self.httpHandler.piece_act(self.game_id, piece.piece_id, move_option)
         response = self.httpHandler.get_board(self.game_id)
         self.board.piece_id_matrix = response["board"]
