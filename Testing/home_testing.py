@@ -25,7 +25,7 @@ current_script_directory = os.path.dirname(os.path.abspath(__file__))
 
 # Navigate up the directory structure four times to get to the desired directory
 four_levels_up = os.path.abspath(os.path.join(current_script_directory, '../../'))
-image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png"
+image_path = "/Frontend/Game/Sprite_Images\\soldier.png"
 square_color = (255, 0, 0)  # Red
 # sprite = PieceSprite(image, 1, 2, board)
 sprite_group = pygame.sprite.Group()

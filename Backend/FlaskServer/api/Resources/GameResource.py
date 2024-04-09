@@ -32,7 +32,7 @@ class GameResource(Resource):
         http_request_data = GameResource.parser.parse_args()
         response = self.game_handler.put(http_request_data)
         if "return_type" in response:
-            if response["data"]["return_type"] == 1:
+            if response["return_type"] == 1:
                 winner = UserModel.find_by_id(response.data["winner"])
                 winner.add_win()
                 loser = UserModel.find_by_id(response.data["loser"])
