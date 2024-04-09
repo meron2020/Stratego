@@ -1,9 +1,10 @@
+import asyncio
 import json
 import unittest
 
 from Backend.GamesAPI.Game.Game import Game
 from Backend.GamesAPI.GameHandler.GamesHandler import GamesHandler
-from Frontend.GUI.GUIHandler import GUIHandler
+from Frontend.Game.GameHandler import GameHandler
 from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
 
 
@@ -29,7 +30,7 @@ class MyTestCase(unittest.TestCase):
         httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
         game_id = httpHandler.join_game(1)["game_id"]
         httpHandler.join_game(2)
-        handler = GUIHandler()
+        handler = GameHandler()
         handler.game_id = game_id
         handler.run_setup_loop()
 
@@ -57,20 +58,15 @@ class MyTestCase(unittest.TestCase):
                                              230: (3, 5), 220: (3, 6), 208: (3, 7), 210: (3, 8), 209: (3, 9)}, 2)
 
     def test_get_board(self):
-        guiHandler = GUIHandler()
-        guiHandler.game_id = 1
-        guiHandler.game_loop()
+        guiHandler = GameHandler(1, 1)
+        asyncio.run(guiHandler.game_loop())
+
+
+async def test_get_board():
+    guiHandler = GameHandler()
+    guiHandler.game_id = 1
+    await guiHandler.game_loop()
 
 
 if __name__ == '__main__':
-    unittest.main()
-
-
-def test_get_board():
-    httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
-    response_dict = httpHandler.get_board(1)
-    guiHandler = GUIHandler(1)
-    guiHandler.game_id = 1
-    sprite_group = guiHandler.create_pieces_sprites_from_get_request(response_dict["pieces_dict"])
-    guiHandler.game_loop()
-
+    asyncio.run(test_get_board())

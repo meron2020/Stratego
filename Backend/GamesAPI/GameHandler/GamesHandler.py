@@ -78,7 +78,7 @@ class GamesHandler:
                     pieces_dict[piece_id] = json.dumps(piece, default=lambda obj: obj.__dict__)
                 return {"pieces_dict": pieces_dict, "board": game.get_board()}
             elif request_type == 2:
-                return {"request_owner_turn": game.turn_id == player_id}
+                return {"request_owner_turn": int(game.turn_id) == player_id}
             elif request_type == 3:
                 return {"piece_options": game.return_piece_options(data["piece_id"])}
             elif request_type == 4:
@@ -115,7 +115,6 @@ class GamesHandler:
     @staticmethod
     def get_from_json(game_id):
         try:
-            print(game_id)
             with open(GamesHandler.create_game_db_paths("f", game_id), 'r') as openfile:
                 # Reading from json file
                 json_object = json.load(openfile)

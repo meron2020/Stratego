@@ -1,5 +1,5 @@
 import sys
-from PieceSprite import PieceSprite
+from Frontend.Game.PieceSprite import PieceSprite
 import pygame
 
 # Initialize Pygame

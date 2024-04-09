@@ -2,8 +2,8 @@ import sys
 
 import pygame
 
-from PieceSprite import PieceSprite
-from Board import Board
+from Frontend.Game.PieceSprite import PieceSprite
+from Frontend.Game.Board import Board
 
 # Initialize Pygame
 pygame.init()

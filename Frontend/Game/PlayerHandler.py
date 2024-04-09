@@ -1,5 +1,6 @@
 import pygame
-from Frontend.GUI.Board import Board
+
+from Frontend.Game.Board import Board
 
 
 class PlayerHandler:
@@ -87,17 +88,16 @@ class PlayerHandler:
                     selected_square = self.board.get_clicked_square(
                         event.pos)  # Implement this method to get the square position
                     if not possible_options:
-                        clicked_piece = Board.get_clicked_sprite_and_position(self.sprite_group, event.pos)
+                        piece = Board.get_clicked_sprite_and_position(sprite_group, event.pos)
+                        if piece.player_id == self.player_id:
+                            clicked_piece = piece
                     else:
                         if selected_square in possible_options:
-                            return selected_square
-                            # self.httpHandler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
-                            # response = self.httpHandler.get_board(self.game_id)
-                            # self.board.piece_id_matrix = response["board"]
-                            # self.sprite_group = self.create_pieces_sprites_from_get_request(response["pieces_dict"])
+                            return selected_square, clicked_piece
                         else:
-                            clicked_piece = Board.get_clicked_sprite_and_position(self.sprite_group, event.pos)
-
+                            piece = Board.get_clicked_sprite_and_position(sprite_group, event.pos)
+                            if piece.player_id == self.player_id:
+                                clicked_piece = piece
             self.screen.fill((255, 255, 255))
             self.board.draw_board()
 
@@ -116,21 +116,3 @@ class PlayerHandler:
         for option in options:
             self.board.color_square(option, (0, 255, 0))
         return options
-
-    def get_user_piece_act(self, options, sprite_group, piece):
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    running = False
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    for move_option in options:
-                        rect = self.board.create_square_by_row_and_column(move_option[0], move_option[1])
-                        if rect.collidepoint(event.pos):
-                            return move_option
-                    for sprite in sprite_group:
-                        if sprite.piece_id / 100 == self.player_id:
-                            if sprite.rect.collidepoint(event.pos):
-                                return {"sprite": sprite}

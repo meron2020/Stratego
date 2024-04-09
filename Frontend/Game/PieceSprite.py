@@ -1,3 +1,5 @@
+import json
+
 import pygame
 
 
@@ -14,7 +16,7 @@ class PieceSprite(pygame.sprite.Sprite):
         self.offset = (0, 0)
         self.screen = screen
         self.piece_id = piece_id
-
+        self.player_id = int(piece_id / 100)
         self.cur_row = None
         self.cur_col = None
 
@@ -133,3 +135,37 @@ class PieceSprite(pygame.sprite.Sprite):
         elif row == 4 and col == 7:
             row += 1
         return row, col
+
+
+class SpriteCreator:
+    @classmethod
+    def create_pieces_sprites_from_get_request(cls, pieces_dict, board, screen, player_id):
+        folder_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\"
+        sprite_group = pygame.sprite.Group()
+        for piece_id, piece_object in pieces_dict.items():
+            piece_object = json.loads(piece_object)
+            if int(int(piece_id) / 100) == player_id:
+                file_name = piece_object["_name"] + ".png"
+                image_path = folder_path + file_name
+            else:
+                image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\soldier.png"
+            sprite_group.add(
+                PieceSprite(image_path, int(piece_object["_position"][0]), int(piece_object["_position"][1]),
+                            board, screen, int(piece_id), False))
+        return sprite_group
+
+    @classmethod
+    def create_player_sprites(cls, player_id, board, screen):
+        image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\soldier.png"
+        sprite_group = pygame.sprite.Group()
+        for i in range(10):
+            for j in range(4):
+                if player_id == 1:
+                    sprite_group.add(
+                        PieceSprite(image_path, i, j - 4, board, screen, player_id * 100 + 1 + j * 10 + i,
+                                    True))
+                else:
+                    sprite_group.add(
+                        PieceSprite(image_path, i, j + 10, board, screen, player_id * 100 + 1 + j * 10 + i,
+                                    True))
+        return sprite_group

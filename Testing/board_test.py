@@ -57,7 +57,7 @@ class Board:
 
         # Draw background
         background = pygame.image.load(
-            "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\GUI\\Sprite_Images\\soldier.png")  # Replace with your actual file path
+            "/Frontend/Game/Sprite_Images\\soldier.png")  # Replace with your actual file path
         background = pygame.transform.scale(background, (self.screen.get_width(), self.screen.get_height()))
         self.screen.blit(background, (0, 0))
 
