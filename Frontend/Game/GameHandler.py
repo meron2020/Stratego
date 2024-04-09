@@ -78,7 +78,7 @@ class GameHandler:
                 self.is_player_turn = True
                 return
             else:
-                await asyncio.sleep(1)
+                await asyncio.sleep(2)
 
     async def game_loop(self):
         self.sprite_group = self.display_board()
@@ -89,10 +89,12 @@ class GameHandler:
             if self.is_player_turn:
                 self.get_user_piece_act()
                 self.is_player_turn = False
+                continue
             else:
                 asyncio.create_task(self.await_my_turn())
                 self.await_turn_event_handling()
                 await asyncio.sleep(0)
+                continue
 
     # Function tasked with displaying a selected piece's moving options.
     # Sends get request to server and per the response, colors the board squares. Returns list of available options for

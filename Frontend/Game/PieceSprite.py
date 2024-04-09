@@ -140,7 +140,7 @@ class PieceSprite(pygame.sprite.Sprite):
 class SpriteCreator:
     @classmethod
     def create_pieces_sprites_from_get_request(cls, pieces_dict, board, screen, player_id):
-        folder_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\"
+        folder_path = "C:\\Users\\user1\\PycharmProjects\\Stratego\Frontend\\Game\\Sprite_Images\\"
         sprite_group = pygame.sprite.Group()
         for piece_id, piece_object in pieces_dict.items():
             piece_object = json.loads(piece_object)
@@ -148,7 +148,7 @@ class SpriteCreator:
                 file_name = piece_object["_name"] + ".png"
                 image_path = folder_path + file_name
             else:
-                image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\soldier.png"
+                image_path = folder_path + "soldier.png"
             sprite_group.add(
                 PieceSprite(image_path, int(piece_object["_position"][0]), int(piece_object["_position"][1]),
                             board, screen, int(piece_id), False))
@@ -156,7 +156,7 @@ class SpriteCreator:
 
     @classmethod
     def create_player_sprites(cls, player_id, board, screen):
-        image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\soldier.png"
+        image_path = "C:\\Users\\user1\\PycharmProjects\\Stratego\Frontend\\Game\\Sprite_Images\\soldier.png"
         sprite_group = pygame.sprite.Group()
         for i in range(10):
             for j in range(4):

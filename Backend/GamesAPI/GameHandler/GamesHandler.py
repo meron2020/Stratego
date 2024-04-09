@@ -21,6 +21,7 @@ class GamesHandler:
             elif http_request_data["request_type_num"] == 2:
                 action_response = game.piece_act(
                     http_request_data["data"]["piece_id"], http_request_data["data"]["new_pos"])
+                print("[+] Arrived Here")
                 GamesHandler.turn_to_json(game)
                 if not action_response:
                     return {"pieces_dict": game.pieces_dict, "board": game.get_board(), "return_type": 0}
@@ -75,7 +76,10 @@ class GamesHandler:
             if request_type == 1:
                 pieces_dict = {}
                 for piece_id, piece in game.pieces_dict.items():
-                    pieces_dict[piece_id] = json.dumps(piece, default=lambda obj: obj.__dict__)
+                    try:
+                        pieces_dict[piece_id] = json.dumps(piece, default=lambda obj: obj.__dict__)
+                    except TypeError:
+                        print(pieces_dict[piece_id])
                 return {"pieces_dict": pieces_dict, "board": game.get_board()}
             elif request_type == 2:
                 return {"request_owner_turn": int(game.turn_id) == player_id}
