@@ -89,15 +89,17 @@ class PlayerHandler:
                         event.pos)  # Implement this method to get the square position
                     if not possible_options:
                         piece = Board.get_clicked_sprite_and_position(sprite_group, event.pos)
-                        if piece.player_id == self.player_id:
-                            clicked_piece = piece
+                        if piece:
+                            if piece.player_id == self.player_id:
+                                clicked_piece = piece
                     else:
                         if selected_square in possible_options:
                             return selected_square, clicked_piece
                         else:
                             piece = Board.get_clicked_sprite_and_position(sprite_group, event.pos)
-                            if piece.player_id == self.player_id:
-                                clicked_piece = piece
+                            if piece:
+                                if piece.player_id == self.player_id:
+                                    clicked_piece = piece
             self.screen.fill((255, 255, 255))
             self.board.draw_board()
 

@@ -1,5 +1,7 @@
 import asyncio
 import sys
+import threading
+import time
 
 import pygame
 
@@ -71,18 +73,32 @@ class GameHandler:
     # Function sends get request to server to check if it's the players turn.
     # Requests are sent once a second and once the response is True, the player_turn var is set to True and
     # the function returns.
-    async def await_my_turn(self):
+    def await_turn_request(self):
         while True:
             my_turn = self.httpHandler.check_if_my_turn(self.game_id, self.player_id)["request_owner_turn"]
             if my_turn:
                 self.is_player_turn = True
                 return
             else:
-                await asyncio.sleep(2)
+                time.sleep(2)
 
-    async def game_loop(self):
+    def await_my_turn(self):
+        check_thread = threading.Thread(target=self.await_turn_request)
+        check_thread.daemon = True  # Daemonize the thread so it terminates when the main program exits
+        check_thread.start()
+
+        while not self.is_player_turn:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    continue
+        return
+
+    def game_loop(self):
         self.sprite_group = self.display_board()
-        await self.await_my_turn()
+        self.await_my_turn()
         running = True
         while running:
             self.sprite_group = self.display_board()
@@ -91,10 +107,7 @@ class GameHandler:
                 self.is_player_turn = False
                 continue
             else:
-                asyncio.create_task(self.await_my_turn())
-                self.await_turn_event_handling()
-                await asyncio.sleep(0)
-                continue
+                self.await_my_turn()
 
     # Function tasked with displaying a selected piece's moving options.
     # Sends get request to server and per the response, colors the board squares. Returns list of available options for

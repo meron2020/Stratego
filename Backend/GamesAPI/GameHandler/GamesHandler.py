@@ -24,7 +24,13 @@ class GamesHandler:
                 print("[+] Arrived Here")
                 GamesHandler.turn_to_json(game)
                 if not action_response:
-                    return {"pieces_dict": game.pieces_dict, "board": game.get_board(), "return_type": 0}
+                    pieces_dict = {}
+                    for piece_id, piece in game.pieces_dict.items():
+                        try:
+                            pieces_dict[piece_id] = json.dumps(piece, default=lambda obj: obj.__dict__)
+                        except TypeError:
+                            print(pieces_dict[piece_id])
+                    return {"pieces_dict": pieces_dict, "board": game.get_board(), "return_type": 0}
                 else:
                     if "return_type" not in action_response:
                         return action_response.update({"return_type": 1})
@@ -95,6 +101,7 @@ class GamesHandler:
     # Turns game object to json and writes it to database.
     @staticmethod
     def turn_to_json(game):
+        print(game)
         object_string = json.dumps(game, default=lambda obj: obj.__dict__)
         file_path = GamesHandler.create_game_db_paths("f", game.game_id)
         with open(file_path, "w") as outfile:
