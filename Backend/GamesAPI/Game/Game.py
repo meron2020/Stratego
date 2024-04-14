@@ -72,6 +72,8 @@ class Game:
                 piece_in_new_position = self.get_piece_by_id(piece_id_in_new_position)
                 self.piece_attack(piece_id, piece_in_new_position, new_position)
             winner = VictoryRules.check_player_is_winner(self.get_opposite_player(self.turn_id), self.pieces_dict)
+            if winner:
+                return self.end_game(self.turn_id)
             if VictoryRules.check_tie(self.turn_id, self.get_opposite_player(self.turn_id), self.pieces_dict):
                 return {"return_type": 2, "player_ids": self.players}
             if not winner:
@@ -86,15 +88,19 @@ class Game:
 
     # Deletes piece if lost a battle.
     def delete_piece(self, piece_id):
-        self.board.delete_piece(self.pieces_dict[piece_id].position)
-        self.pieces_dict.pop(piece_id)
+        self.board.delete_piece(self.pieces_dict[str(piece_id)].position)
+        self.pieces_dict.pop(str(piece_id))
 
     # Checks which piece is stronger and returns True if the attacker won, False otherwise.
     def piece_attack(self, piece_id, piece_to_attack, new_position):
         piece = self.get_piece_by_id(piece_id)
         winner = AttackingRules.check_battle_winner(piece, piece_to_attack)
         if winner == piece:
-            self.board.set_new_piece_id_position(piece_id, new_position)
+            self.board.set_new_piece_id_position(piece, new_position)
+            self.pieces_dict.pop(str(piece_to_attack.piece_id))
+        if not winner:
+            self.delete_piece(piece_id)
+            self.delete_piece(piece_to_attack.piece_id)
         else:
             self.delete_piece(piece_id)
 
@@ -110,6 +116,7 @@ class Game:
             piece = self.get_piece_by_id(piece_id)
             piece.set_new_piece_position(position)
             self.board.set_new_piece_id_position(piece, position)
+            self.game_state = "Awaiting Opponent Player Setup"
         if self.board.get_piece_count() == 80:
             self.game_state = "Running"
             self.turn_id = 1
@@ -152,7 +159,8 @@ class Game:
 
     # Function returns true if game is running and false otherwise.
     def check_game_still_running(self):
-        return self.game_state == "Awaiting setups" or self.game_state == "Running"
+        return (self.game_state == "Awaiting setups" or self.game_state == "Running" or
+                self.game_state == "Awaiting Opponent Player Setup")
 
     # Function ends the game. Removes the player that ended the game from the player list.
     # Updates the game state, and returns to the player that ended the game the result.
@@ -160,7 +168,7 @@ class Game:
         self.players.remove(player_id)
         self.game_state = "Awaiting opponent disconnect"
         return {"winner": self.get_opposite_player(player_id),
-                "loser": player_id, "game_status": self.game_state}
+                "loser": player_id, "game_state": self.game_state}
 
     # Function takes the game object, turns it into a json dictionary and stores it in a json file on the database.
     def turn_to_json(self):
