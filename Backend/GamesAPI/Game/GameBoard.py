@@ -30,12 +30,12 @@ class GameBoard:
 
         # Sets piece position to new position and changes board matrix accordingly.
         piece.position = new_position
-        self._board_matrix[new_position[0]][new_position[1]] = [piece.piece_id]
+        self._board_matrix[new_position[0]][new_position[1]] = piece.piece_id
         return True
 
     # Takes a position and deletes the piece in that position.
     def delete_piece(self, position):
-        self._board_matrix[position[0]][position[1]] = None
+        self._board_matrix[position[0]][position[1]] = []
 
     # Returns the amount of pieces on the board.
     def get_piece_count(self):
