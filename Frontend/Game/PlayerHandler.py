@@ -112,6 +112,8 @@ class PlayerHandler:
 
             pygame.display.flip()
 
+    # Function that displays on the board the chosen piece's available spaces to move to.
+    # Open spaces are displayed in light green.
     def display_piece_options(self, piece):
         response = self.httpHandler.check_piece_options(self.game_id, piece.piece_id)
         options = response["piece_options"]

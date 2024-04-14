@@ -41,10 +41,10 @@ class GameResource(Resource):
                 for player_id in response["data"]["player_ids"]:
                     player = UserModel.find_by_id(player_id)
                     player.add_tie()
-        else:
-            if "game_status" in response:
-                return {"game_status": "Ended. You have won."}
 
+        elif "game_state" in response:
+            if http_request_data["player_id"] == response["winner"]:
+                return {"game_status": "Ended. You have won."}
             else:
                 return {"game_status": "Ended. You have lost."}
         return response

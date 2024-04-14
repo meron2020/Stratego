@@ -1,5 +1,5 @@
 class RunnerRules:
-    IllegalPositions = [(6, 3), (6, 4), (5, 3), (5, 3), (6, 7), (6, 8), (5, 7), (5, 8)]
+    IllegalPositions = [(4, 2), (4, 3), (5, 2), (5, 3), (4, 6), (4, 7), (5, 6), (5, 7)]
 
     # Checks available moves above the runner.
     @classmethod
@@ -10,12 +10,12 @@ class RunnerRules:
             elif pos in RunnerRules.IllegalPositions:
                 return []
             else:
-                hit_piece = pieces_dict[str(board[pos[0]][pos[1]][0])]
+                hit_piece = pieces_dict[str(board[pos[0]][pos[1]])]
                 if hit_piece.color != color:
                     return [pos]
                 else:
                     return []
-        except IndexError:
+        except KeyError:
             pos_list = (RunnerRules.check_runner_above((pos[0] - 1, pos[1]), color, board, pieces_dict))
             pos_list.append(pos)
             return pos_list
@@ -29,12 +29,12 @@ class RunnerRules:
             elif pos in RunnerRules.IllegalPositions:
                 return []
             else:
-                hit_piece = pieces_dict[str(board[pos[0]][pos[1]][0])]
+                hit_piece = pieces_dict[str(board[pos[0]][pos[1]])]
                 if hit_piece.color != color:
                     return [pos]
                 else:
                     return []
-        except IndexError:
+        except KeyError:
             pos_list = (RunnerRules.check_runner_below((pos[0] + 1, pos[1]), color, board, pieces_dict))
             pos_list.append(pos)
             return pos_list
@@ -48,12 +48,12 @@ class RunnerRules:
             elif pos in RunnerRules.IllegalPositions:
                 return []
             else:
-                hit_piece = pieces_dict[str(board[pos[0]][pos[1]][0])]
+                hit_piece = pieces_dict[str(board[pos[0]][pos[1]])]
                 if hit_piece.color != color:
                     return [pos]
                 else:
                     return []
-        except IndexError:
+        except KeyError:
             pos_list = (RunnerRules.check_runner_left((pos[0], pos[1] - 1), color, board, pieces_dict))
             pos_list.append(pos)
             return pos_list
@@ -67,12 +67,12 @@ class RunnerRules:
             elif pos in RunnerRules.IllegalPositions:
                 return []
             else:
-                hit_piece = pieces_dict[str(board[pos[0]][pos[1]][0])]
+                hit_piece = pieces_dict[str(board[pos[0]][pos[1]])]
                 if hit_piece.color != color:
                     return [pos]
                 else:
                     return []
-        except IndexError:
+        except KeyError:
             pos_list = (RunnerRules.check_runner_right((pos[0], pos[1] + 1), color, board, pieces_dict))
             pos_list.append(pos)
             return pos_list

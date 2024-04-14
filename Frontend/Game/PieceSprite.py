@@ -2,6 +2,8 @@ import json
 
 import pygame
 
+from universals import id_to_image_dict
+
 
 class PieceSprite(pygame.sprite.Sprite):
     def __init__(self, image, row, column, board, screen, piece_id, in_set_up_mode):
@@ -138,6 +140,7 @@ class PieceSprite(pygame.sprite.Sprite):
 
 
 class SpriteCreator:
+    # Function creates the list of PieceSprites from the dictionary provided by the server
     @classmethod
     def create_pieces_sprites_from_get_request(cls, pieces_dict, board, screen, player_id):
         folder_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\"
@@ -154,18 +157,24 @@ class SpriteCreator:
                             board, screen, int(piece_id), False))
         return sprite_group
 
+    # Function creates the list of PieceSprites for the setup.
     @classmethod
     def create_player_sprites(cls, player_id, board, screen):
-        image_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\soldier.png"
+        folder_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\"
         sprite_group = pygame.sprite.Group()
         for i in range(10):
             for j in range(4):
+                piece_id = player_id * 100 + 1 + j * 10 + i
                 if player_id == 1:
+                    # Sprites for player with playerId = 1
+                    image_path = folder_path + id_to_image_dict[piece_id - 100] + ".png"
                     sprite_group.add(
                         PieceSprite(image_path, i, j - 4, board, screen, player_id * 100 + 1 + j * 10 + i,
                                     True))
                 else:
+                    # Sprites for player with playerId = 2
+                    image_path = folder_path + id_to_image_dict[piece_id - 200] + ".png"
                     sprite_group.add(
-                        PieceSprite(image_path, i, j + 10, board, screen, player_id * 100 + 1 + j * 10 + i,
+                        PieceSprite(image_path, i, j - 4, board, screen, player_id * 100 + 1 + j * 10 + i,
                                     True))
         return sprite_group

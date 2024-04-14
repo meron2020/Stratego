@@ -24,7 +24,7 @@ class MovementRules:
         surrounding_positions = MovementRules.find_surrounding_options(piece.position)
         possible_options = []
         for pos in surrounding_positions:
-            if not (pos in MovementRules.IllegalPositions or str(game_board[pos[0]][pos[1]])[1] == str(piece.piece_id)[0]):
+            if not (pos in MovementRules.IllegalPositions or str(game_board[pos[0]][pos[1]])[0] == str(piece.piece_id)[0]):
                 possible_options.append(pos)
 
         return possible_options
@@ -40,7 +40,7 @@ class MovementRules:
 
         # Checks if the position is on the board
         for pos in surrounding_positions:
-            if (9 >= pos[0] >= 0) or (9 >= pos[1] >= 0):
+            if (9 >= pos[0] >= 0) and (9 >= pos[1] >= 0):
                 positions_to_return.append(pos)
 
         return positions_to_return

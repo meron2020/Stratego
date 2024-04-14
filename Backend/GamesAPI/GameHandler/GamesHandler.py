@@ -11,18 +11,20 @@ class GamesHandler:
     # Put method updates the game object depending on request.
     @classmethod
     def put(cls, http_request_data):
-        print("Game ID >> " + str(http_request_data["game_id"]))
         game = GamesHandler.get_from_json(http_request_data["game_id"])
+        # Checks if game is still running
         if game is not None and game.check_game_still_running():
+            # Checks if request is for piece setup
             if http_request_data["request_type_num"] == 1:
                 pieces_set = game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])
                 GamesHandler.turn_to_json(game)
                 return {"pieces_set": pieces_set}
+            # Checks if request is for piece action.
             elif http_request_data["request_type_num"] == 2:
                 action_response = game.piece_act(
                     http_request_data["data"]["piece_id"], http_request_data["data"]["new_pos"])
-                print("[+] Arrived Here")
                 GamesHandler.turn_to_json(game)
+                # If action was successful with no response, return the current game board and state.
                 if not action_response:
                     pieces_dict = {}
                     for piece_id, piece in game.pieces_dict.items():
@@ -35,7 +37,8 @@ class GamesHandler:
                     if "return_type" not in action_response:
                         return action_response.update({"return_type": 1})
                     return action_response
-        return {"game_status": "Ended"}
+        else:
+            return {"game_status": "Ended"}
 
     # Delete method ends game. This game is ended by forfeit and so it awaits opponent player checking the game state
     # to update him.
@@ -96,7 +99,7 @@ class GamesHandler:
                     return {"game_state": game.get_state()}
                 else:
                     GamesHandler.delete_game(game_id)
-                    return {"game_status": "Ended", "player_status": "Won by forfeit"}
+                    return {"game_state": "Ended", "player_status": "Won by forfeit"}
 
     # Turns game object to json and writes it to database.
     @staticmethod
