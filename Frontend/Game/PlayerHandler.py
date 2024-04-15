@@ -50,8 +50,8 @@ class PlayerHandler:
                 if sprite != clicked_sprite:
                     sprite.update()
 
-            # Check if bottom four rows are filled
-            if self.board.setup_rows_filled(1):
+            # Check if player's four rows are filled
+            if self.board.setup_rows_filled(self.player_id):
                 # Display "Finish set up" button in the bottom right corner
                 finish_button_rect = pygame.Rect(
                     pygame.display.get_window_size()[0] - 300,
