@@ -41,7 +41,7 @@ class Board:
 
     def add_piece(self, row, col, piece):
         self.pieces.append(piece)
-        self.board_matrix[row - 1][col - 5] =[piece.piece_id]
+        self.board_matrix[row - 1][col - 5] = [piece.piece_id]
 
     def calculate_dimensions(self):
         min_dimension = min(self.screen.get_width(), self.screen.get_height())
