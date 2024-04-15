@@ -95,7 +95,6 @@ class Board:
 
     def create_piece_to_pos_dict(self):
         piece_to_pos_dict = {}
-        print(self.piece_id_matrix)
         for row in self.piece_id_matrix:
             for col in row:
                 if len(col) != 0:
@@ -114,6 +113,7 @@ class Board:
         )
         pygame.draw.rect(self.screen, color, rect)
         pygame.display.flip()
+
 
     @classmethod
     def get_clicked_sprite_and_position(cls, sprite_group, mouse_pos):
