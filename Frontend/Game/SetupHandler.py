@@ -1,7 +1,7 @@
 import threading
 import time
-from GameHandler import GameHandler
-from PieceSprite import SpriteCreator
+from Frontend.App.ScreenHandler import ScreenHandler
+from Frontend.Game.PieceSprite import SpriteCreator
 
 
 class SetupHandler:
@@ -47,4 +47,4 @@ class SetupHandler:
 
         # Function for handling the pygame while awaiting the server response.
         while not self.opponent_finished_setup:
-            GameHandler.event_handling_when_waiting()
+            ScreenHandler.event_handling_when_waiting()

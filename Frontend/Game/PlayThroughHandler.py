@@ -4,8 +4,7 @@ import time
 import pygame
 
 from Frontend.Game.PieceSprite import SpriteCreator
-from GameHandler import GameHandler
-
+from Frontend.App.ScreenHandler import ScreenHandler
 
 class PlayThroughHandler:
     def __init__(self, http_handler, board, game_id, player_handler, player_id, screen):
@@ -56,7 +55,7 @@ class PlayThroughHandler:
 
         # Function for handling the pygame while awaiting the server response.
         while not self.is_player_turn:
-            GameHandler.event_handling_when_waiting()
+            ScreenHandler.event_handling_when_waiting()
 
     # Function tasked with displaying the current board setup.
     # Request is sent to the server for the board setup and the response is shown to the user.

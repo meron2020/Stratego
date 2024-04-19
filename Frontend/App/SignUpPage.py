@@ -2,114 +2,152 @@ import sys
 
 import pygame
 
-from ScreenHandler import ScreenHandler
+from Frontend.ServerCommunications.UserHTTPHandlers import UserHTTPHandler
+from Frontend.App.ScreenHandler import ScreenHandler
 
 
 class SignUpPage:
-    def __init__(self, screen_handler):
+    def __init__(self, screen_handler, user_http_handler):
         self.screen_handler = screen_handler
+        self.user_http_handler = user_http_handler
 
-    def create_signup_day(self):
+    def run(self):
+        username = ""
+        password = ""
+        password_confirm = ""
         self.screen_handler.screen.fill(self.screen_handler.WHITE)
 
         # Draw title
-        self.screen_handler.draw_text("Sign Up", pygame.font.Font(None, self.screen_handler.FONT_SIZE * 2),
-                                      self.screen_handler.BLACK, self.screen_handler.screen,
-                                      self.screen_handler.SCREEN_WIDTH // 2,
-                                      self.screen_handler.SCREEN_HEIGHT // 4)
+        title_font = pygame.font.Font(None, self.screen_handler.FONT_SIZE * 2)
+        self.screen_handler.draw_text("Sign Up", title_font, self.screen_handler.BLACK,
+                                      self.screen_handler.SCREEN_WIDTH // 2, self.screen_handler.SCREEN_HEIGHT // 8)
 
-        # Input fields
-        username_input = pygame.Rect(self.screen_handler.SCREEN_WIDTH // 4, self.screen_handler.SCREEN_HEIGHT // 2 - 30,
-                                     self.screen_handler.SCREEN_WIDTH // 2,
-                                     40)
-        password_input = pygame.Rect(self.screen_handler.SCREEN_WIDTH // 4, self.screen_handler.SCREEN_HEIGHT // 2 + 30,
-                                     self.screen_handler.SCREEN_WIDTH // 2,
-                                     40)
-        password_confirm_input = pygame.Rect(self.screen_handler.SCREEN_WIDTH // 4,
-                                             self.screen_handler.SCREEN_HEIGHT // 2 + 90,
-                                             self.screen_handler.SCREEN_WIDTH // 2, 40)
-        pygame.draw.rect(self.screen_handler.screen, self.screen_handler.BLACK, username_input, 2)
-        pygame.draw.rect(self.screen_handler.screen, self.screen_handler.BLACK, password_input, 2)
-        pygame.draw.rect(self.screen_handler.screen, self.screen_handler.BLACK, password_confirm_input, 2)
-
-        # Draw labels
+        # Draw username field
+        username_label_x = self.screen_handler.SCREEN_WIDTH // 4
+        username_label_y = self.screen_handler.SCREEN_HEIGHT // 3
         self.screen_handler.draw_text("Username:", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                      self.screen_handler.BLACK, self.screen_handler.screen,
-                                      self.screen_handler.SCREEN_WIDTH // 4 - 100,
-                                      self.screen_handler.SCREEN_HEIGHT // 2 - 30)
-        self.screen_handler.draw_text("Password:", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                      self.screen_handler.BLACK, self.screen_handler.screen,
-                                      self.screen_handler.SCREEN_WIDTH // 4 - 100,
-                                      self.screen_handler.SCREEN_HEIGHT // 2 + 30)
-        self.screen_handler.draw_text("Confirm Password:", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                      self.screen_handler.BLACK, self.screen_handler.screen,
-                                      self.screen_handler.SCREEN_WIDTH // 4 - 100,
-                                      self.screen_handler.SCREEN_HEIGHT // 2 + 90)
+                                      self.screen_handler.BLACK, username_label_x, username_label_y)
 
-        # Sign Up button
-        signup_button = pygame.Rect(self.screen_handler.SCREEN_WIDTH // 4, self.screen_handler.SCREEN_HEIGHT // 2 + 160,
-                                    self.screen_handler.SCREEN_WIDTH // 4, 50)
-        pygame.draw.rect(self.screen_handler.screen, self.screen_handler.BLACK, signup_button, 2)
-        self.screen_handler.draw_text("Sign Up", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                      self.screen_handler.BLACK, self.screen_handler.screen, signup_button.centerx,
-                                      signup_button.centery)
+        username_input_rect = self.screen_handler.draw_text_input(self.screen_handler.SCREEN_WIDTH // 2,
+                                                                  self.screen_handler.SCREEN_HEIGHT // 3,
+                                                                  400, 50,
+                                                                  username)
+
+        # Draw password field
+        password_label_y = self.screen_handler.SCREEN_HEIGHT // 2
+        self.screen_handler.draw_text("Password:", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                      self.screen_handler.BLACK, username_label_x, password_label_y)
+        password_input_rect = self.screen_handler.draw_text_input(self.screen_handler.SCREEN_WIDTH // 2,
+                                                                  password_label_y, 400, 50, password,
+                                                                  is_password=True)
+
+        # Draw password confirmation field
+        password_confirm_label_y = self.screen_handler.SCREEN_HEIGHT * 2 // 3
+        self.screen_handler.draw_text("Confirm Password:", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                      self.screen_handler.BLACK, username_label_x, password_confirm_label_y)
+        password_confirm_input_rect = self.screen_handler.draw_text_input(self.screen_handler.SCREEN_WIDTH // 2,
+                                                                          password_confirm_label_y, 400, 50,
+                                                                          password_confirm, is_password=True)
+
+        # Draw buttons
+        back_button_rect = self.screen_handler.draw_button("Back",
+                                                           pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                           self.screen_handler.BLACK,
+                                                           self.screen_handler.SCREEN_WIDTH // 4,
+                                                           self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
+        signup_button_rect = self.screen_handler.draw_button("Sign Up",
+                                                             pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                             self.screen_handler.BLACK,
+                                                             self.screen_handler.SCREEN_WIDTH * 3 // 4,
+                                                             self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
 
         pygame.display.flip()
 
-        # Event handling
+        # Main loop
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    if signup_button.collidepoint(mouse_pos):
-                        if password == password_confirm:
-                            print("Sign Up clicked")
-                            print("Username:", username)
-                            print("Password:", password)
-                            return
-                        else:
-                            print("Passwords do not match")
-                    elif username_input.collidepoint(mouse_pos):
-                        username = self.get_text_input("Enter username:")
-                    elif password_input.collidepoint(mouse_pos):
-                        password = self.get_text_input("Enter password:", True)
-                    elif password_confirm_input.collidepoint(mouse_pos):
-                        password_confirm = self.get_text_input("Confirm password:", True)
-
-    # Function to get text input from the user
-    def get_text_input(self, prompt, password=False):
-        text = ""
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    if event.button == 1:  # Left mouse button
+                        mouse_pos = pygame.mouse.get_pos()
+                        if back_button_rect.collidepoint(mouse_pos):
+                            print("Back button clicked")
+                            # Handle going back to the welcome page
+                        elif signup_button_rect.collidepoint(mouse_pos):
+                            print("Sign Up button clicked")
+                            if password == password_confirm:
+                                response = self.user_http_handler.create_user(username, password)
+                                if response["message"] == "User created":
+                                    return username, response["PlayerId"]
+                                else:
+                                    self.screen_handler.draw_text("Username already exists",
+                                                                  pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                                  self.screen_handler.BLACK,
+                                                                  self.screen_handler.SCREEN_WIDTH // 2,
+                                                                  self.screen_handler.SCREEN_HEIGHT * 3 // 4)
+                                    pygame.display.flip()
+                            # Handle sign up functionality here
+                        elif username_input_rect.collidepoint(mouse_pos):
+                            print("Username input clicked")
+                            # Handle input field interaction here
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        return text
-                    elif event.key == pygame.K_BACKSPACE:
-                        text = text[:-1]
-                    elif event.key == pygame.K_ESCAPE:
-                        return ""
+                    if event.key == pygame.K_BACKSPACE:
+                        if username_input_rect.collidepoint(pygame.mouse.get_pos()):
+                            username = username[:-1]
+                        elif password_input_rect.collidepoint(pygame.mouse.get_pos()):
+                            password = password[:-1]
+                        elif password_confirm_input_rect.collidepoint(pygame.mouse.get_pos()):
+                            password_confirm = password_confirm[:-1]
                     else:
-                        text += event.unicode if not password else "*"
+                        if username_input_rect.collidepoint(pygame.mouse.get_pos()):
+                            username += event.unicode
+                        elif password_input_rect.collidepoint(pygame.mouse.get_pos()):
+                            password += event.unicode
+                        elif password_confirm_input_rect.collidepoint(pygame.mouse.get_pos()):
+                            password_confirm += event.unicode
 
-            self.screen_handler.screen.fill(self.screen_handler.WHITE)
-            self.screen_handler.draw_text(prompt, pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                          self.screen_handler.BLACK, self.screen_handler.screen,
-                                          self.screen_handler.SCREEN_WIDTH // 2, self.screen_handler.SCREEN_HEIGHT // 2)
-            self.screen_handler.draw_text(text, pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                          self.screen_handler.BLACK, self.screen_handler.screen,
-                                          self.screen_handler.SCREEN_WIDTH // 2,
-                                          self.screen_handler.SCREEN_HEIGHT // 2 + 50)
-            pygame.display.flip()
+                    # Update the screen
+                    self.screen_handler.screen.fill(self.screen_handler.WHITE)
+                    self.screen_handler.draw_text("Sign Up", title_font, self.screen_handler.BLACK,
+                                                  self.screen_handler.SCREEN_WIDTH // 2,
+                                                  self.screen_handler.SCREEN_HEIGHT // 8)
+                    self.screen_handler.draw_text("Username:",
+                                                  pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                  self.screen_handler.BLACK, username_label_x, username_label_y)
+                    self.screen_handler.draw_text("Password:",
+                                                  pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                  self.screen_handler.BLACK, username_label_x, password_label_y)
+                    self.screen_handler.draw_text("Confirm Password:",
+                                                  pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                  self.screen_handler.BLACK, username_label_x,
+                                                  password_confirm_label_y)
+                    username_input_rect = self.screen_handler.draw_text_input(
+                        self.screen_handler.SCREEN_WIDTH // 2, self.screen_handler.SCREEN_HEIGHT // 3, 400, 50,
+                        username)
+                    password_input_rect = self.screen_handler.draw_text_input(
+                        self.screen_handler.SCREEN_WIDTH // 2, password_label_y, 400, 50, password,
+                        is_password=True)
+                    password_confirm_input_rect = self.screen_handler.draw_text_input(
+                        self.screen_handler.SCREEN_WIDTH // 2, password_confirm_label_y, 400, 50,
+                        password_confirm, is_password=True)
+                    self.screen_handler.draw_button("Back",
+                                                    pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                    self.screen_handler.BLACK,
+                                                    self.screen_handler.SCREEN_WIDTH // 4,
+                                                    self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
+                    self.screen_handler.draw_button("Sign Up",
+                                                    pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                    self.screen_handler.BLACK,
+                                                    self.screen_handler.SCREEN_WIDTH * 3 // 4,
+                                                    self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
+                    pygame.display.flip()
 
 
 if __name__ == "__main__":
+    httpHandler = UserHTTPHandler("http://127.0.0.1:5000")
     screenHandler = ScreenHandler()
     screenHandler.setup_app_infrastructure()
-    signUpPage = SignUpPage(screenHandler)
-    signUpPage.create_signup_day()
+    signUpPage = SignUpPage(screenHandler, httpHandler)
+    signUpPage.run()

@@ -1,6 +1,6 @@
 from flask_restful import reqparse, Resource
 
-from Backend.FlaskServer.api.Models.user import UserModel
+from Backend.FlaskServer.api.Users.UserHandler import UserHandler
 
 
 class UserResource(Resource):
@@ -13,14 +13,18 @@ class UserResource(Resource):
     @classmethod
     def get(cls):
         arguments = UserResource.parser.parse_args()
-        return UserModel.get_stats(arguments["username"])
+        return UserHandler.get_stats(arguments["username"])
 
     @classmethod
     def post(cls):
         arguments = UserResource.parser.parse_args()
-        return UserModel.create_new_user(arguments["username"], hash(arguments["password"]))
+        created_user = UserHandler.create_new_user(arguments["username"], arguments["password"])
+        if created_user:
+            return {"message": "User created", "PlayerId": UserHandler.get_player_id(arguments["username"])}
+        else:
+            return {"message": "Username already exists"}
 
     @classmethod
     def delete(cls):
         arguments = UserResource.parser.parse_args()
-        return UserModel.delete_user(arguments["username"])
+        return UserHandler.delete_user(arguments["username"])

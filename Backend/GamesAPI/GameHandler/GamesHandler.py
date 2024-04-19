@@ -104,7 +104,6 @@ class GamesHandler:
     # Turns game object to json and writes it to database.
     @staticmethod
     def turn_to_json(game):
-        print(game)
         object_string = json.dumps(game, default=lambda obj: obj.__dict__)
         file_path = GamesHandler.create_game_db_paths("f", game.game_id)
         with open(file_path, "w") as outfile:
