@@ -18,6 +18,9 @@ class AttackingRules:
             else:
                 return defender
 
+        if defender.strength == 'F':
+            return attacker
+
         elif AttackingRules.check_tie(attacker, defender):
             return None
 

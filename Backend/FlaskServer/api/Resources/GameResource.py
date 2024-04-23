@@ -33,9 +33,9 @@ class GameResource(Resource):
         response = self.game_handler.put(http_request_data)
         if "return_type" in response:
             if response["return_type"] == 1:
-                winner = UserHandler.find_by_id(response.data["winner"])
+                winner = UserHandler.find_by_id(response["winner"])
                 UserHandler.add_win_to_user(winner)
-                loser = UserHandler.find_by_id(response.data["loser"])
+                loser = UserHandler.find_by_id(response["loser"])
                 UserHandler.add_loss_to_user(loser)
             elif response["return_type"] == 2:
                 for player_id in response["data"]["player_ids"]:

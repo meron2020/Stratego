@@ -2,6 +2,7 @@ from Frontend.App.LoginPage import LoginPage
 from Frontend.App.OptionsPage import OptionsPage
 from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.App.SignUpPage import SignUpPage
+from Frontend.App.StatsPage import StatsPage
 from Frontend.App.WelcomePage import WelcomePage
 from Frontend.Game.GameHandler import GameHandler
 from Frontend.ServerCommunications.UserHTTPHandlers import UserHTTPHandler
@@ -27,12 +28,20 @@ class AppHandler:
             login_page = LoginPage(self.screen_handler, self.user_http_handler)
             self.username, self.player_id = login_page.run()
 
+    def get_stats(self):
+        stats = self.user_http_handler.get_stats(self.username)
+        stats_page = StatsPage(self.screen_handler)
+        stats_page.create_stats_page(self.username, stats["wins"], stats["losses"], stats["ties"])
+
     def user_option(self, option):
         if option == "Join Game":
             self.join_game()
+        elif option == "Get Stats":
+            self.get_stats()
 
     def join_game(self):
         game_handler = GameHandler(self.player_id, self.screen_handler)
+        game_handler.await_opponent_player_connect()
         game_handler.game_loop()
 
 

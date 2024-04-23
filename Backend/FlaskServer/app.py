@@ -7,6 +7,7 @@ from Backend.FlaskServer.api.Resources.AuthResource import Auth
 from Backend.FlaskServer.api.Resources.GameResource import GameResource
 from Backend.FlaskServer.api.Resources.UserResource import UserResource
 from Backend.FlaskServer.api.Users.UserHandler import UserHandler
+from Backend.FlaskServer.Testing.UserTester import UserTester
 
 
 app = Flask(__name__)
@@ -21,10 +22,11 @@ api = Api(app)
 # push context manually to app
 with app.app_context():
     UserHandler.create_username_id_json()
+    UserTester.create_users()
 
 api.add_resource(UserResource, "/users")
 api.add_resource(GameResource, "/games")
 api.add_resource(Auth, "/auth")
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=False)

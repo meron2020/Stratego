@@ -167,8 +167,8 @@ class Game:
     def end_game(self, player_id):
         self.players.remove(player_id)
         self.game_state = "Awaiting opponent disconnect"
-        return {"winner": self.get_opposite_player(player_id),
-                "loser": player_id, "game_state": self.game_state}
+        return {"winner": player_id,
+                "loser": self.get_opposite_player(player_id), "game_state": self.game_state}
 
     # Function takes the game object, turns it into a json dictionary and stores it in a json file on the database.
     def turn_to_json(self):

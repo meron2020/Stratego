@@ -15,6 +15,7 @@ class GameTester:
         test_game.board = GameTester.create_board(test_game.pieces_dict)
         test_game.turn_color = "red"
         test_game.turn = 1
+        test_game.players = [1, 2]
         test_game.player_to_color_dict = {"1": "red", "2": "blue"}
 
         GamesHandler.turn_to_json(test_game)
@@ -30,13 +31,13 @@ class GameTester:
     @classmethod
     def create_piece_dict(cls):
         piece = Piece(2, "red", "Scout", 105, [5, 9])
-        piece1 = Piece(2, "blue", "Scout", 204, [5, 8])
-        piece2 = Piece(3, "blue", "Miner", 203, [2, 1])
-        piece3 = Piece(2, "red", "Scout", 103, [3, 8])
-        flag1 = Piece('F', "red", "Flag", 101, [4, 2])
+        # piece1 = Piece(2, "blue", "Scout", 204, [5, 8])
+        piece2 = Piece(3, "blue", "Miner", 203, [3, 2])
+        piece3 = Piece(2, "red", "Scout", 103, [2, 2])
+        flag1 = Piece('F', "red", "Flag", 101, [9, 2])
         flag2 = Piece('F', "blue", "Flag", 201, [3, 2])
 
-        piece_dict = {105: piece, 204: piece1, 203: piece2, 101: flag1, 201: flag2, 103: piece3}
+        piece_dict = {105: piece, 203: piece2, 101: flag1, 201: flag2, 103: piece3}
         return piece_dict
 
 

@@ -2,7 +2,7 @@ import unittest
 
 from Frontend.Game.GameHandler import GameHandler
 from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
-
+from Frontend.App.ScreenHandler import ScreenHandler
 
 class MyTestCase(unittest.TestCase):
 
@@ -54,7 +54,9 @@ class MyTestCase(unittest.TestCase):
         #                                      230: (3, 5), 220: (3, 6), 208: (3, 7), 210: (3, 8), 209: (3, 9)}, 2)
 
     def test_get_board(self):
-        guiHandler = GameHandler(1, 1)
+        screenHandler = ScreenHandler()
+        screenHandler.setup_app_infrastructure()
+        guiHandler = GameHandler(1, screenHandler)
         guiHandler.game_loop()
 
     def test_send_setup(self):

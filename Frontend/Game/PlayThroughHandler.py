@@ -3,8 +3,9 @@ import time
 
 import pygame
 
-from Frontend.Game.PieceSprite import SpriteCreator
 from Frontend.App.ScreenHandler import ScreenHandler
+from Frontend.Game.PieceSprite import SpriteCreator
+
 
 class PlayThroughHandler:
     def __init__(self, http_handler, board, game_id, player_handler, player_id, screen):
@@ -26,6 +27,9 @@ class PlayThroughHandler:
         for option in options:
             self.board.color_square(option, (0, 255, 0))
         return options
+
+    def set_sprite_group(self, sprite_group):
+        self.sprite_group = sprite_group
 
     # Function to handle the users action when it is the player's turn.
     # The player's action choice is sent to the server and the updated board and pieces are received.
@@ -70,7 +74,8 @@ class PlayThroughHandler:
         sprite_group.draw(self.screen)
 
         pygame.display.flip()
-        return sprite_group
+
+        self.sprite_group = sprite_group
 
     def run_play_through_loop(self):
         self.display_board()
@@ -79,6 +84,7 @@ class PlayThroughHandler:
         while running:
             self.display_board()
             if self.is_player_turn:
+
                 self.get_user_piece_act()
                 self.is_player_turn = False
                 continue

@@ -7,7 +7,7 @@ from Backend.FlaskServer.api.Users.User import User
 class UserHandler:
     @staticmethod
     def create_username_id_json():
-        path = UserHandler.create_path_to_users_dir() + "username_to_id.json"
+        path = UserHandler.create_path_to_users_dir() + "id_to_username.json"
         with open(path, "w") as outfile:
             json_object = json.dumps({})
             outfile.write(json_object)
@@ -16,7 +16,6 @@ class UserHandler:
     @staticmethod
     def create_path_to_users_dir():
         script_directory = os.path.dirname(os.path.abspath(__file__))
-
         # Go up three levels to reach the project directory
         project_directory = os.path.abspath(os.path.join(script_directory, '../../..'))
         path = project_directory + "\\FlaskServer\\api\\UserJsons\\"
@@ -24,7 +23,7 @@ class UserHandler:
 
     @staticmethod
     def add_user_to_u_i_json(username, player_id):
-        path = UserHandler.create_path_to_users_dir() + "username_to_id.json"
+        path = UserHandler.create_path_to_users_dir() + "id_to_username.json"
         with open(path, 'r') as openfile:
             # Reading from json file
             user_to_id_dict = json.load(openfile)
@@ -109,10 +108,13 @@ class UserHandler:
 
     @classmethod
     def find_by_id(cls, player_id):
-        path = UserHandler.create_path_to_users_dir()
-        with open(path, "r") as file:
-            u_to_i_dict = json.load(file)
-            return u_to_i_dict[player_id]
+        path = UserHandler.create_path_to_users_dir() + "id_to_username.json"
+        with open(path, 'r') as openfile:
+            # Reading from json file
+            user_to_id_dict = json.load(openfile)
+            username = user_to_id_dict[str(player_id)]
+        openfile.close()
+        return username
 
     @staticmethod
     def delete_user(username):

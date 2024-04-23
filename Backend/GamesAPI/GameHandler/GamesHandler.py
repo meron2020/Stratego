@@ -35,7 +35,8 @@ class GamesHandler:
                     return {"pieces_dict": pieces_dict, "board": game.get_board(), "return_type": 0}
                 else:
                     if "return_type" not in action_response:
-                        return action_response.update({"return_type": 1})
+                        action_response.update({"return_type": 1})
+                        return action_response
                     return action_response
         else:
             return {"game_status": "Ended"}
@@ -81,6 +82,13 @@ class GamesHandler:
     def get(cls, game_id, request_type, player_id=None, data=None):
         game = GamesHandler.get_from_json(game_id)
 
+        if request_type == 4:
+            if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
+                return {"game_state": game.get_state()}
+            else:
+                GamesHandler.delete_game(game_id)
+                return {"game_state": "Ended", "player_status": "Won by forfeit"}
+
         if game.check_game_still_running():
             if request_type == 1:
                 pieces_dict = {}
@@ -94,12 +102,6 @@ class GamesHandler:
                 return {"request_owner_turn": int(game.turn_id) == player_id}
             elif request_type == 3:
                 return {"piece_options": game.return_piece_options(data["piece_id"])}
-            elif request_type == 4:
-                if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
-                    return {"game_state": game.get_state()}
-                else:
-                    GamesHandler.delete_game(game_id)
-                    return {"game_state": "Ended", "player_status": "Won by forfeit"}
 
     # Turns game object to json and writes it to database.
     @staticmethod
