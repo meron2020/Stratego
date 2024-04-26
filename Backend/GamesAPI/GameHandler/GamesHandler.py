@@ -10,17 +10,17 @@ from Backend.GamesAPI.Game.Piece import Piece
 class GamesHandler:
     # Put method updates the game object depending on request.
     @classmethod
-    def put(cls, http_request_data):
+    def put(cls, http_request_data, request_type):
         game = GamesHandler.get_from_json(http_request_data["game_id"])
         # Checks if game is still running
         if game is not None and game.check_game_still_running():
             # Checks if request is for piece setup
-            if http_request_data["request_type_num"] == 1:
+            if request_type == "piece_setup":
                 pieces_set = game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])
                 GamesHandler.turn_to_json(game)
                 return {"pieces_set": pieces_set}
             # Checks if request is for piece action.
-            elif http_request_data["request_type_num"] == 2:
+            elif request_type == "piece_action":
                 action_response = game.piece_act(
                     http_request_data["data"]["piece_id"], http_request_data["data"]["new_pos"])
                 GamesHandler.turn_to_json(game)
@@ -48,7 +48,7 @@ class GamesHandler:
         game = GamesHandler.get_from_json(game_id)
         # If game is still running, the player is forfeiting.
         if game.check_game_still_running():
-            data_to_return = game.end_game(player_id)
+            data_to_return = game.end_game(player_id, game.get_opposite_player(player_id))
             return data_to_return
         # This is in case the player has forfeited after the opposing player, so he still wins.
         else:
@@ -82,15 +82,18 @@ class GamesHandler:
     def get(cls, game_id, request_type, player_id=None, data=None):
         game = GamesHandler.get_from_json(game_id)
 
-        if request_type == 4:
+        if request_type == "game_state":
             if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
                 return {"game_state": game.get_state()}
             else:
                 GamesHandler.delete_game(game_id)
-                return {"game_state": "Ended", "player_status": "Won by forfeit"}
+                if game.winner == player_id:
+                    return {"game_state": "Ended", "player_status": "Winner"}
+                else:
+                    return {"game_state": "Ended", "player_status": "Loser"}
 
         if game.check_game_still_running():
-            if request_type == 1:
+            if request_type == "get_board":
                 pieces_dict = {}
                 for piece_id, piece in game.pieces_dict.items():
                     try:
@@ -98,9 +101,9 @@ class GamesHandler:
                     except TypeError:
                         print(pieces_dict[piece_id])
                 return {"pieces_dict": pieces_dict, "board": game.get_board()}
-            elif request_type == 2:
+            elif request_type == "my_turn":
                 return {"request_owner_turn": int(game.turn_id) == player_id}
-            elif request_type == 3:
+            elif request_type == "piece_options":
                 return {"piece_options": game.return_piece_options(data["piece_id"])}
 
     # Turns game object to json and writes it to database.

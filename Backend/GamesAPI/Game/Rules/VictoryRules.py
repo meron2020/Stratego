@@ -28,6 +28,6 @@ class VictoryRules:
     def check_tie(player, opposing_player, pieces_dict):
         if not VictoryRules._check_has_movable_pieces(player,
                                                       pieces_dict) and not VictoryRules._check_has_movable_pieces(
-                opposing_player, pieces_dict):
+            opposing_player, pieces_dict):
             return True
         return False

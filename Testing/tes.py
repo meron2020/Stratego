@@ -57,7 +57,7 @@ class MyTestCase(unittest.TestCase):
         screenHandler = ScreenHandler()
         screenHandler.setup_app_infrastructure()
         guiHandler = GameHandler(1, screenHandler)
-        guiHandler.game_loop()
+        guiHandler.test_game_loop()
 
     def test_send_setup(self):
         httpHandler = GameHTTPHandler("http://127.0.0.1:5000")

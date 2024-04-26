@@ -2,8 +2,9 @@ import sys
 
 import pygame
 
-from Frontend.ServerCommunications.UserHTTPHandlers import UserHTTPHandler
 from Frontend.App.ScreenHandler import ScreenHandler
+from Frontend.ServerCommunications.UserHTTPHandlers import UserHTTPHandler
+
 
 class LoginPage:
     def __init__(self, screen_handler, http_handler):
@@ -47,8 +48,14 @@ class LoginPage:
         login_button_rect = self.screen_handler.draw_button("Login",
                                                             pygame.font.Font(None, self.screen_handler.FONT_SIZE),
                                                             self.screen_handler.BLACK,
-                                                            self.screen_handler.SCREEN_WIDTH // 2,
+                                                            self.screen_handler.SCREEN_WIDTH * 3 // 4,
                                                             self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
+
+        back_button_rect = self.screen_handler.draw_button("Back",
+                                                           pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                           self.screen_handler.BLACK,
+                                                           self.screen_handler.SCREEN_WIDTH // 4,
+                                                           self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
 
         pygame.display.flip()
 
@@ -61,6 +68,9 @@ class LoginPage:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Left mouse button
                         mouse_pos = pygame.mouse.get_pos()
+                        if back_button_rect.collidepoint(mouse_pos):
+                            print("Back button clicked")
+                            return None
                         if login_button_rect.collidepoint(mouse_pos):
                             response = (self.http_handler.auth(self.username, self.password))
                             if response is None:
@@ -71,7 +81,7 @@ class LoginPage:
                                                               self.screen_handler.SCREEN_HEIGHT * 3 // 4)
                                 pygame.display.flip()
                             else:
-                                return self.username, response["PlayerId"]
+                                return tuple((self.username, response["PlayerId"]))
                             # Handle login functionality here
 
                         elif username_input_rect.collidepoint(mouse_pos):
@@ -108,7 +118,12 @@ class LoginPage:
                                                                               password_label_y, 400, 50, self.password,
                                                                               is_password=True)
                     self.screen_handler.draw_button("Login", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                                    self.screen_handler.BLACK, self.screen_handler.SCREEN_WIDTH // 2,
+                                                    self.screen_handler.BLACK, self.screen_handler.SCREEN_WIDTH * 3 // 4,
+                                                    self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
+                    self.screen_handler.draw_button("Back",
+                                                    pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                    self.screen_handler.BLACK,
+                                                    self.screen_handler.SCREEN_WIDTH // 4,
                                                     self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
                     pygame.display.flip()
 

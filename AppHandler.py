@@ -14,19 +14,32 @@ class AppHandler:
         self.screen_handler = ScreenHandler()
         self.screen_handler.setup_app_infrastructure()
         welcome_page = WelcomePage(self.screen_handler)
-        user_option = welcome_page.create_page()
-        self.login_or_sign_up(user_option)
+        signed_in = False
+        while not signed_in:
+            user_option = welcome_page.create_page()
+            signed_in = self.login_or_sign_up(user_option)
         options_page = OptionsPage(self.screen_handler)
-        option = options_page.run()
-        self.user_option(option)
+        while True:
+            option = options_page.run()
+            self.user_option(option)
 
     def login_or_sign_up(self, user_option):
         if user_option == "Sign Up":
             sign_up_page = SignUpPage(self.screen_handler, self.user_http_handler)
-            self.username, self.player_id = sign_up_page.run()
+            response = sign_up_page.run()
+            if response:
+                self.username, self.player_id = response[0], response[1]
+                return True
+            else:
+                return False
         else:
             login_page = LoginPage(self.screen_handler, self.user_http_handler)
-            self.username, self.player_id = login_page.run()
+            response = login_page.run()
+            if response:
+                self.username, self.player_id = response[0], response[1]
+                return True
+            else:
+                return False
 
     def get_stats(self):
         stats = self.user_http_handler.get_stats(self.username)
@@ -36,13 +49,16 @@ class AppHandler:
     def user_option(self, option):
         if option == "Join Game":
             self.join_game()
+            return False
         elif option == "Get Stats":
             self.get_stats()
+            return False
 
     def join_game(self):
         game_handler = GameHandler(self.player_id, self.screen_handler)
         game_handler.await_opponent_player_connect()
         game_handler.game_loop()
+        return
 
 
 if __name__ == "__main__":

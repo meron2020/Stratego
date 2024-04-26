@@ -15,12 +15,13 @@ class AttackingRules:
         if defender.strength == 'B':
             if attacker.strength == 3:
                 return attacker
-            else:
-                return defender
+            return None
 
+        # If the defender is a flag, the attacker wins.
         if defender.strength == 'F':
             return attacker
 
+        # If the battle is a tie, the winner returned is None
         elif AttackingRules.check_tie(attacker, defender):
             return None
 
@@ -33,5 +34,6 @@ class AttackingRules:
         elif attacker.strength > defender.strength:
             return attacker
 
+        # The piece with the higher strength will win.
         elif attacker.strength < defender.strength:
             return defender

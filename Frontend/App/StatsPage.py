@@ -24,6 +24,12 @@ class StatsPage:
         gap_y = self.screen_handler.SCREEN_HEIGHT // 12
         title_x_offset = 300  # Offset for the category titles
 
+        back_button_rect = self.screen_handler.draw_button("Back",
+                                                           pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                           self.screen_handler.BLACK,
+                                                           self.screen_handler.SCREEN_WIDTH // 2,
+                                                           self.screen_handler.SCREEN_HEIGHT * 7 // 8, 300, 100)
+
         # Draw user name
         self.screen_handler.draw_text("User:", pygame.font.Font(None, self.screen_handler.FONT_SIZE),
                                       self.screen_handler.BLACK, center_x - title_x_offset, start_y)
@@ -56,6 +62,12 @@ class StatsPage:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button
+                        mouse_pos = pygame.mouse.get_pos()
+                        if back_button_rect.collidepoint(mouse_pos):
+                            print("Back button clicked")
+                            return False
 
 
 if __name__ == "__main__":

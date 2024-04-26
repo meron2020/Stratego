@@ -35,9 +35,17 @@ class PlayThroughHandler:
     # The player's action choice is sent to the server and the updated board and pieces are received.
     def get_user_piece_act(self):
         selected_square, clicked_piece = self.player_handler.user_act(self.sprite_group)
-        self.http_handler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
+        response = self.http_handler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
+        if "winner" in response:
+            if response["winner"] == self.player_id:
+                return True, "winner"
+            elif response["loser"] == self.player_id:
+                return True, "loser"
+            else:
+                return True, "tie"
         response = self.http_handler.get_board(self.game_id)
         self.board.piece_id_matrix = response["board"]
+        return False, None
 
     # Function sends get request to server to check if it's the players turn.
     def await_turn_request(self):
@@ -84,8 +92,9 @@ class PlayThroughHandler:
         while running:
             self.display_board()
             if self.is_player_turn:
-
-                self.get_user_piece_act()
+                game_ended, result = self.get_user_piece_act()
+                if game_ended:
+                    return result
                 self.is_player_turn = False
                 continue
             else:

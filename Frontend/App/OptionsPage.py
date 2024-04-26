@@ -35,6 +35,12 @@ class OptionsPage:
                                                                 self.screen_handler.SCREEN_WIDTH // 2,
                                                                 self.screen_handler.SCREEN_HEIGHT // 2, 400, 100)
 
+        quit_game_button_rect = self.screen_handler.draw_button("Quit Game",
+                                                                pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                                self.screen_handler.BLACK,
+                                                                self.screen_handler.SCREEN_WIDTH // 2,
+                                                                self.screen_handler.SCREEN_HEIGHT // 3 * 2, 400, 100)
+
         pygame.display.flip()
 
         # Main loop
@@ -47,11 +53,19 @@ class OptionsPage:
                     if event.button == 1:  # Left mouse button
                         mouse_pos = pygame.mouse.get_pos()
                         if join_game_button_rect.collidepoint(mouse_pos):
+                            self.screen_handler.draw_text("Joining Game...", title_font,
+                                                          self.screen_handler.BLACK,
+                                                          self.screen_handler.SCREEN_WIDTH // 2,
+                                                          self.screen_handler.SCREEN_HEIGHT // 8 * 6)
+                            pygame.display.flip()
                             return "Join Game"
                             # Handle join game functionality here
                         elif get_stats_button_rect.collidepoint(mouse_pos):
                             return "Get Stats"
                             # Handle get player stats functionality here
+                        elif quit_game_button_rect.collidepoint(mouse_pos):
+                            pygame.quit()
+                            sys.exit()
 
 
 if __name__ == "__main__":

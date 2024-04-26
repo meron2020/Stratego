@@ -73,9 +73,11 @@ class Game:
                 self.piece_attack(piece_id, piece_in_new_position, new_position)
             winner = VictoryRules.check_player_is_winner(self.get_opposite_player(self.turn_id), self.pieces_dict)
             if winner:
-                return self.end_game(self.turn_id)
+                return self.end_game(self.turn_id, self.get_opposite_player(self.turn_id))
             if VictoryRules.check_tie(self.turn_id, self.get_opposite_player(self.turn_id), self.pieces_dict):
                 return {"return_type": 2, "player_ids": self.players}
+            if VictoryRules.check_player_is_winner(self.turn_id, self.pieces_dict):
+                return self.end_game(self.get_opposite_player(self.turn_id), self.turn_id)
             if not winner:
                 if self.turn_color == "red":
                     self.turn_color = "blue"
@@ -84,7 +86,7 @@ class Game:
                     self.turn += 1
                 self.turn_id = self.get_opposite_player(self.turn_id)
                 return None
-        return self.end_game(self.get_opposite_player(self.turn_id))
+        return self.end_game(self.get_opposite_player(self.turn_id), self.turn_id)
 
     # Deletes piece if lost a battle.
     def delete_piece(self, piece_id):
@@ -164,11 +166,13 @@ class Game:
 
     # Function ends the game. Removes the player that ended the game from the player list.
     # Updates the game state, and returns to the player that ended the game the result.
-    def end_game(self, player_id):
-        self.players.remove(player_id)
+    def end_game(self, winner, loser):
+        self.players.remove(winner)
         self.game_state = "Awaiting opponent disconnect"
-        return {"winner": player_id,
-                "loser": self.get_opposite_player(player_id), "game_state": self.game_state}
+        self.winner = winner
+        self.loser = loser
+        return {"winner": winner,
+                "loser": loser, "game_state": self.game_state}
 
     # Function takes the game object, turns it into a json dictionary and stores it in a json file on the database.
     def turn_to_json(self):

@@ -74,13 +74,14 @@ class SignUpPage:
                         mouse_pos = pygame.mouse.get_pos()
                         if back_button_rect.collidepoint(mouse_pos):
                             print("Back button clicked")
+                            return None
                             # Handle going back to the welcome page
                         elif signup_button_rect.collidepoint(mouse_pos):
                             print("Sign Up button clicked")
                             if password == password_confirm:
                                 response = self.user_http_handler.create_user(username, password)
                                 if response["message"] == "User created":
-                                    return username, response["PlayerId"]
+                                    return tuple((username, response["PlayerId"]))
                                 else:
                                     self.screen_handler.draw_text("Username already exists",
                                                                   pygame.font.Font(None, self.screen_handler.FONT_SIZE),

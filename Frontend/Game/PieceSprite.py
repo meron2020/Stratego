@@ -167,13 +167,13 @@ class SpriteCreator:
                 piece_id = player_id * 100 + 1 + j * 10 + i
                 if player_id == 1:
                     # Sprites for player with playerId = 1
-                    image_path = folder_path + id_to_image_dict[piece_id - 100] + ".png"
+                    image_path = folder_path + id_to_image_dict[piece_id % 100] + ".png"
                     sprite_group.add(
                         PieceSprite(image_path, i, j - 4, board, screen, player_id * 100 + 1 + j * 10 + i,
                                     True))
                 else:
                     # Sprites for player with playerId = 2
-                    image_path = folder_path + id_to_image_dict[piece_id - 200] + ".png"
+                    image_path = folder_path + id_to_image_dict[piece_id % 100] + ".png"
                     sprite_group.add(
                         PieceSprite(image_path, i, j - 4, board, screen, player_id * 100 + 1 + j * 10 + i,
                                     True))
