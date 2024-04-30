@@ -1,112 +1,125 @@
-import os
-import sys
-from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
 import pygame
-
-from Testing.sprite_testing import PieceSprite
-from board_test import Board
 
 # Initialize Pygame
 pygame.init()
 
-# Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.Info().current_w, pygame.display.Info().current_h
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+LIGHT_GRAY = (230, 230, 230)
 
-# Initialize the screen in full-screen mode
+# Set up display in full-screen mode
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-pygame.display.set_caption("Stratego")
+WIDTH, HEIGHT = screen.get_width(), screen.get_height()
 
-# Create a Board instance with a fixed margin
-board = Board(screen, margin_percentage=0.05)
+pygame.display.set_caption("Stratego Instructions")
 
-# Create a DraggableSquare instance
-square_size = board.square_size
-current_script_directory = os.path.dirname(os.path.abspath(__file__))
+# Load background image
+bg_image = pygame.image.load(
+    "C:\\Users\\yoavm\\PycharmProjects\\StrategoV2\\Frontend\\Game\\Background_Images\\Instructions_Background.jpg")
+bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))
 
-# Navigate up the directory structure four times to get to the desired directory
-four_levels_up = os.path.abspath(os.path.join(current_script_directory, '../../'))
-image_path = "/Frontend/Game/Sprite_Images\\soldier.png"
-square_color = (255, 0, 0)  # Red
-# sprite = PieceSprite(image, 1, 2, board)
-sprite_group = pygame.sprite.Group()
-for i in range(10):
-    for j in range(4):
-        sprite_group.add(PieceSprite(image_path, i, j - 4, board, screen, 101 + j*10 + i))
+# Define fonts
+title_font = pygame.font.Font(None, 80)
+heading_font = pygame.font.Font(None, 50)
+text_font = pygame.font.Font(None, 28)
 
-# sprite_group.add(sprite)
-# Game loop
+# Define text content
+instructions = [
+    {
+        "title": "Stratego",
+        "content": "A two-player board game where each player commands an army. The objective is to capture the opponent's flag or eliminate their army.",
+        "is_heading": True
+    },
+    {
+        "title": "Game Setup",
+        "content": ("The board is a 10x10 grid with two lakes in the center. Each player has 40 pieces: "
+                    "Marshal, Generals, Colonels, and other ranks, including Miners, Scouts, and a Spy. "
+                    "Bombs and a Flag are also included."),
+        "is_heading": True
+    },
+    {
+        "title": "Game Play",
+        "content": ("Players take turns making one move per turn. Pieces can move one square per turn. "
+                    "Special abilities: Miners defuse Bombs, Scouts move across multiple squares, "
+                    "Spies defeat Marshals if they attack first."),
+        "is_heading": True
+    },
+    {
+        "title": "Winning the Game",
+        "content": ("Capture the opponent's Flag or eliminate all their movable pieces to win."),
+        "is_heading": True
+    },
+    {
+        "title": "Strategies",
+        "content": ("Defense: Position your Flag and Bombs strategically."
+                    "Offense: Use higher-ranking pieces to eliminate key opponents. "
+                    "Bluff: Mislead the opponent with low-ranking pieces or Bombs."),
+        "is_heading": True
+    }
+]
+
+
+# Function to wrap text content
+def wrap_text(font, content, max_width):
+    """Wraps a text content into multiple lines based on the font width."""
+    words = content.split()
+    lines = []
+    current_line = words[0]
+
+    for word in words[1:]:
+        test_line = f"{current_line} {word}"
+        if font.size(test_line)[0] > max_width:
+            lines.append(current_line)
+            current_line = word
+        else:
+            current_line = test_line
+
+    lines.append(current_line)  # Append the last line
+    return lines
+
+
+# Function to render text blocks on screen
+def render_text(screen, text_blocks, y_start, y_gap):
+    y = y_start
+    for block in text_blocks:
+        if block["is_heading"]:
+            title = heading_font.render(block["title"], True, WHITE)
+            screen.blit(title, (50, y))
+            y += title.get_height() + 10
+
+        wrapped_content = wrap_text(text_font, block["content"], WIDTH - 100)
+        for line in wrapped_content:
+            content_line = text_font.render(line, True, WHITE)
+            screen.blit(content_line, (50, y))
+            y += content_line.get_height() + 5
+
+        y += y_gap  # Gap between blocks
+
+
+# Main loop
 running = True
-clicked_sprite = None
-
-httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
-game_id = httpHandler.join_game(1)["game_id"]
-httpHandler.join_game(2)
-
 while running:
+    # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check if any sprite is clicked
-            for sprite in sprite_group:
-                if sprite.rect.collidepoint(event.pos):
-                    clicked_sprite = sprite
-                    clicked_sprite.start_drag(event.pos)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
 
-            finish_button_rect = pygame.Rect(
-                pygame.display.get_window_size()[0] - 300,
-                pygame.display.get_window_size()[1] - 150,
-                175, 50
-            )
-            if finish_button_rect.collidepoint(event.pos):
-                piece_to_pos_dict = board.create_piece_to_pos_dict()
-                response = httpHandler.send_starting_positions(game_id, piece_to_pos_dict, 1)
-                print(response)
+    # Draw the background image
+    screen.blit(bg_image, (0, 0))
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if clicked_sprite:
-                clicked_sprite.stop_drag()
-                clicked_sprite = None
+    # Render the "Instructions" title
+    instructions_title = title_font.render("Instructions", True, WHITE)
+    screen.blit(instructions_title, ((WIDTH - instructions_title.get_width()) / 2, 50))
 
-    # Update the clicked sprite
-    if clicked_sprite:
-        clicked_sprite.update()
-
-    # Update the other sprites in the group
-    for sprite in sprite_group:
-        if sprite != clicked_sprite:
-            sprite.update()
-
-    # Check if bottom four rows are filled
-    if board.setup_rows_filled(1):
-        # Display "Finish set up" button in the bottom right corner
-        finish_button_rect = pygame.Rect(
-            pygame.display.get_window_size()[0] - 300,
-            pygame.display.get_window_size()[1] - 150,
-            175, 50
-        )
-
-        pygame.draw.rect(screen, (0, 0, 255), finish_button_rect)
-        font = pygame.font.Font(None, 36)
-        text = font.render("Finish set up", True, (255, 255, 255))
-        screen.blit(text, finish_button_rect.move(10, 5))
-        pygame.display.flip()
-
-    # sprite.drag(pygame.mouse.get_pos())
-    screen.fill((255, 255, 255))
-
-    # Draw the board and pieces
-    board.draw_board()
-    sprite_group.draw(screen)
-
-    # Draw the square
-    # screen.blit(sprite.image, sprite.rect.topleft)
+    # Render text blocks
+    render_text(screen, instructions, 150, 50)
 
     # Update the display
     pygame.display.flip()
 
 # Quit Pygame
 pygame.quit()
-sys.exit()

@@ -160,7 +160,7 @@ class SpriteCreator:
     # Function creates the list of PieceSprites for the setup.
     @classmethod
     def create_player_sprites(cls, player_id, board, screen):
-        folder_path = "C:\\Users\\yoavm\\PycharmProjects\\Stratego\\Frontend\\Game\\Sprite_Images\\"
+        folder_path = "C:\\Users\\yoavm\\PycharmProjects\\StrategoV2\\Frontend\\Game\\Sprite_Images\\"
         sprite_group = pygame.sprite.Group()
         for i in range(10):
             for j in range(4):

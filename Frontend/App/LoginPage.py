@@ -3,7 +3,7 @@ import sys
 import pygame
 
 from Frontend.App.ScreenHandler import ScreenHandler
-from Frontend.ServerCommunications.UserHTTPHandlers import UserHTTPHandler
+from Frontend.ServerCommunications.UserHTTPHandler import UserHTTPHandler
 
 
 class LoginPage:

@@ -5,7 +5,7 @@ from Frontend.App.SignUpPage import SignUpPage
 from Frontend.App.StatsPage import StatsPage
 from Frontend.App.WelcomePage import WelcomePage
 from Frontend.Game.GameHandler import GameHandler
-from Frontend.ServerCommunications.UserHTTPHandlers import UserHTTPHandler
+from Frontend.ServerCommunications.UserHTTPHandler import UserHTTPHandler
 
 
 class AppHandler:
