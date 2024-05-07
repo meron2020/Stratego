@@ -1,8 +1,10 @@
+import datetime
+
 from flask_restful import Resource, reqparse
 
 # Importing UserHandler for retrieving player information and Authenticator for authentication
 from Backend.FlaskServer.api.Users.UserHandler import UserHandler
-from Backend.FlaskServer.security import Authenticator
+from Backend.FlaskServer.authenticator import Authenticator
 
 
 class Auth(Resource):
@@ -13,18 +15,22 @@ class Auth(Resource):
     parser.add_argument('username', type=str)
     parser.add_argument('password', type=str)
 
-    @classmethod
-    def post(cls):
+    def __init__(self):
+        self.authenticator = Authenticator()
+
+    def post(self):
         # Parsing the incoming request data
         data = Auth.parser.parse_args()
 
         # Authenticating the user using the provided username and password
-        authenticated = Authenticator.authenticate(data['username'], data['password'])
+        authenticated = self.authenticator.authenticate(data['username'], data['password'])
 
         # If user is authenticated, return success message along with PlayerId
         if authenticated:
+            last_activity = datetime.datetime.utcnow().timestamp()
+            token = Authenticator.create_token(UserHandler.get_user(data['username']).id, last_activity)
             return {'message': 'User authenticated successfully.',
-                    "PlayerId": UserHandler.get_player_id(data["username"])}, 201
+                    "PlayerId": UserHandler.get_player_id(data["username"]), "token": token}, 201
         else:
             # If authentication fails, return error message
             return {'message': "Not authenticated"}, 401

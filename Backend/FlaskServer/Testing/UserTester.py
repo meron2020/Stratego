@@ -4,8 +4,6 @@ from Backend.FlaskServer.api.Users.UserHandler import UserHandler
 class UserTester:
     @classmethod
     def create_users(cls):
-        UserHandler.add_user_to_u_i_json("yoav", 1)
-        UserHandler.add_user_to_u_i_json("yair", 2)
+        UserHandler.create_new_user("yoav", "meron")
+        UserHandler.create_new_user("yair", "meron")
 
-
-UserTester.create_users()

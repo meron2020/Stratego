@@ -6,13 +6,6 @@ class GameBoard:
         else:
             self._board_matrix = board_matrix
 
-    # Creates a 2d matrix that represents the board.
-    def set_up_board(self):
-        for i in range(10):
-            self._board_matrix.append([])
-            for j in range(10):
-                self._board_matrix[i][j] = None
-
     # Takes position as parameter and returns the id of the piece in that position.
     def get_piece_id_in_position(self, position):
         return self._board_matrix[position[0]][position[1]]

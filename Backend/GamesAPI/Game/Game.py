@@ -1,5 +1,3 @@
-import json
-
 from Backend.GamesAPI.Game.GameBoard import GameBoard
 from Backend.GamesAPI.Game.Piece import Piece
 from Backend.GamesAPI.Game.Rules.AttackingRules import AttackingRules
@@ -45,9 +43,6 @@ class Game:
                 counter += 1
 
         return pieces_dict
-
-    def get_pieces_dict(self):
-        return self.pieces_dict
 
     def get_opposite_player(self, player_id):
         for player in self.player_to_color_dict.keys():
@@ -155,10 +150,6 @@ class Game:
     def get_piece_by_id(self, piece_id):
         return self.pieces_dict[str(piece_id)]
 
-    # Returns the player id of the player who has the current turn color.
-    def get_player_id_by_turn(self):
-        return self.player_to_color_dict[self.turn_color]
-
     # Function returns true if game is running and false otherwise.
     def check_game_still_running(self):
         return (self.game_state == "Awaiting setups" or self.game_state == "Running" or
@@ -174,14 +165,8 @@ class Game:
         return {"winner": winner,
                 "loser": loser, "game_state": self.game_state}
 
-    # Function takes the game object, turns it into a json dictionary and stores it in a json file on the database.
-    def turn_to_json(self):
-        object_string = json.dumps(self)
-        with open("GamesJson/" + str(self.game_id) + ".json", "w") as outfile:
-            outfile.write(object_string)
-
-        outfile.close()
-
+    # Function takes an object as a parameter and returns a
+    # dictionary with instance variable names as keys and the values themselves as values
     @staticmethod
     def object_to_dict(obj):
         if isinstance(obj, list):

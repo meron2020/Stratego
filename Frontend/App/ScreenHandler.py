@@ -27,6 +27,25 @@ class ScreenHandler:
         self.draw_text(text, font, color, x, y)
         return button_rect
 
+    @classmethod
+    # Function to wrap text content
+    def wrap_text(cls, font, content, max_width):
+        """Wraps a text content into multiple lines based on the font width."""
+        words = content.split()
+        lines = []
+        current_line = words[0]
+
+        for word in words[1:]:
+            test_line = f"{current_line} {word}"
+            if font.size(test_line)[0] > max_width:
+                lines.append(current_line)
+                current_line = word
+            else:
+                current_line = test_line
+
+        lines.append(current_line)  # Append the last line
+        return lines
+
     # Function to draw text input field
     # Function to draw text input field
     def draw_text_input(self, x, y, width, height, text, is_password=False):

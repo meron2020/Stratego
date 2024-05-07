@@ -11,11 +11,6 @@ class Piece:
         return Piece(piece_dict["_strength"], piece_dict["_color"], piece_dict["_name"], piece_dict["piece_id"],
                      piece_dict["_position"])
 
-    # Property method for piece position
-    @property
-    def position(self):
-        return self._position
-
     # Property method for piece color
     @property
     def color(self):
@@ -34,7 +29,3 @@ class Piece:
     # Function to update piece position after move
     def set_new_piece_position(self, new_position):
         self._position = new_position
-
-    @position.setter
-    def position(self, value):
-        self._position = value

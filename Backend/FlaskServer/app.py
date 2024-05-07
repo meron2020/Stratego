@@ -1,4 +1,5 @@
 from datetime import timedelta
+
 from flask import Flask
 from flask_restful import Api
 
@@ -6,12 +7,11 @@ from flask_restful import Api
 from Backend.FlaskServer.api.Resources.AuthResource import Auth
 from Backend.FlaskServer.api.Resources.GameResource import GameResource
 from Backend.FlaskServer.api.Resources.UserResource import UserResource
-from Backend.FlaskServer.api.Users.UserHandler import UserHandler
-from Backend.FlaskServer.Testing.UserTester import UserTester
+from Backend.FlaskServer.db import db
 
 # Creating Flask application
 app = Flask(__name__)
-
+app.secret_key = "yoav_key"
 # Configuration settings
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -23,8 +23,8 @@ api = Api(app)
 
 # Creating username to ID JSON and creating test users
 with app.app_context():
-    UserHandler.create_username_id_json()
-    UserTester.create_users()
+    db.init_app(app)
+    db.create_all()
 
 # Adding resources to API routes
 api.add_resource(UserResource, "/users")
@@ -34,3 +34,4 @@ api.add_resource(Auth, "/auth")
 # Running the Flask application
 if __name__ == '__main__':
     app.run(port=5000, debug=False)
+    print(app.config["SECRET_KEY"])

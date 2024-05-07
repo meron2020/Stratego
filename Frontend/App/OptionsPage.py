@@ -30,16 +30,26 @@ class OptionsPage:
 
         # Draw get player stats button
         get_stats_button_rect = self.screen_handler.draw_button("Get Player Stats",
-                                                                pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                                pygame.font.Font(None,
+                                                                                 self.screen_handler.FONT_SIZE),
                                                                 self.screen_handler.BLACK,
                                                                 self.screen_handler.SCREEN_WIDTH // 2,
                                                                 self.screen_handler.SCREEN_HEIGHT // 2, 400, 100)
 
+        # Draw Instructions button
+        instructions_button_rect = self.screen_handler.draw_button("Game Rules",
+                                                                   pygame.font.Font(None,
+                                                                                    self.screen_handler.FONT_SIZE),
+                                                                   self.screen_handler.BLACK,
+                                                                   self.screen_handler.SCREEN_WIDTH // 2,
+                                                                   self.screen_handler.SCREEN_HEIGHT // 3 * 2, 400, 100)
+
+        # Draw quit game button
         quit_game_button_rect = self.screen_handler.draw_button("Quit Game",
                                                                 pygame.font.Font(None, self.screen_handler.FONT_SIZE),
                                                                 self.screen_handler.BLACK,
                                                                 self.screen_handler.SCREEN_WIDTH // 2,
-                                                                self.screen_handler.SCREEN_HEIGHT // 3 * 2, 400, 100)
+                                                                self.screen_handler.SCREEN_HEIGHT // 6 * 5, 400, 100)
 
         pygame.display.flip()
 
@@ -52,6 +62,7 @@ class OptionsPage:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Left mouse button
                         mouse_pos = pygame.mouse.get_pos()
+                        # Handle join game functionality here
                         if join_game_button_rect.collidepoint(mouse_pos):
                             self.screen_handler.draw_text("Joining Game...", title_font,
                                                           self.screen_handler.BLACK,
@@ -59,10 +70,12 @@ class OptionsPage:
                                                           self.screen_handler.SCREEN_HEIGHT // 8 * 6)
                             pygame.display.flip()
                             return "Join Game"
-                            # Handle join game functionality here
+                        # Handle get player stats functionality here
                         elif get_stats_button_rect.collidepoint(mouse_pos):
                             return "Get Stats"
-                            # Handle get player stats functionality here
+                        # Handle instructions functionality here
+                        elif instructions_button_rect.collidepoint(mouse_pos):
+                            return "Instructions"
                         elif quit_game_button_rect.collidepoint(mouse_pos):
                             pygame.quit()
                             sys.exit()

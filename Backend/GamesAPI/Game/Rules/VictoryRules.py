@@ -24,6 +24,7 @@ class VictoryRules:
             return True
         return True
 
+    # Function checks if the result of a game is a tie.
     @staticmethod
     def check_tie(player, opposing_player, pieces_dict):
         if not VictoryRules._check_has_movable_pieces(player,

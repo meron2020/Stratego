@@ -2,6 +2,7 @@ from flask_restful import Resource, reqparse
 
 # Importing UserHandler for handling user-related operations
 from Backend.FlaskServer.api.Users.UserHandler import UserHandler
+from Backend.FlaskServer.authenticator import Authenticator
 # Importing GamesHandler for handling game-related operations
 from Backend.GamesAPI.GameHandler.GamesHandler import GamesHandler
 
@@ -18,6 +19,7 @@ class GameResource(Resource):
         # Initializing GamesHandler instance to handle game-related operations
         self.game_handler = GamesHandler()
 
+    @Authenticator.jwt_required
     # HTTP Get method. Retrieves game-related information based on the request.
     def get(self, request_type):
         # Parsing the incoming request data
@@ -27,6 +29,7 @@ class GameResource(Resource):
                                     http_request_data["player_id"], http_request_data["data"])
         return response
 
+    @Authenticator.jwt_required
     # HTTP Post method. Handles the creation or connection of a game.
     def post(self, request_type):
         # Parsing the incoming request data
@@ -35,6 +38,7 @@ class GameResource(Resource):
         response = self.game_handler.post(http_request_data["player_id"])
         return response
 
+    @Authenticator.jwt_required
     # HTTP PUT Method. Updates game state and possibly user information.
     def put(self, request_type):
         # Parsing the incoming request data
@@ -46,15 +50,12 @@ class GameResource(Resource):
         if "return_type" in response:
             if response["return_type"] == 1:
                 # Updating user information in case of a win
-                winner = UserHandler.find_by_id(response["winner"])
-                UserHandler.add_win_to_user(winner)
-                loser = UserHandler.find_by_id(response["loser"])
-                UserHandler.add_loss_to_user(loser)
+                UserHandler.add_win_to_user(response["winner"])
+                UserHandler.add_loss_to_user(response["loser"])
             elif response["return_type"] == 2:
                 # Updating user information in case of a tie
                 for player_id in response["data"]["player_ids"]:
-                    player = UserHandler.find_by_id(player_id)
-                    UserHandler.add_tie_to_user(player)
+                    UserHandler.add_tie_to_user(player_id)
         elif "game_state" in response:
             # Handling game end state
             if http_request_data["player_id"] == response["winner"]:
@@ -63,6 +64,7 @@ class GameResource(Resource):
                 return {"game_status": "Ended. You have lost."}
         return response
 
+    @Authenticator.jwt_required
     # HTTP Delete method. Handles deletion of a game and updates user information.
     def delete(self, request_type):
         # Parsing the incoming request data

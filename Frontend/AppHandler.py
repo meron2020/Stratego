@@ -1,3 +1,4 @@
+from Frontend.App.InstructionsPage import InstructionsPage
 from Frontend.App.LoginPage import LoginPage
 from Frontend.App.OptionsPage import OptionsPage
 from Frontend.App.ScreenHandler import ScreenHandler
@@ -9,8 +10,8 @@ from Frontend.ServerCommunications.UserHTTPHandler import UserHTTPHandler
 
 
 class AppHandler:
-    def __init__(self):
-        self.user_http_handler = UserHTTPHandler("http://127.0.0.1:5000")
+    def __init__(self, http_address):
+        self.user_http_handler = UserHTTPHandler(http_address)
         self.screen_handler = ScreenHandler()
         self.screen_handler.setup_app_infrastructure()
         welcome_page = WelcomePage(self.screen_handler)
@@ -46,12 +47,20 @@ class AppHandler:
         stats_page = StatsPage(self.screen_handler)
         stats_page.create_stats_page(self.username, stats["wins"], stats["losses"], stats["ties"])
 
+    def instructions(self):
+        instructions_page = InstructionsPage(self.screen_handler)
+        instructions_page.run()
+
     def user_option(self, option):
         if option == "Join Game":
             self.join_game()
             return False
         elif option == "Get Stats":
             self.get_stats()
+            return False
+
+        elif option == "Instructions":
+            self.instructions()
             return False
 
     def join_game(self):
@@ -62,4 +71,4 @@ class AppHandler:
 
 
 if __name__ == "__main__":
-    appHandler = AppHandler()
+    appHandler = AppHandler("http://127.0.0.1:5000")

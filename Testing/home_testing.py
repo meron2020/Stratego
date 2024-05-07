@@ -16,7 +16,7 @@ pygame.display.set_caption("Stratego Instructions")
 
 # Load background image
 bg_image = pygame.image.load(
-    "C:\\Users\\yoavm\\PycharmProjects\\StrategoV2\\Frontend\\Game\\Background_Images\\Instructions_Background.jpg")
+    "/Frontend/App/Background_Images\\Instructions_Background.jpg")
 bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))
 
 # Define fonts
