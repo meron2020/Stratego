@@ -141,7 +141,7 @@ class GamesHandler:
                 if "pieces_dict" in json_object:
                     for piece_num, pieceDict in json_object["pieces_dict"].items():
                         pieces_dict[piece_num] = Piece.create_piece_from_dict(pieceDict)
-                    openfile.close()
+                openfile.close()
                 return Game(json_object["game_id"], json_object["players"], game_board, pieces_dict,
                             json_object["turn"], json_object["player_to_color_dict"], json_object["turn_id"],
                             json_object["turn_color"], json_object["game_state"], json_object["two_players_connected"])

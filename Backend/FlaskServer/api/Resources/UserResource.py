@@ -15,7 +15,7 @@ class UserResource(Resource):
     parser.add_argument("password", type=str)
 
     @classmethod
-    @Authenticator.jwt_required
+    #@Authenticator.jwt_required
     def get(cls):
         # Parsing the incoming request data
         arguments = UserResource.parser.parse_args()
@@ -31,9 +31,9 @@ class UserResource(Resource):
         # If user creation is successful, return success message along with PlayerId
         if created_user:
             last_activity = datetime.datetime.utcnow().timestamp()
-            token = Authenticator.create_token(UserHandler.get_user(arguments['username']).id, last_activity)
+            #token = Authenticator.create_token(UserHandler.get_user(arguments['username']).id, last_activity)
             return {"message": "User created", "PlayerId": UserHandler.get_player_id(arguments["username"]),
-                    "token": token}
+                    "token": "hello"}
         else:
             # If username already exists, return error message
             return {"message": "Username already exists"}

@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 from Frontend.App.ScreenHandler import ScreenHandler
@@ -55,7 +57,8 @@ class InstructionsPage:
                 screen.blit(title, (50, y))
                 y += title.get_height() + 10
 
-            wrapped_content = ScreenHandler.wrap_text(self.text_font, block["content"], self.screen_handler.SCREEN_WIDTH - 100)
+            wrapped_content = ScreenHandler.wrap_text(self.text_font, block["content"],
+                                                      self.screen_handler.SCREEN_WIDTH - 100)
             for line in wrapped_content:
                 content_line = self.text_font.render(line, True, self.screen_handler.WHITE)
                 screen.blit(content_line, (50, y))
@@ -64,10 +67,13 @@ class InstructionsPage:
             y += y_gap  # Gap between blocks
 
     def run(self):
+        current_file_path = __file__
+        image_path = os.path.dirname(current_file_path) + "\\Background_Images\\Instructions_Background.jpg"
         # Load background image
         bg_image = pygame.image.load(
-            "C:\\Users\\yoavm\\PycharmProjects\\StrategoV2\\Frontend\\App\\Background_Images\\Instructions_Background.jpg")
-        bg_image = pygame.transform.scale(bg_image, (self.screen_handler.SCREEN_WIDTH, self.screen_handler.SCREEN_HEIGHT))
+            image_path)
+        bg_image = pygame.transform.scale(bg_image,
+                                          (self.screen_handler.SCREEN_WIDTH, self.screen_handler.SCREEN_HEIGHT))
 
         running = True
         while running:
@@ -85,7 +91,8 @@ class InstructionsPage:
             # Render the "Instructions" title
             instructions_title = self.title_font.render("Instructions", True, self.screen_handler.WHITE)
             self.screen_handler.screen.blit(instructions_title,
-                                            ((self.screen_handler.SCREEN_WIDTH - instructions_title.get_width()) / 2, 50))
+                                            ((self.screen_handler.SCREEN_WIDTH - instructions_title.get_width()) / 2,
+                                             50))
 
             # Render text blocks
             self.render_text(self.screen_handler.screen, self.instructions, 150, 50)

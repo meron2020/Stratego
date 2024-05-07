@@ -28,9 +28,9 @@ class Auth(Resource):
         # If user is authenticated, return success message along with PlayerId
         if authenticated:
             last_activity = datetime.datetime.utcnow().timestamp()
-            token = Authenticator.create_token(UserHandler.get_user(data['username']).id, last_activity)
+            #token = Authenticator.create_token(UserHandler.get_user(data['username']).id, last_activity)
             return {'message': 'User authenticated successfully.',
-                    "PlayerId": UserHandler.get_player_id(data["username"]), "token": token}, 201
+                    "PlayerId": UserHandler.get_player_id(data["username"]), "token": "hello"}, 201
         else:
             # If authentication fails, return error message
             return {'message': "Not authenticated"}, 401

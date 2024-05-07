@@ -1,17 +1,13 @@
-class ListElements:
-    def __init__(self, ls):
-        self.ls = ls
+import os
 
-    def print_list(self):
-        print(self.ls)
+# Get the path of the current file
+current_file_path = __file__
 
-
-def add_element(ls):
-    ls.append(1)
-
-
-ls1 = [5]
-listEm = ListElements(ls1)
-listEm.print_list()
-add_element(ls1)
-listEm.print_list()
+# Get the directory of the current file
+current_directory = os.path.dirname(current_file_path)
+upper_directory = os.path.dirname(current_directory)
+print("Current file path:", current_file_path)
+print("Directory of the current file:", current_directory)
+print("Directory of the current file:", upper_directory)
+current_directory_escaped = current_directory.replace('\\', '\\\\')
+print(current_directory_escaped)
