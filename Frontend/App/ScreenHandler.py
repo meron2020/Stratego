@@ -23,7 +23,7 @@ class ScreenHandler:
     # Function to draw buttons on the screen
     def draw_button(self, text, font, color, x, y, width, height):
         button_rect = pygame.Rect(x - width // 2, y - height // 2, width, height)
-        pygame.draw.rect(self.screen, self.BLACK, button_rect, 2)
+        pygame.draw.rect(self.screen, color, button_rect, 2)
         self.draw_text(text, font, color, x, y)
         return button_rect
 

@@ -67,8 +67,13 @@ class InstructionsPage:
             y += y_gap  # Gap between blocks
 
     def run(self):
+        back_button_rect = self.screen_handler.draw_button("Back",
+                                                           pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                                           self.screen_handler.WHITE,
+                                                           self.screen_handler.SCREEN_WIDTH // 2,
+                                                           self.screen_handler.SCREEN_HEIGHT * 14 // 15, 300, 100)
         current_file_path = __file__
-        image_path = os.path.dirname(current_file_path) + "\\Background_Images\\Instructions_Background.jpg"
+        image_path = os.path.dirname(current_file_path) + "\\Background_Images\\Instructions_Background.png"
         # Load background image
         bg_image = pygame.image.load(
             image_path)
@@ -81,9 +86,14 @@ class InstructionsPage:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button
+                        mouse_pos = pygame.mouse.get_pos()
+                        if back_button_rect.collidepoint(mouse_pos):
+                            print("Back button clicked")
+                            running = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        running = False
+                    continue
 
             # Draw the background image
             self.screen_handler.screen.blit(bg_image, (0, 0))
@@ -95,7 +105,11 @@ class InstructionsPage:
                                              50))
 
             # Render text blocks
-            self.render_text(self.screen_handler.screen, self.instructions, 150, 50)
-
+            self.render_text(self.screen_handler.screen, self.instructions, 150, 100)
+            self.screen_handler.draw_button("Back",
+                                            pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                            self.screen_handler.WHITE,
+                                            self.screen_handler.SCREEN_WIDTH // 2,
+                                            self.screen_handler.SCREEN_HEIGHT * 14 // 15, 300, 100)
             # Update the display
             pygame.display.flip()

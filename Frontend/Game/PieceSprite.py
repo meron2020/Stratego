@@ -164,7 +164,7 @@ class SpriteCreator:
     def create_player_sprites(cls, player_id, board, screen):
         current_file_path = __file__
         #folder_path = os.path.dirname(current_file_path).replace("\\", "\\\\") + "\\\\SpriteImages\\\\"
-        folder_path = "Game/Sprite_Images/"
+        folder_path = "Frontend/Game/Sprite_Images/"
         sprite_group = pygame.sprite.Group()
         for i in range(10):
             for j in range(4):
