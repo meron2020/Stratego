@@ -144,8 +144,7 @@ class SpriteCreator:
     # Function creates the list of PieceSprites from the dictionary provided by the server
     @classmethod
     def create_pieces_sprites_from_get_request(cls, pieces_dict, board, screen, player_id):
-        folder_path = "C:\\Users\\user1\\PycharmProjects\\Stratego2\\Frontend\\Game\\Sprite_Images\\"
-        #folder_path = "Game/Sprite_Images/"
+        folder_path = "Game/Sprite_Images/"
         sprite_group = pygame.sprite.Group()
         for piece_id, piece_object in pieces_dict.items():
             piece_object = json.loads(piece_object)
@@ -162,8 +161,7 @@ class SpriteCreator:
     # Function creates the list of PieceSprites for the setup.
     @classmethod
     def create_player_sprites(cls, player_id, board, screen):
-        folder_path = "C:\\Users\\user1\\PycharmProjects\\Stratego2\\Frontend\\Game\\Sprite_Images\\"
-        #folder_path = "Game/Sprite_Images/"
+        folder_path = "Game/Sprite_Images/"
         sprite_group = pygame.sprite.Group()
         for i in range(10):
             for j in range(4):

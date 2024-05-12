@@ -12,14 +12,16 @@ from Frontend.App.GameResultPage import GameResultPage
 
 class GameHandler:
 
-    def __init__(self, player_id, screen_handler):
+    def __init__(self, player_id, screen_handler, server_address):
         self.screen_handler = screen_handler
+        self.server_address = server_address
         self.player_id = player_id
         self.set_up_game_handler()
         self.opponent_player_connected = False
 
     def set_up_game_handler(self):
-        self.httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
+        self.httpHandler = GameHTTPHandler(self.server_address)
+
         self.game_id = self.httpHandler.join_game(self.player_id)["game_id"]
         self.board = Board(self.screen_handler.screen, margin_percentage=0.05)
         self.player_handler = PlayerHandler(self.player_id, self.board, self.screen_handler.screen, self.httpHandler,
