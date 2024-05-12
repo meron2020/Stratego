@@ -53,9 +53,11 @@ class Board:
         board_height = self.board_size * self.square_size
         self.start_x = (self.screen.get_width() - board_width) // 2
         self.start_y = (self.screen.get_height() - board_height) // 2
-        # Draw background
         background = pygame.image.load(
-             "App/Background_Images/Game_Background.png")  # Replace with your actual file path
+            "C:\\Users\\user1\\PycharmProjects\\Stratego2\\Frontend\\App\\Background_Images\\Game_Background.png")  # Replace with your actual file path
+        # Draw background
+        # background = pygame.image.load(
+        #     "App/Background_Images/Game_Background.png")  # Replace with your actual file path
         background = pygame.transform.scale(background, (self.screen.get_width(), self.screen.get_height()))
         self.screen.blit(background, (0, 0))
 

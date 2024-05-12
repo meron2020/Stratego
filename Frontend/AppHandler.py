@@ -11,6 +11,7 @@ from Frontend.ServerCommunications.UserHTTPHandler import UserHTTPHandler
 
 class AppHandler:
     def __init__(self, http_address):
+        self.server_address = http_address
         self.user_http_handler = UserHTTPHandler(http_address)
         self.screen_handler = ScreenHandler()
         self.screen_handler.setup_app_infrastructure()
@@ -64,11 +65,11 @@ class AppHandler:
             return False
 
     def join_game(self):
-        game_handler = GameHandler(self.player_id, self.screen_handler)
+        game_handler = GameHandler(self.player_id, self.screen_handler, self.server_address)
         game_handler.await_opponent_player_connect()
         game_handler.game_loop()
         return
 
 
 if __name__ == "__main__":
-    appHandler = AppHandler("http://127.0.0.1:5000")
+    appHandler = AppHandler("http://10.116.3.101:5000")
