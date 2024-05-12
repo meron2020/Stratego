@@ -32,7 +32,7 @@ class GameTester:
     def create_piece_dict(cls):
         piece = Piece(2, "red", "Scout", 105, [5, 9])
         # piece1 = Piece(2, "blue", "Scout", 204, [5, 8])
-        piece2 = Piece(3, "blue", "Miner", 203, [3, 2])
+        piece2 = Piece(3, "blue", "Miner", 203, [1, 2])
         piece3 = Piece(2, "red", "Scout", 103, [2, 2])
         flag1 = Piece('F', "red", "Flag", 101, [9, 2])
         flag2 = Piece('F', "blue", "Flag", 201, [3, 2])

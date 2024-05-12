@@ -22,7 +22,7 @@ class GameBoard:
             self._board_matrix[piece_pos[0]][piece_pos[1]] = []
 
         # Sets piece position to new position and changes board matrix accordingly.
-        piece.position = new_position
+        piece.set_new_piece_position(new_position)
         self._board_matrix[new_position[0]][new_position[1]] = piece.piece_id
         return True
 

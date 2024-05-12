@@ -92,6 +92,9 @@ class GamesHandler:
                 else:
                     return {"game_state": "Ended", "player_status": "Loser"}
 
+        elif request_type == "my_turn" and not game.check_game_still_running():
+            return {"game_state": "Ended", "player_status": "Loser"}
+
         if game.check_game_still_running():
             if request_type == "get_board":
                 pieces_dict = {}

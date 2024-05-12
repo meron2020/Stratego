@@ -51,7 +51,9 @@ class GameHandler:
         return
 
     def test_game_loop(self):
-        self.play_through_handler.run_play_through_loop()
+        result = self.play_through_handler.run_play_through_loop()
+        result_page = GameResultPage(self.screen_handler)
+        result_page.run(result)
 
     def check_opponent_connect(self):
         while True:
