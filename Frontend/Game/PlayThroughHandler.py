@@ -10,6 +10,7 @@ from Frontend.Game.PieceSprite import SpriteCreator
 class PlayThroughHandler:
     def __init__(self, http_handler, board, game_id, player_handler, player_id, screen):
         self.screen = screen
+        self.game_over = False
         self.http_handler = http_handler
         self.player_id = player_id
         self.board = board
@@ -18,18 +19,11 @@ class PlayThroughHandler:
         self.is_player_turn = False
         self.sprite_group = None
 
-    # Function tasked with displaying a selected piece's moving options.
-    # Sends get request to server and per the response, colors the board squares. Returns list of available options for
-    # movement.
-    def display_piece_options(self, piece):
-        response = self.http_handler.check_piece_options(self.game_id, piece.piece_id)
-        options = response["piece_options"]
-        for option in options:
-            self.board.color_square(option, (0, 255, 0))
-        return options
-
-    def set_sprite_group(self, sprite_group):
-        self.sprite_group = sprite_group
+    def check_if_game_over(self):
+        response = self.http_handler.get_game_state(self.game_id)
+        if response["game_state"] == "Awaiting opponent disconnect":
+            return True
+        return False
 
     # Function to handle the users action when it is the player's turn.
     # The player's action choice is sent to the server and the updated board and pieces are received.
@@ -51,13 +45,17 @@ class PlayThroughHandler:
     def await_turn_request(self):
         while True:
             # Requests are sent once a second
-            my_turn = self.http_handler.check_if_my_turn(self.game_id, self.player_id)["request_owner_turn"]
-            if my_turn:
-                # once the response is True, the player_turn var is set to True and the function returns.
-                self.is_player_turn = True
+            try:
+                my_turn = self.http_handler.check_if_my_turn(self.game_id, self.player_id)["request_owner_turn"]
+                if my_turn:
+                    # once the response is True, the player_turn var is set to True and the function returns.
+                    self.is_player_turn = True
+                    return
+                else:
+                    time.sleep(2)
+            except KeyError:
+                self.game_over = True
                 return
-            else:
-                time.sleep(2)
 
     def await_my_turn(self):
         # Starts thread with function that sends the server the get requests.
@@ -66,7 +64,7 @@ class PlayThroughHandler:
         check_thread.start()
 
         # Function for handling the pygame while awaiting the server response.
-        while not self.is_player_turn:
+        while (not self.is_player_turn) and (not self.game_over):
             ScreenHandler.event_handling_when_waiting()
 
     # Function tasked with displaying the current board setup.
@@ -88,6 +86,8 @@ class PlayThroughHandler:
     def run_play_through_loop(self):
         self.display_board()
         self.await_my_turn()
+        if self.game_over:
+            return False
         running = True
         while running:
             self.display_board()
@@ -98,5 +98,7 @@ class PlayThroughHandler:
                 self.is_player_turn = False
                 continue
             else:
+                if self.game_over:
+                    return False
                 self.await_my_turn()
                 continue

@@ -4,6 +4,7 @@ from Frontend.Game.GameHandler import GameHandler
 from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
 from Frontend.App.ScreenHandler import ScreenHandler
 
+
 class MyTestCase(unittest.TestCase):
 
     #     def test_create_game(self):
@@ -57,6 +58,12 @@ class MyTestCase(unittest.TestCase):
         screenHandler = ScreenHandler()
         screenHandler.setup_app_infrastructure()
         guiHandler = GameHandler(1, screenHandler)
+        guiHandler.test_game_loop()
+
+    def test_end_player_two(self):
+        screenHandler = ScreenHandler()
+        screenHandler.setup_app_infrastructure()
+        guiHandler = GameHandler(2, screenHandler)
         guiHandler.test_game_loop()
 
     def test_send_setup(self):

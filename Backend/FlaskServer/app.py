@@ -32,6 +32,5 @@ api.add_resource(GameResource, "/games/<string:request_type>")
 api.add_resource(Auth, "/auth")
 
 # Running the Flask application
-if __name__ == '__main__':
-    app.run(port=5000, debug=False)
-    print(app.config["SECRET_KEY"])
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
