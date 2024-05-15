@@ -81,8 +81,10 @@ class GamesHandler:
     @classmethod
     def get(cls, game_id, request_type, player_id=None, data=None):
         game = GamesHandler.get_from_json(game_id)
+        if request_type == "setup_pos":
+            return {"setup_pos": game.player_to_setup_pos_dict}
 
-        if request_type == "game_state":
+        elif request_type == "game_state":
             if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
                 return {"game_state": game.get_state()}
             else:
@@ -147,7 +149,8 @@ class GamesHandler:
                 openfile.close()
                 return Game(json_object["game_id"], json_object["players"], game_board, pieces_dict,
                             json_object["turn"], json_object["player_to_color_dict"], json_object["turn_id"],
-                            json_object["turn_color"], json_object["game_state"], json_object["two_players_connected"])
+                            json_object["turn_color"], json_object["game_state"],
+                            json_object["player_to_setup_pos_dict"], json_object["two_players_connected"])
         except OSError:
             print("Os Error")
             return False

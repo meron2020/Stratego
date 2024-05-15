@@ -1,5 +1,4 @@
 import json
-import os
 
 import pygame
 
@@ -12,7 +11,7 @@ class PieceSprite(pygame.sprite.Sprite):
         self.setup_mode = in_set_up_mode
         self.board = board
         self.image = pygame.transform.scale(pygame.image.load(image),
-                                            (int(self.board.square_size), int(self.board.square_size)))
+                                            (int(self.board.square_size) - 10, int(self.board.square_size) - 10))
         self.rect = self.image.get_rect()
         self.rect.topleft = self.calculate_exact_position(row, column)
         self.is_dragging = False
@@ -108,7 +107,7 @@ class PieceSprite(pygame.sprite.Sprite):
     def calculate_square_position(self, row, col):
         x = col * self.board.square_size + self.board.margin * 8
         y = row * self.board.square_size - 4 * self.board.margin
-        return x, y
+        return x + 5, y + 5
 
     @classmethod
     def check_setup_viable(cls, row, player_id):
@@ -144,7 +143,7 @@ class SpriteCreator:
     # Function creates the list of PieceSprites from the dictionary provided by the server
     @classmethod
     def create_pieces_sprites_from_get_request(cls, pieces_dict, board, screen, player_id):
-        folder_path = "Game/Sprite_Images/"
+        folder_path = "Frontend/Game/Sprite_Images/"
         sprite_group = pygame.sprite.Group()
         for piece_id, piece_object in pieces_dict.items():
             piece_object = json.loads(piece_object)
@@ -154,28 +153,28 @@ class SpriteCreator:
             else:
                 image_path = folder_path + "soldier.png"
             sprite_group.add(
-                PieceSprite(image_path, int(piece_object["position"][0]), int(piece_object["position"][1]),
+                PieceSprite(image_path, int(piece_object["_position"][0]), int(piece_object["_position"][1]),
                             board, screen, int(piece_id), False))
         return sprite_group
 
     # Function creates the list of PieceSprites for the setup.
     @classmethod
-    def create_player_sprites(cls, player_id, board, screen):
-        folder_path = "Game/Sprite_Images/"
+    def create_player_sprites(cls, player_id, board, screen, pos):
+        folder_path = "Frontend/Game/Sprite_Images/"
         sprite_group = pygame.sprite.Group()
         for i in range(10):
             for j in range(4):
                 piece_id = player_id * 100 + 1 + j * 10 + i
-                if player_id == 1:
+                if pos == "bottom":
                     # Sprites for player with playerId = 1
                     image_path = folder_path + id_to_image_dict[piece_id % 100] + ".png"
                     sprite_group.add(
-                        PieceSprite(image_path, i, j - 4, board, screen, player_id * 100 + 1 + j * 10 + i,
+                        PieceSprite(image_path, i, j - 4, board, screen, piece_id,
                                     True))
                 else:
                     # Sprites for player with playerId = 2
                     image_path = folder_path + id_to_image_dict[piece_id % 100] + ".png"
                     sprite_group.add(
-                        PieceSprite(image_path, i, j - 4, board, screen, player_id * 100 + 1 + j * 10 + i,
+                        PieceSprite(image_path, i, j + 10, board, screen, piece_id,
                                     True))
         return sprite_group

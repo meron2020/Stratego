@@ -1,3 +1,5 @@
+import sys
+
 import pygame
 
 from Frontend.Game.Board import Board
@@ -13,7 +15,7 @@ class PlayerHandler:
 
     def player_set_pieces(self, sprite_group):
         clicked_sprite = None
-
+        setup_finished = False
         running = True
         while running:
             for event in pygame.event.get():
@@ -33,7 +35,7 @@ class PlayerHandler:
                         pygame.display.get_window_size()[1] - 150,
                         175, 50
                     )
-                    if finish_button_rect.collidepoint(event.pos):
+                    if finish_button_rect.collidepoint(event.pos) and setup_finished:
                         return
 
                 elif event.type == pygame.MOUSEBUTTONUP:
@@ -58,6 +60,7 @@ class PlayerHandler:
                     pygame.display.get_window_size()[1] - 150,
                     175, 50
                 )
+                setup_finished = True
 
                 pygame.draw.rect(self.screen, (0, 0, 255), finish_button_rect)
                 font = pygame.font.Font(None, 36)

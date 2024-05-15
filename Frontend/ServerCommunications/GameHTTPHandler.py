@@ -42,6 +42,10 @@ class GameHTTPHandler:
         json = {"game_id": game_id, "data": {"piece_id": piece_id}}
         return self.send_request(json, "piece_options", "g")
 
+    def check_setup_pos(self, game_id, player_id):
+        json = {"game_id": game_id, "player_id": player_id}
+        return self.send_request(json, "setup_pos", "g")
+
     # Function to get the game state. GameId Parameter.
     def get_game_state(self, game_id):
         json = {"game_id": game_id}

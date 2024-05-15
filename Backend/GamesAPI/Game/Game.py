@@ -11,8 +11,9 @@ class Game:
     # Game object constructor
     def __init__(self, game_id, players=[], board=GameBoard(), pieces_dict=None, turn=0, player_to_color_dict={},
                  turn_id=None, turn_color="red", game_state="Awaiting Opponent Player Connect",
-                 two_players_connected=False):
+                 player_to_setup_pos_dict={}, two_players_connected=False):
 
+        self.player_to_setup_pos_dict = player_to_setup_pos_dict
         self.game_id = game_id
         self.board = board
         self.turn = turn
@@ -131,6 +132,7 @@ class Game:
             self.player_to_color_dict[player_id] = "red"
             self.players.append(player_id)
             self.game_state = "Awaiting Opponent Player Connect"
+            self.player_to_setup_pos_dict[player_id] = "bottom"
             return True
         elif len(self.player_to_color_dict.keys()) == 1:
             self.player_to_color_dict[player_id] = "blue"
@@ -138,6 +140,7 @@ class Game:
             self.players.append(player_id)
             self.pieces_dict = self.create_pieces_dict()
             self.game_state = "Awaiting setups"
+            self.player_to_setup_pos_dict[player_id] = "top"
             return True
         else:
             return False

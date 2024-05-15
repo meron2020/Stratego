@@ -72,4 +72,4 @@ class AppHandler:
 
 
 if __name__ == "__main__":
-    appHandler = AppHandler("http://10.116.3.101:5000")
+    appHandler = AppHandler("http://127.0.0.1:5000")

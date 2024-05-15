@@ -19,7 +19,6 @@ class GameResource(Resource):
         # Initializing GamesHandler instance to handle game-related operations
         self.game_handler = GamesHandler()
 
-    # @Authenticator.jwt_required
     # HTTP Get method. Retrieves game-related information based on the request.
     def get(self, request_type):
         # Parsing the incoming request data
@@ -29,7 +28,6 @@ class GameResource(Resource):
                                     http_request_data["player_id"], http_request_data["data"])
         return response
 
-    # @Authenticator.jwt_required
     # HTTP Post method. Handles the creation or connection of a game.
     def post(self, request_type):
         # Parsing the incoming request data
@@ -38,7 +36,6 @@ class GameResource(Resource):
         response = self.game_handler.post(http_request_data["player_id"])
         return response
 
-    # @Authenticator.jwt_required
     # HTTP PUT Method. Updates game state and possibly user information.
     def put(self, request_type):
         # Parsing the incoming request data
@@ -64,7 +61,6 @@ class GameResource(Resource):
                 return {"game_status": "Ended. You have lost."}
         return response
 
-    # @Authenticator.jwt_required
     # HTTP Delete method. Handles deletion of a game and updates user information.
     def delete(self, request_type):
         # Parsing the incoming request data

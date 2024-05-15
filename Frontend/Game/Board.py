@@ -114,7 +114,6 @@ class Board:
         pygame.draw.rect(self.screen, color, rect)
         pygame.display.flip()
 
-
     @classmethod
     def get_clicked_sprite_and_position(cls, sprite_group, mouse_pos):
         for sprite in sprite_group:

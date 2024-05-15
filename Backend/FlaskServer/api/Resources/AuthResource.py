@@ -1,5 +1,3 @@
-import datetime
-
 from flask_restful import Resource, reqparse
 
 # Importing UserHandler for retrieving player information and Authenticator for authentication
@@ -27,8 +25,6 @@ class Auth(Resource):
 
         # If user is authenticated, return success message along with PlayerId
         if authenticated:
-            last_activity = datetime.datetime.utcnow().timestamp()
-            #token = Authenticator.create_token(UserHandler.get_user(data['username']).id, last_activity)
             return {'message': 'User authenticated successfully.',
                     "PlayerId": UserHandler.get_player_id(data["username"]), "token": "hello"}, 201
         else:

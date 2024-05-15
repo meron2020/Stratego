@@ -1,5 +1,8 @@
 import threading
 import time
+
+import pygame
+
 from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.Game.PieceSprite import SpriteCreator
 
@@ -10,13 +13,17 @@ class SetupHandler:
         self.screen_handler = screen_handler
         self.board = board
         self.game_id = game_id
+        self.font = pygame.font.Font(None, 36)
         self.player_handler = player_handler
         self.http_handler = http_handler
         self.opponent_finished_setup = False
 
     # Function for the setup phase of the game in which the player places his pieces in their starting positions.
     def run_setup_loop(self):
-        sprite_group = SpriteCreator.create_player_sprites(self.player_id, self.board, self.screen_handler.screen)
+        setup_pos_dict = self.http_handler.check_setup_pos(self.game_id, self.player_id)["setup_pos"]
+        setup_pos = setup_pos_dict[str(self.player_id)]
+        sprite_group = SpriteCreator.create_player_sprites(self.player_id, self.board, self.screen_handler.screen,
+                                                           setup_pos)
         # Game loop
         self.player_handler.player_set_pieces(sprite_group)
 

@@ -17,14 +17,17 @@ class InstructionsPage:
         self.instructions = [
             {
                 "title": "Stratego",
-                "content": "A two-player board game where each player commands an army. The objective is to capture the opponent's flag or eliminate their army.",
+                "content": "A two-player board game where each player commands an army. "
+                           "The objective is to capture the opponent's flag or eliminate their army.",
                 "is_heading": True
             },
             {
                 "title": "Game Setup",
                 "content": ("The board is a 10x10 grid with two lakes in the center. Each player has 40 pieces: "
                             "Marshal, Generals, Colonels, and other ranks, including Miners, Scouts, and a Spy. "
-                            "Bombs and a Flag are also included."),
+                            "Bombs and a Flag are also included. If the soldiers at startup are on the left side, "
+                            "the soldiers setup will be on the bottom four rows. If the soldiers at startup are on "
+                            "the right side, the soldiers setup will be on the top four rows."),
                 "is_heading": True
             },
             {
@@ -36,7 +39,7 @@ class InstructionsPage:
             },
             {
                 "title": "Winning the Game",
-                "content": ("Capture the opponent's Flag or eliminate all their movable pieces to win."),
+                "content": "Capture the opponent's Flag or eliminate all their movable pieces to win.",
                 "is_heading": True
             },
             {
