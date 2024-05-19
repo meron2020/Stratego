@@ -133,8 +133,8 @@ class Game:
     # Function adds player to game, and assigns them their relevant values depending on whether they are the first or
     # the second player to connect. Returns true if connection successful, false otherwise.
     def connect_to_game(self, player_id):
-        if not self.one_player_connected:
-            self.player_to_color_dict[player_id] = "yoav"
+        if len(self.player_to_color_dict.keys()) == 0:
+            self.player_to_color_dict[player_id] = "red"
             self.players.append(player_id)
             self.game_state = "Awaiting Opponent Player Connect"
             self.player_to_setup_pos_dict[player_id] = "bottom"

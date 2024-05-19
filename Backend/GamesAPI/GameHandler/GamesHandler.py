@@ -169,7 +169,10 @@ class GamesHandler:
 
     # Creates game object. Returns the new game's id
     def create_game(self, game_id):
-        game = Game(game_id)
+        game = Game(game_id, [], GameBoard(), None, 0,
+                 {},
+                 None, "red", "Awaiting Opponent Player Connect",
+                 {}, False, False)
         return game
 
     # Function iterates over database and checks for open name slot numbers.
