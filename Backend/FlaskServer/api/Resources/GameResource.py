@@ -2,7 +2,6 @@ from flask_restful import Resource, reqparse
 
 # Importing UserHandler for handling user-related operations
 from Backend.FlaskServer.api.Users.UserHandler import UserHandler
-from Backend.FlaskServer.authenticator import Authenticator
 # Importing GamesHandler for handling game-related operations
 from Backend.GamesAPI.GameHandler.GamesHandler import GamesHandler
 
@@ -24,8 +23,8 @@ class GameResource(Resource):
         # Parsing the incoming request data
         http_request_data = GameResource.parser.parse_args()
         # Calling GamesHandler to process the GET request and return the response
-        response = GamesHandler.get(http_request_data["game_id"], request_type,
-                                    http_request_data["player_id"], http_request_data["data"])
+        response = self.game_handler.get(http_request_data["game_id"], request_type,
+                                         http_request_data["player_id"], http_request_data["data"])
         return response
 
     # HTTP Post method. Handles the creation or connection of a game.

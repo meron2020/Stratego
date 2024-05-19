@@ -41,4 +41,4 @@ class GameTester:
         return piece_dict
 
 
-GameTester.create_test_game()
+# GameTester.create_test_game()

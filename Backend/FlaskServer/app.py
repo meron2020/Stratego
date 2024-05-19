@@ -16,7 +16,6 @@ app.secret_key = "yoav_key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
 
 # Creating RESTful API
 api = Api(app)

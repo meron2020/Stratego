@@ -1,10 +1,7 @@
-import datetime
-
 from flask_restful import reqparse, Resource
 
 # Importing UserHandler for handling user-related operations
 from Backend.FlaskServer.api.Users.UserHandler import UserHandler
-from Backend.FlaskServer.authenticator import Authenticator
 
 
 class UserResource(Resource):
@@ -15,7 +12,6 @@ class UserResource(Resource):
     parser.add_argument("password", type=str)
 
     @classmethod
-    #@Authenticator.jwt_required
     def get(cls):
         # Parsing the incoming request data
         arguments = UserResource.parser.parse_args()
@@ -30,8 +26,6 @@ class UserResource(Resource):
         created_user = UserHandler.create_new_user(arguments["username"], arguments["password"])
         # If user creation is successful, return success message along with PlayerId
         if created_user:
-            last_activity = datetime.datetime.utcnow().timestamp()
-            #token = Authenticator.create_token(UserHandler.get_user(arguments['username']).id, last_activity)
             return {"message": "User created", "PlayerId": UserHandler.get_player_id(arguments["username"]),
                     "token": "hello"}
         else:

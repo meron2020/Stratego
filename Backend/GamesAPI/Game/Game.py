@@ -9,9 +9,13 @@ from universals import strength_to_name_and_number_dict as s_to_n_and_n
 # Game class is responsible for running the game.
 class Game:
     # Game object constructor
-    def __init__(self, game_id, players=[], board=GameBoard(), pieces_dict=None, turn=0, player_to_color_dict={},
+    def __init__(self, game_id=1, players=[], board=GameBoard(), pieces_dict=None, turn=0,
+                 player_to_color_dict={},
                  turn_id=None, turn_color="red", game_state="Awaiting Opponent Player Connect",
-                 player_to_setup_pos_dict={}, two_players_connected=False):
+                 player_to_setup_pos_dict={}, two_players_connected=False, test=False):
+
+        if test:
+            print("test")
 
         self.player_to_setup_pos_dict = player_to_setup_pos_dict
         self.game_id = game_id
@@ -24,6 +28,7 @@ class Game:
         self.turn_id = turn_id
         self.turn_color = turn_color
         self.game_state = game_state
+        self.one_player_connected = False
         self.two_players_connected = two_players_connected
 
     # Function takes a color as a parameter and returns the initial list of pieces set with that color.
@@ -128,11 +133,12 @@ class Game:
     # Function adds player to game, and assigns them their relevant values depending on whether they are the first or
     # the second player to connect. Returns true if connection successful, false otherwise.
     def connect_to_game(self, player_id):
-        if len(self.player_to_color_dict.keys()) == 0:
-            self.player_to_color_dict[player_id] = "red"
+        if not self.one_player_connected:
+            self.player_to_color_dict[player_id] = "yoav"
             self.players.append(player_id)
             self.game_state = "Awaiting Opponent Player Connect"
             self.player_to_setup_pos_dict[player_id] = "bottom"
+            self.one_player_connected = True
             return True
         elif len(self.player_to_color_dict.keys()) == 1:
             self.player_to_color_dict[player_id] = "blue"

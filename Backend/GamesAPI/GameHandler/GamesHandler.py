@@ -9,21 +9,21 @@ from Backend.GamesAPI.Game.Piece import Piece
 # GameHandler class handles communication between game objects and the flask resource.
 class GamesHandler:
     # Put method updates the game object depending on request.
-    @classmethod
-    def put(cls, http_request_data, request_type):
-        game = GamesHandler.get_from_json(http_request_data["game_id"])
+
+    def put(self, http_request_data, request_type):
+        game = self.get_from_json(http_request_data["game_id"])
         # Checks if game is still running
         if game is not None and game.check_game_still_running():
             # Checks if request is for piece setup
             if request_type == "piece_setup":
                 pieces_set = game.set_color_pieces(http_request_data["data"]["pieces_to_pos_dict"])
-                GamesHandler.turn_to_json(game)
+                self.turn_to_json(game)
                 return {"pieces_set": pieces_set}
             # Checks if request is for piece action.
             elif request_type == "piece_action":
                 action_response = game.piece_act(
                     http_request_data["data"]["piece_id"], http_request_data["data"]["new_pos"])
-                GamesHandler.turn_to_json(game)
+                self.turn_to_json(game)
                 # If action was successful with no response, return the current game board and state.
                 if not action_response:
                     pieces_dict = {}
@@ -43,44 +43,41 @@ class GamesHandler:
 
     # Delete method ends game. This game is ended by forfeit and so it awaits opponent player checking the game state
     # to update him.
-    @classmethod
-    def delete(cls, game_id, player_id):
-        game = GamesHandler.get_from_json(game_id)
+    def delete(self, game_id, player_id):
+        game = self.get_from_json(game_id)
         # If game is still running, the player is forfeiting.
         if game.check_game_still_running():
             data_to_return = game.end_game(player_id, game.get_opposite_player(player_id))
             return data_to_return
         # This is in case the player has forfeited after the opposing player, so he still wins.
         else:
-            GamesHandler.delete_game(game_id)
+            self.delete_game(game_id)
             return {"game_status": "Ended", "player_status": "Won by forfeit"}
 
     # Post method checks if there is a game that can be connected to. If so, it connects the requesting player to
     # that game. If not, it creates a new game and connects the player to it.
-    @classmethod
-    def post(cls, player_id):
-        game_amount = GamesHandler.current_game_amount()
-        last_game = GamesHandler.get_from_json(game_amount)
+    def post(self, player_id):
+        game_amount = self.current_game_amount()
+        last_game = self.get_from_json(game_amount)
         if not last_game:
-            game = GamesHandler.create_game(game_amount + 1)
+            game = self.create_game(game_amount + 1)
             game.connect_to_game(player_id)
-            GamesHandler.turn_to_json(game)
+            self.turn_to_json(game)
             return {"status": "awaiting opposing player connection", "game_id": game_amount + 1}
         else:
             connected = last_game.connect_to_game(player_id)
             if not connected:
-                game = GamesHandler.create_game(game_amount + 1)
-                game.connect_to_game(player_id)
-                GamesHandler.turn_to_json(game)
+                new_game = self.create_game(game_amount + 1)
+                new_game.connect_to_game(player_id)
+                self.turn_to_json(new_game)
                 return {"status": "awaiting opposing player connection", "game_id": game_amount + 1}
             else:
-                GamesHandler.turn_to_json(last_game)
+                self.turn_to_json(last_game)
                 return {"status": "game ready to play", "game_id": game_amount}
 
     # Get method runs checks get type and returns the answer accordingly.
-    @classmethod
-    def get(cls, game_id, request_type, player_id=None, data=None):
-        game = GamesHandler.get_from_json(game_id)
+    def get(self, game_id, request_type, player_id=None, data=None):
+        game = self.get_from_json(game_id)
         if request_type == "setup_pos":
             return {"setup_pos": game.player_to_setup_pos_dict}
 
@@ -88,7 +85,7 @@ class GamesHandler:
             if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
                 return {"game_state": game.get_state()}
             else:
-                GamesHandler.delete_game(game_id)
+                self.delete_game(game_id)
                 if game.winner == player_id:
                     return {"game_state": "Ended", "player_status": "Winner"}
                 else:
@@ -112,17 +109,15 @@ class GamesHandler:
                 return {"piece_options": game.return_piece_options(data["piece_id"])}
 
     # Turns game object to json and writes it to database.
-    @staticmethod
-    def turn_to_json(game):
+    def turn_to_json(self, game):
         object_string = json.dumps(game, default=lambda obj: obj.__dict__)
-        file_path = GamesHandler.create_game_db_paths("f", game.game_id)
+        file_path = self.create_game_db_paths("f", game.game_id)
         with open(file_path, "w") as outfile:
             outfile.write(object_string)
 
         outfile.close()
 
-    @staticmethod
-    def create_game_db_paths(path_type, game_id=None):
+    def create_game_db_paths(self, path_type, game_id=None):
         script_directory = os.path.dirname(os.path.abspath(__file__))
 
         # Go up three levels to reach the project directory
@@ -134,11 +129,9 @@ class GamesHandler:
         return os.path.join(project_directory, relative_path)
 
     # Returns game file with parameter game_id as Game object
-
-    @staticmethod
-    def get_from_json(game_id):
+    def get_from_json(self, game_id):
         try:
-            with open(GamesHandler.create_game_db_paths("f", game_id), 'r') as openfile:
+            with open(self.create_game_db_paths("f", game_id), 'r') as openfile:
                 # Reading from json file
                 json_object = json.load(openfile)
                 game_board = GameBoard(json_object["board"]["_board_matrix"])
@@ -156,19 +149,17 @@ class GamesHandler:
             return False
 
     # Function removes game file with parameter number.
-    @staticmethod
-    def delete_game(game_id):
-        os.remove(GamesHandler.create_game_db_paths("f", game_id))
+    def delete_game(self, game_id):
+        os.remove(self.create_game_db_paths("f", game_id))
         return True
 
     # Function returns the amount of games currently running.
-    @classmethod
-    def current_game_amount(cls):
+    def current_game_amount(self):
         json_files_count = 0
 
         # Iterate over all files in the directory
-        for filename in os.listdir(GamesHandler.create_game_db_paths("d")):
-            file_path = os.path.join(GamesHandler.create_game_db_paths("d"), filename)
+        for filename in os.listdir(self.create_game_db_paths("d")):
+            file_path = os.path.join(self.create_game_db_paths("d"), filename)
 
             # Check if it's a file and has a '.json' extension
             if os.path.isfile(file_path) and filename.endswith('.json'):
@@ -176,19 +167,17 @@ class GamesHandler:
 
         return json_files_count
 
-    # Creates game object and stores it in database. Returns the new game's id
-    @staticmethod
-    def create_game(game_id):
+    # Creates game object. Returns the new game's id
+    def create_game(self, game_id):
         game = Game(game_id)
         return game
 
     # Function iterates over database and checks for open name slot numbers.
-    @staticmethod
-    def check_for_open_game_slots(game_amount):
+    def check_for_open_game_slots(self, game_amount):
         try:
             file_number = 1
             for i in range(game_amount):
-                file_name = GamesHandler.create_game_db_paths("f", file_number)
+                file_name = self.create_game_db_paths("f", file_number)
 
                 if not os.path.exists(file_name):
                     return file_number
