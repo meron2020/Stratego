@@ -1,4 +1,4 @@
-from datetime import timedelta
+import os
 
 from flask import Flask
 from flask_restful import Api
@@ -8,6 +8,22 @@ from Backend.FlaskServer.api.Resources.AuthResource import Auth
 from Backend.FlaskServer.api.Resources.GameResource import GameResource
 from Backend.FlaskServer.api.Resources.UserResource import UserResource
 from Backend.FlaskServer.db import db
+
+
+def create_directory():
+    # Get the directory of the current script
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # Define the target directory relative to the base directory
+    target_dir = os.path.join(base_dir, "GamesAPI", "GamesJson")
+
+    # Check if the directory does not exist
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+        print(f"Directory '{target_dir}' created.")
+    else:
+        print(f"Directory '{target_dir}' already exists.")
+
 
 # Creating Flask application
 app = Flask(__name__)
@@ -24,6 +40,7 @@ api = Api(app)
 with app.app_context():
     db.init_app(app)
     db.create_all()
+    create_directory()
 
 # Adding resources to API routes
 api.add_resource(UserResource, "/users")
