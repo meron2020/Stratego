@@ -12,11 +12,14 @@ from Frontend.App.GameResultPage import GameResultPage
 
 class GameHandler:
 
-    def __init__(self, player_id, screen_handler, server_address):
+    def __init__(self, player_id, screen_handler, server_address, test=False):
         self.screen_handler = screen_handler
         self.server_address = server_address
         self.player_id = player_id
-        self.set_up_game_handler()
+        if test:
+            self.test_setup_handler()
+        else:
+            self.set_up_game_handler()
         self.opponent_player_connected = False
 
     def set_up_game_handler(self):

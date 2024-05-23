@@ -74,7 +74,7 @@ class InstructionsPage:
                                                            pygame.font.Font(None, self.screen_handler.FONT_SIZE),
                                                            self.screen_handler.WHITE,
                                                            self.screen_handler.SCREEN_WIDTH // 2,
-                                                           self.screen_handler.SCREEN_HEIGHT * 14 // 15, 300, 100)
+                                                           self.screen_handler.SCREEN_HEIGHT * 14 // 15, 300, 75)
         current_file_path = __file__
         image_path = os.path.dirname(current_file_path) + "\\Background_Images\\Instructions_Background.png"
         # Load background image
@@ -113,6 +113,6 @@ class InstructionsPage:
                                             pygame.font.Font(None, self.screen_handler.FONT_SIZE),
                                             self.screen_handler.WHITE,
                                             self.screen_handler.SCREEN_WIDTH // 2,
-                                            self.screen_handler.SCREEN_HEIGHT * 14 // 15, 300, 100)
+                                            self.screen_handler.SCREEN_HEIGHT * 16 // 17, 300, 75)
             # Update the display
             pygame.display.flip()

@@ -30,6 +30,9 @@ class PlayThroughHandler:
     def get_user_piece_act(self):
         selected_square, clicked_piece = self.player_handler.user_act(self.sprite_group)
         response = self.http_handler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
+        if "attacked_piece" in response and response["attacked_piece"] is not None:
+            self.show_attacked_piece(response["attacked_piece"], selected_square)
+            time.sleep(1.5)
         if "winner" in response:
             if response["winner"] == self.player_id:
                 return True, "winner"
@@ -83,6 +86,19 @@ class PlayThroughHandler:
 
         self.sprite_group = sprite_group
 
+    def show_attacked_piece(self, attacked_piece, square):
+        folder_path = "Game/Sprite_Images/"
+        file_name = attacked_piece + ".png"
+        image_path = folder_path + file_name
+        for sprite_piece in self.sprite_group:
+            if sprite_piece.row == square[0] and sprite_piece.column == square[1]:
+                sprite_piece.image = pygame.transform.scale(pygame.image.load(image_path),
+                                                            (int(self.board.square_size) - 10,
+                                                             int(self.board.square_size) - 10))
+        self.sprite_group.draw(self.screen)
+
+        pygame.display.flip()
+
     def run_play_through_loop(self):
         self.display_board()
         self.await_my_turn()
@@ -90,7 +106,10 @@ class PlayThroughHandler:
             return False
         running = True
         while running:
-            self.display_board()
+            try:
+                self.display_board()
+            except TypeError:
+                return False
             if self.is_player_turn:
                 game_ended, result = self.get_user_piece_act()
                 if game_ended:

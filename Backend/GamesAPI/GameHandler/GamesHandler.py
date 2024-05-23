@@ -25,14 +25,14 @@ class GamesHandler:
                     http_request_data["data"]["piece_id"], http_request_data["data"]["new_pos"])
                 self.turn_to_json(game)
                 # If action was successful with no response, return the current game board and state.
-                if not action_response:
+                if "attacked_piece" in action_response:
                     pieces_dict = {}
                     for piece_id, piece in game.pieces_dict.items():
                         try:
                             pieces_dict[piece_id] = json.dumps(piece, default=lambda obj: obj.__dict__)
                         except TypeError:
                             print(pieces_dict[piece_id])
-                    return {"pieces_dict": pieces_dict, "board": game.get_board(), "return_type": 0}
+                    return {"pieces_dict": pieces_dict, "board": game.get_board(), "return_type": 0, "attacked_piece": action_response["attacked_piece"]}
                 else:
                     if "return_type" not in action_response:
                         action_response.update({"return_type": 1})

@@ -64,6 +64,7 @@ class Game:
     # action was successful.
     def piece_act(self, piece_id, new_position):
         winner = VictoryRules.check_player_is_winner(self.get_opposite_player(self.turn_id), self.pieces_dict)
+        piece_in_new_position = None
         if not winner:
             piece_id_in_new_position = self.board.get_piece_id_in_position(new_position)
             if piece_id_in_new_position == []:
@@ -86,7 +87,10 @@ class Game:
                     self.turn_color = "red"
                     self.turn += 1
                 self.turn_id = self.get_opposite_player(self.turn_id)
-                return None
+                if piece_in_new_position:
+                    return {"attacked_piece": piece_in_new_position.name}
+                else:
+                    return {"attacked_piece": None}
         return self.end_game(self.get_opposite_player(self.turn_id), self.turn_id)
 
     # Deletes piece if lost a battle.
@@ -101,7 +105,7 @@ class Game:
         if winner == piece:
             self.board.set_new_piece_id_position(piece, new_position)
             self.pieces_dict.pop(str(piece_to_attack.piece_id))
-        if not winner:
+        elif not winner:
             self.delete_piece(piece_id)
             self.delete_piece(piece_to_attack.piece_id)
         else:
@@ -167,7 +171,7 @@ class Game:
     # Function ends the game. Removes the player that ended the game from the player list.
     # Updates the game state, and returns to the player that ended the game the result.
     def end_game(self, winner, loser):
-        self.players.remove(winner)
+        self.players.remove(int(winner))
         self.game_state = "Awaiting opponent disconnect"
         self.winner = winner
         self.loser = loser

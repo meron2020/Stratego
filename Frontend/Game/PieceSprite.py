@@ -14,6 +14,8 @@ class PieceSprite(pygame.sprite.Sprite):
                                             (int(self.board.square_size) - 10, int(self.board.square_size) - 10))
         self.rect = self.image.get_rect()
         self.rect.topleft = self.calculate_exact_position(row, column)
+        self.row = row
+        self.column = column
         self.is_dragging = False
         self.offset = (0, 0)
         self.screen = screen
