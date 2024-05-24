@@ -1,5 +1,3 @@
-import sys
-
 import pygame
 
 from Frontend.Game.Board import Board
@@ -7,6 +5,7 @@ from Frontend.Game.Board import Board
 
 class PlayerHandler:
     def __init__(self, player_id, board, screen, http_handler, game_id):
+        # Initialize the PlayerHandler with necessary parameters
         self.player_id = player_id
         self.board = board
         self.screen = screen
@@ -30,6 +29,7 @@ class PlayerHandler:
                             clicked_sprite = sprite
                             clicked_sprite.start_drag(event.pos)
 
+                    # Define the finish button rect
                     finish_button_rect = pygame.Rect(
                         pygame.display.get_window_size()[0] - 300,
                         pygame.display.get_window_size()[1] - 150,
@@ -67,7 +67,8 @@ class PlayerHandler:
                 text = font.render("Finish set up", True, (255, 255, 255))
                 self.screen.blit(text, finish_button_rect.move(10, 5))
                 pygame.display.flip()
-                # sprite.drag(pygame.mouse.get_pos())
+
+            # Clear the screen
             self.screen.fill((255, 255, 255))
 
             # Draw the board and pieces
@@ -103,6 +104,7 @@ class PlayerHandler:
                             if piece:
                                 if piece.player_id == self.player_id:
                                     clicked_piece = piece
+            # Clear the screen
             self.screen.fill((255, 255, 255))
             self.board.draw_board()
 
@@ -113,6 +115,7 @@ class PlayerHandler:
             if clicked_piece:
                 possible_options = self.display_piece_options(clicked_piece)
 
+            # Update the display
             pygame.display.flip()
 
     # Function that displays on the board the chosen piece's available spaces to move to.

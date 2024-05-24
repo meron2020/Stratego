@@ -9,6 +9,7 @@ from Frontend.Game.PieceSprite import SpriteCreator
 
 class PlayThroughHandler:
     def __init__(self, http_handler, board, game_id, player_handler, player_id, screen):
+        # Initialize the PlayThroughHandler with necessary parameters
         self.screen = screen
         self.game_over = False
         self.http_handler = http_handler
@@ -20,19 +21,27 @@ class PlayThroughHandler:
         self.sprite_group = None
 
     def check_if_game_over(self):
+        # Check if the game is over by requesting the game state from the server
         response = self.http_handler.get_game_state(self.game_id)
         if response["game_state"] == "Awaiting opponent disconnect":
             return True
         return False
 
-    # Function to handle the users action when it is the player's turn.
+    # Function to handle the user's action when it is the player's turn.
     # The player's action choice is sent to the server and the updated board and pieces are received.
     def get_user_piece_act(self):
+        # Get the selected square and the piece the player clicked on
         selected_square, clicked_piece = self.player_handler.user_act(self.sprite_group)
+
+        # Send the piece action to the server
         response = self.http_handler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
+
+        # If the response includes an attacked piece, show the attacked piece
         if "attacked_piece" in response and response["attacked_piece"] is not None:
             self.show_attacked_piece(response["attacked_piece"], selected_square)
             time.sleep(1.5)
+
+        # Check if the response includes a winner
         if "winner" in response:
             if response["winner"] == self.player_id:
                 return True, "winner"
@@ -40,18 +49,20 @@ class PlayThroughHandler:
                 return True, "loser"
             else:
                 return True, "tie"
+
+        # Update the board with the new state
         response = self.http_handler.get_board(self.game_id)
         self.board.piece_id_matrix = response["board"]
         return False, None
 
-    # Function sends get request to server to check if it's the players turn.
+    # Function sends GET request to server to check if it's the player's turn.
     def await_turn_request(self):
         while True:
-            # Requests are sent once a second
+            # Requests are sent once every 2 seconds
             try:
                 my_turn = self.http_handler.check_if_my_turn(self.game_id, self.player_id)["request_owner_turn"]
                 if my_turn:
-                    # once the response is True, the player_turn var is set to True and the function returns.
+                    # Once the response is True, the player_turn variable is set to True and the function returns.
                     self.is_player_turn = True
                     return
                 else:
@@ -61,24 +72,30 @@ class PlayThroughHandler:
                 return
 
     def await_my_turn(self):
-        # Starts thread with function that sends the server the get requests.
+        # Start a thread with a function that sends the server the GET requests.
         check_thread = threading.Thread(target=self.await_turn_request)
         check_thread.daemon = True  # Daemonize the thread so it terminates when the main program exits
         check_thread.start()
 
-        # Function for handling the pygame while awaiting the server response.
+        # Function for handling pygame events while awaiting the server response.
         while (not self.is_player_turn) and (not self.game_over):
             ScreenHandler.event_handling_when_waiting()
 
     # Function tasked with displaying the current board setup.
     # Request is sent to the server for the board setup and the response is shown to the user.
     def display_board(self):
+        # Get the board state from the server
         response = self.http_handler.get_board(self.game_id)
         self.board.pieces = []
         self.board.piece_id_matrix = response["board"]
+
+        # Create sprites for the pieces on the board
         sprite_group = SpriteCreator.create_pieces_sprites_from_get_request(response["pieces_dict"], self.board,
                                                                             self.screen, self.player_id)
+        # Fill the screen with white color
         self.screen.fill((255, 255, 255))
+
+        # Draw the board and the pieces
         self.board.draw_board()
         sprite_group.draw(self.screen)
 
@@ -87,19 +104,23 @@ class PlayThroughHandler:
         self.sprite_group = sprite_group
 
     def show_attacked_piece(self, attacked_piece, square):
+        # Show the attacked piece on the board
         folder_path = "Game/Sprite_Images/"
         file_name = attacked_piece + ".png"
         image_path = folder_path + file_name
+
+        # Update the sprite image for the attacked piece
         for sprite_piece in self.sprite_group:
             if sprite_piece.row == square[0] and sprite_piece.column == square[1]:
                 sprite_piece.image = pygame.transform.scale(pygame.image.load(image_path),
                                                             (int(self.board.square_size) - 10,
                                                              int(self.board.square_size) - 10))
-        self.sprite_group.draw(self.screen)
 
+        self.sprite_group.draw(self.screen)
         pygame.display.flip()
 
     def run_play_through_loop(self):
+        # Main loop for the playthrough
         self.display_board()
         self.await_my_turn()
         if self.game_over:
