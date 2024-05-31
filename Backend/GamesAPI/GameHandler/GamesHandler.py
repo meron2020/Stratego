@@ -92,6 +92,7 @@ class GamesHandler:
                     return {"game_state": "Ended", "player_status": "Loser"}
 
         elif request_type == "my_turn" and not game.check_game_still_running():
+            self.delete_game(game_id)
             return {"game_state": "Ended", "player_status": "Loser"}
 
         if game.check_game_still_running():

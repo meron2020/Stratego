@@ -52,6 +52,7 @@ class GameResource(Resource):
                 # Updating user information in case of a tie
                 for player_id in response["data"]["player_ids"]:
                     UserHandler.add_tie_to_user(player_id)
+
         elif "game_state" in response:
             # Handling game end state
             if http_request_data["player_id"] == response["winner"]:

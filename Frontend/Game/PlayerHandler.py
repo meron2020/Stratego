@@ -4,16 +4,20 @@ from Frontend.Game.Board import Board
 
 
 class PlayerHandler:
-    def __init__(self, player_id, board, screen, http_handler, game_id):
+    def __init__(self, player_id, board, screen_handler, http_handler, game_id):
         # Initialize the PlayerHandler with necessary parameters
         self.player_id = player_id
         self.board = board
-        self.screen = screen
+        self.screen_handler = screen_handler
         self.httpHandler = http_handler
         self.game_id = game_id
 
     def player_set_pieces(self, sprite_group):
         clicked_sprite = None
+        quit_button = pygame.Rect(
+            pygame.display.get_window_size()[0] / 2 - 85,
+            pygame.display.get_window_size()[1] - 65,
+            175, 50)
         setup_finished = False
         running = True
         while running:
@@ -36,7 +40,10 @@ class PlayerHandler:
                         175, 50
                     )
                     if finish_button_rect.collidepoint(event.pos) and setup_finished:
-                        return
+                        return True
+
+                    if quit_button.collidepoint(event.pos):
+                        return False
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if clicked_sprite:
@@ -62,18 +69,24 @@ class PlayerHandler:
                 )
                 setup_finished = True
 
-                pygame.draw.rect(self.screen, (0, 0, 255), finish_button_rect)
+                pygame.draw.rect(self.screen_handler.screen, (0, 0, 255), finish_button_rect)
                 font = pygame.font.Font(None, 36)
                 text = font.render("Finish set up", True, (255, 255, 255))
-                self.screen.blit(text, finish_button_rect.move(10, 5))
+                self.screen_handler.screen.blit(text, finish_button_rect.move(10, 5))
                 pygame.display.flip()
 
             # Clear the screen
-            self.screen.fill((255, 255, 255))
+            self.screen_handler.screen.fill((255, 255, 255))
 
             # Draw the board and pieces
             self.board.draw_board()
-            sprite_group.draw(self.screen)
+            sprite_group.draw(self.screen_handler.screen)
+
+            pygame.draw.rect(self.screen_handler.screen, (0, 0, 139), quit_button)
+            font = pygame.font.Font(None, 36)
+            text = font.render("Quit", True, (255, 255, 255))
+            text_rect = text.get_rect(center=quit_button.center)  # Center text within the button
+            self.screen_handler.screen.blit(text, text_rect)
 
             # Update the display
             pygame.display.flip()
@@ -105,11 +118,11 @@ class PlayerHandler:
                                 if piece.player_id == self.player_id:
                                     clicked_piece = piece
             # Clear the screen
-            self.screen.fill((255, 255, 255))
+            self.screen_handler.screen.fill((255, 255, 255))
             self.board.draw_board()
 
             # Draw the pieces
-            sprite_group.draw(self.screen)
+            sprite_group.draw(self.screen_handler.screen)
 
             # Highlight possible moves if a piece is selected
             if clicked_piece:

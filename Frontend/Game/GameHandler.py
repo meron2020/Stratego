@@ -28,13 +28,13 @@ class GameHandler:
 
         self.game_id = self.httpHandler.join_game(self.player_id)["game_id"]  # Joins a game and retrieves the game ID
         self.board = Board(self.screen_handler.screen, margin_percentage=0.05)  # Sets up the game board
-        self.player_handler = PlayerHandler(self.player_id, self.board, self.screen_handler.screen, self.httpHandler,
+        self.player_handler = PlayerHandler(self.player_id, self.board, self.screen_handler, self.httpHandler,
                                             self.game_id)  # Handles player interactions
         self.setup_handler = SetupHandler(self.player_id, self.screen_handler, self.board, self.game_id,
                                           self.player_handler, self.httpHandler)  # Handles game setup
         self.play_through_handler = PlayThroughHandler(self.httpHandler, self.board, self.game_id, self.player_handler,
                                                        self.player_id,
-                                                       self.screen_handler.screen)  # Handles gameplay logic
+                                                       self.screen_handler)  # Handles gameplay logic
 
     # Setup handler for testing environment, similar to the production but uses a fixed server address and game ID
     def test_setup_handler(self):
@@ -46,13 +46,16 @@ class GameHandler:
         self.setup_handler = SetupHandler(self.player_id, self.screen_handler, self.board, self.game_id,
                                           self.player_handler, self.httpHandler)
         self.play_through_handler = PlayThroughHandler(self.httpHandler, self.board, self.game_id,
-                                                       self.player_handler, self.player_id, self.screen_handler.screen)
+                                                       self.player_handler, self.player_id, self.screen_handler)
 
     # Main game loop for handling the complete game process
     def game_loop(self):
-        self.setup_handler.run_setup_loop()  # Run the setup loop
-        self.setup_handler.await_opponent_player_setup()  # Wait for the opponent's setup to complete
-        result = self.play_through_handler.run_play_through_loop()  # Execute the main game play loop
+        finished = self.setup_handler.run_setup_loop()  # Run the setup loop
+        if finished:
+            self.setup_handler.await_opponent_player_setup()  # Wait for the opponent's setup to complete
+            result = self.play_through_handler.run_play_through_loop()  # Execute the main game play loop
+        else:
+            result = False
         result_page = GameResultPage(self.screen_handler)
         result_page.run(result)  # Display the game result page
         return

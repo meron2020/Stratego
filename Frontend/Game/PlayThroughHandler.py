@@ -8,9 +8,9 @@ from Frontend.Game.PieceSprite import SpriteCreator
 
 
 class PlayThroughHandler:
-    def __init__(self, http_handler, board, game_id, player_handler, player_id, screen):
+    def __init__(self, http_handler, board, game_id, player_handler, player_id, screen_handler):
         # Initialize the PlayThroughHandler with necessary parameters
-        self.screen = screen
+        self.screen_handler = screen_handler
         self.game_over = False
         self.http_handler = http_handler
         self.player_id = player_id
@@ -91,13 +91,19 @@ class PlayThroughHandler:
 
         # Create sprites for the pieces on the board
         sprite_group = SpriteCreator.create_pieces_sprites_from_get_request(response["pieces_dict"], self.board,
-                                                                            self.screen, self.player_id)
+                                                                            self.screen_handler.screen, self.player_id)
         # Fill the screen with white color
-        self.screen.fill((255, 255, 255))
+        self.screen_handler.screen.fill((255, 255, 255))
 
         # Draw the board and the pieces
         self.board.draw_board()
-        sprite_group.draw(self.screen)
+        sprite_group.draw(self.screen_handler.screen)
+
+        self.screen_handler.draw_button("Quit Game",
+                                        pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+                                        self.screen_handler.WHITE,
+                                        self.screen_handler.SCREEN_WIDTH // 2,
+                                        self.screen_handler.SCREEN_HEIGHT * 16 // 17, 200, 75)
 
         pygame.display.flip()
 
@@ -116,11 +122,11 @@ class PlayThroughHandler:
                                                             (int(self.board.square_size) - 10,
                                                              int(self.board.square_size) - 10))
 
-        self.sprite_group.draw(self.screen)
+        self.sprite_group.draw(self.screen_handler.screen)
         pygame.display.flip()
 
     def run_play_through_loop(self):
-        # Main loop for the playthrough
+        # Main loop for the play through
         self.display_board()
         self.await_my_turn()
         if self.game_over:

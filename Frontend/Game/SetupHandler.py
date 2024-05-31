@@ -25,12 +25,16 @@ class SetupHandler:
         sprite_group = SpriteCreator.create_player_sprites(self.player_id, self.board, self.screen_handler.screen,
                                                            setup_pos)
         # Game loop
-        self.player_handler.player_set_pieces(sprite_group)
+        finished = self.player_handler.player_set_pieces(sprite_group)
 
-        piece_to_pos_dict = self.board.create_piece_to_pos_dict()
-        response = self.http_handler.send_starting_positions(self.game_id, piece_to_pos_dict, self.player_id)
-        if response["pieces_set"]:
-            return
+        if finished:
+            piece_to_pos_dict = self.board.create_piece_to_pos_dict()
+            response = self.http_handler.send_starting_positions(self.game_id, piece_to_pos_dict, self.player_id)
+            if response["pieces_set"]:
+                return True
+        else:
+            self.http_handler.quit_game(self.game_id, self.player_id)
+            return False
 
     # Function sends request checking if the opponent has finished setting up and the game can begin.
     def opponent_setup_request(self):
