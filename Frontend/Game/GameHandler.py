@@ -87,3 +87,13 @@ class GameHandler:
         # Handles the pygame events while awaiting server response
         while not self.opponent_player_connected:
             ScreenHandler.event_handling_when_waiting()
+
+    def check_player_quit(self):
+        while True:
+            response = self.httpHandler.check_game_ended(self.game_id)
+            if response["game_ended"]:
+                return
+            else:
+                break
+        self.opponent_finished_setup = True
+        return

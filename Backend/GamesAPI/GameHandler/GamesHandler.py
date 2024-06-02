@@ -32,7 +32,8 @@ class GamesHandler:
                             pieces_dict[piece_id] = json.dumps(piece, default=lambda obj: obj.__dict__)
                         except TypeError:
                             print(pieces_dict[piece_id])
-                    return {"pieces_dict": pieces_dict, "board": game.get_board(), "return_type": 0, "attacked_piece": action_response["attacked_piece"]}
+                    return {"pieces_dict": pieces_dict, "board": game.get_board(), "return_type": 0,
+                            "attacked_piece": action_response["attacked_piece"]}
                 else:
                     if "return_type" not in action_response:
                         action_response.update({"return_type": 1})
@@ -80,6 +81,9 @@ class GamesHandler:
         game = self.get_from_json(game_id)
         if request_type == "setup_pos":
             return {"setup_pos": game.player_to_setup_pos_dict}
+
+        elif request_type == "game_ended":
+            return {"game_ended": game.get_state() == "Awaiting opponent disconnect"}
 
         elif request_type == "game_state":
             if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
@@ -171,9 +175,9 @@ class GamesHandler:
     # Creates game object. Returns the new game's id
     def create_game(self, game_id):
         game = Game(game_id, [], GameBoard(), None, 0,
-                 {},
-                 None, "red", "Awaiting Opponent Player Connect",
-                 {}, False, False)
+                    {},
+                    None, "red", "Awaiting Opponent Player Connect",
+                    {}, False, False)
         return game
 
     # Function iterates over database and checks for open name slot numbers.
