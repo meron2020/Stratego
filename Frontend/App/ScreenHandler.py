@@ -1,7 +1,7 @@
 import sys
 
 import pygame
-
+from universals import PLAYER_QUIT_EVENT
 
 class ScreenHandler:
     def __init__(self):
@@ -108,6 +108,9 @@ class ScreenHandler:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 continue  # Placeholder to handle mouse button events
+
+            elif event.type == PLAYER_QUIT_EVENT:
+                return False
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 import threading
 import time
 
+import pygame.event
+
 from Frontend.App.GameResultPage import GameResultPage
 from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.Game.Board import Board
@@ -8,7 +10,7 @@ from Frontend.Game.PlayThroughHandler import PlayThroughHandler
 from Frontend.Game.PlayerHandler import PlayerHandler
 from Frontend.Game.SetupHandler import SetupHandler
 from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
-
+from universals import PLAYER_QUIT_EVENT
 
 class GameHandler:
     # Initializer for the GameHandler class
@@ -50,6 +52,10 @@ class GameHandler:
 
     # Main game loop for handling the complete game process
     def game_loop(self):
+        check_thread = threading.Thread(target=self.check_player_quit, args=())
+        check_thread.daemon = True  # Daemonize the thread so it terminates when the main program exits
+        check_thread.start()
+
         finished = self.setup_handler.run_setup_loop()  # Run the setup loop
         if finished:
             self.setup_handler.await_opponent_player_setup()  # Wait for the opponent's setup to complete
@@ -88,12 +94,12 @@ class GameHandler:
         while not self.opponent_player_connected:
             ScreenHandler.event_handling_when_waiting()
 
-    def check_player_quit(self):
-        while True:
+    def check_player_quit(self, stop_event):
+        while not stop_event.is_set():
             response = self.httpHandler.check_game_ended(self.game_id)
             if response["game_ended"]:
+                pygame.event.post(pygame.event.Event(PLAYER_QUIT_EVENT))
                 return
             else:
-                break
-        self.opponent_finished_setup = True
-        return
+                time.sleep(2)
+                continue

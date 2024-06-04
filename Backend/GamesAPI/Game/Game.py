@@ -170,7 +170,7 @@ class Game:
 
     # Function ends the game. Removes the player that ended the game from the player list.
     # Updates the game state, and returns to the player that ended the game the result.
-    def end_game(self, winner, loser):
+    def end_game(self, winner, loser, is_quit=False):
         self.players.remove(int(winner))
         self.game_state = "Awaiting opponent disconnect"
         self.winner = winner

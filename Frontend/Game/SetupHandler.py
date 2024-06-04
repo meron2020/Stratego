@@ -5,6 +5,7 @@ import pygame
 
 from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.Game.PieceSprite import SpriteCreator
+from universals import PLAYER_QUIT_EVENT
 
 
 class SetupHandler:
@@ -26,6 +27,8 @@ class SetupHandler:
                                                            setup_pos)
         # Game loop
         finished = self.player_handler.player_set_pieces(sprite_group)
+        if finished == "Opponent Quit":
+            return False
 
         if finished:
             piece_to_pos_dict = self.board.create_piece_to_pos_dict()
@@ -59,4 +62,3 @@ class SetupHandler:
         # Function for handling the pygame while awaiting the server response.
         while not self.opponent_finished_setup:
             ScreenHandler.event_handling_when_waiting()
-

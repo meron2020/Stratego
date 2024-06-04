@@ -1,6 +1,7 @@
 import pygame
 
 from Frontend.Game.Board import Board
+from universals import PLAYER_QUIT_EVENT
 
 
 class PlayerHandler:
@@ -24,6 +25,9 @@ class PlayerHandler:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+                elif event.type == PLAYER_QUIT_EVENT:
+                    return "Opponent Quit"
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:

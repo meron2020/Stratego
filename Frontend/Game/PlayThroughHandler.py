@@ -79,7 +79,9 @@ class PlayThroughHandler:
 
         # Function for handling pygame events while awaiting the server response.
         while (not self.is_player_turn) and (not self.game_over):
-            ScreenHandler.event_handling_when_waiting()
+            result = ScreenHandler.event_handling_when_waiting()
+            if not result:
+                return False
 
     # Function tasked with displaying the current board setup.
     # Request is sent to the server for the board setup and the response is shown to the user.
@@ -128,7 +130,9 @@ class PlayThroughHandler:
     def run_play_through_loop(self):
         # Main loop for the play through
         self.display_board()
-        self.await_my_turn()
+        result = self.await_my_turn()
+        if not result:
+            return False
         if self.game_over:
             return False
         running = True
@@ -147,4 +151,6 @@ class PlayThroughHandler:
                 if self.game_over:
                     return False
                 self.await_my_turn()
+                if not result:
+                    return False
                 continue
