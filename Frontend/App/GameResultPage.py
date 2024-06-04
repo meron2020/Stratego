@@ -9,7 +9,7 @@ class GameResultPage:
         self.screen_handler = screen_handler
 
     # Main method to run the game result page
-    def run(self, is_winner):
+    def run(self, is_winner, forfeit=False):
         # Set the fonts for the title and info text
         title_font = pygame.font.Font(None, self.screen_handler.FONT_SIZE * 2)
         info_font = pygame.font.Font(None, self.screen_handler.FONT_SIZE)
@@ -45,14 +45,20 @@ class GameResultPage:
 
             # Display the result message based on whether the player won or lost
             if is_winner:
-                self.screen_handler.draw_text("You Won!", info_font, self.screen_handler.BLACK,
+                result = "You Won!"
+                if forfeit:
+                    result += " Opponent forfeited"
+                self.screen_handler.draw_text(result, info_font, self.screen_handler.BLACK,
                                               self.screen_handler.SCREEN_WIDTH // 2,
                                               self.screen_handler.SCREEN_HEIGHT // 8 * 2)
                 self.screen_handler.draw_text("Added to user stats", info_font, self.screen_handler.BLACK,
                                               self.screen_handler.SCREEN_WIDTH // 2,
                                               self.screen_handler.SCREEN_HEIGHT // 8 * 3)
             else:
-                self.screen_handler.draw_text("You Lost!", info_font, self.screen_handler.BLACK,
+                result = "You Lost!"
+                if forfeit:
+                    result += " You forfeited"
+                self.screen_handler.draw_text(result, info_font, self.screen_handler.BLACK,
                                               self.screen_handler.SCREEN_WIDTH // 2,
                                               self.screen_handler.SCREEN_HEIGHT // 8 * 2)
                 self.screen_handler.draw_text("Added to user stats", info_font, self.screen_handler.BLACK,

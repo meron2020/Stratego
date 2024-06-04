@@ -28,7 +28,7 @@ class SetupHandler:
         # Game loop
         finished = self.player_handler.player_set_pieces(sprite_group)
         if finished == "Opponent Quit":
-            return False
+            return finished
 
         if finished:
             piece_to_pos_dict = self.board.create_piece_to_pos_dict()

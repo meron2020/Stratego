@@ -69,13 +69,11 @@ class GameResource(Resource):
         response = self.game_handler.delete(http_request_data["game_id"], http_request_data["player_id"])
 
         # Updating user information based on game outcome
-        winner = UserHandler.find_by_id(response.data["winner"])
-        UserHandler.add_win_to_user(winner)
-        loser = UserHandler.find_by_id(response.data["loser"])
-        UserHandler.add_loss_to_user(loser)
+        UserHandler.add_win_to_user(response["winner"])
+        UserHandler.add_loss_to_user(response["loser"])
 
         # Handling game end state
-        if response.data.has_key("game_status"):
+        if "game_status" in response:
             return {"game_status": "Ended. You have won."}
         else:
             return {"game_status": "Ended. You have lost."}

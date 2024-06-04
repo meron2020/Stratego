@@ -96,6 +96,10 @@ class PlayerHandler:
             pygame.display.flip()
 
     def user_act(self, sprite_group):
+        quit_button = pygame.Rect(
+            pygame.display.get_window_size()[0] / 2 - 85,
+            pygame.display.get_window_size()[1] - 65,
+            175, 50)
         running = True
         possible_options = None
         clicked_piece = None
@@ -105,7 +109,12 @@ class PlayerHandler:
                     running = False
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
+
+                elif event.type == PLAYER_QUIT_EVENT:
+                    return "Opponent Quit"
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if quit_button.collidepoint(event.pos):
+                        return False
                     selected_square = self.board.get_clicked_square(
                         event.pos)  # Implement this method to get the square position
                     if not possible_options:
@@ -127,6 +136,12 @@ class PlayerHandler:
 
             # Draw the pieces
             sprite_group.draw(self.screen_handler.screen)
+
+            pygame.draw.rect(self.screen_handler.screen, (0, 0, 139), quit_button)
+            font = pygame.font.Font(None, 36)
+            text = font.render("Quit", True, (255, 255, 255))
+            text_rect = text.get_rect(center=quit_button.center)  # Center text within the button
+            self.screen_handler.screen.blit(text, text_rect)
 
             # Highlight possible moves if a piece is selected
             if clicked_piece:

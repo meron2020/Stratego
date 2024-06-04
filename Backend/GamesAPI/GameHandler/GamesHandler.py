@@ -48,7 +48,8 @@ class GamesHandler:
         game = self.get_from_json(game_id)
         # If game is still running, the player is forfeiting.
         if game.check_game_still_running():
-            data_to_return = game.end_game(player_id, game.get_opposite_player(player_id))
+            data_to_return = game.end_game(game.get_opposite_player(player_id), player_id)
+            self.turn_to_json(game)
             return data_to_return
         # This is in case the player has forfeited after the opposing player, so he still wins.
         else:
@@ -83,6 +84,7 @@ class GamesHandler:
             return {"setup_pos": game.player_to_setup_pos_dict}
 
         elif request_type == "game_ended":
+            print(game)
             return {"game_ended": game.get_state() == "Awaiting opponent disconnect"}
 
         elif request_type == "game_state":
