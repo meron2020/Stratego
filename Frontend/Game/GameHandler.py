@@ -44,7 +44,7 @@ class GameHandler:
         self.httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
         self.game_id = 1
         self.board = Board(self.screen_handler.screen, margin_percentage=0.05)
-        self.player_handler = PlayerHandler(self.player_id, self.board, self.screen_handler.screen,
+        self.player_handler = PlayerHandler(self.player_id, self.board, self.screen_handler,
                                             self.httpHandler, self.game_id)
         self.setup_handler = SetupHandler(self.player_id, self.screen_handler, self.board, self.game_id,
                                           self.player_handler, self.httpHandler)
@@ -73,9 +73,17 @@ class GameHandler:
 
     # Game loop used for testing, similar to the main loop but might include specific conditions or configurations
     def test_game_loop(self):
-        result = self.play_through_handler.run_play_through_loop()
+        # check_thread = threading.Thread(target=self.check_player_quit)
+        # check_thread.daemon = True  # Daemonize the thread so it terminates when the main program exits
+        # check_thread.start()
+        result, forfeited = self.play_through_handler.run_play_through_loop()
+        if result == "Opponent Quit":
+            result = True
+        if not result:
+            result = False
+
         result_page = GameResultPage(self.screen_handler)
-        result_page.run(result)
+        result_page.run(result, forfeited)
 
     # Checks the opponent's connection status in a loop
     def check_opponent_connect(self):
@@ -97,7 +105,7 @@ class GameHandler:
 
         # Handles the pygame events while awaiting server response
         while not self.opponent_player_connected:
-            ScreenHandler.event_handling_when_waiting()
+            self.screen_handler.event_handling_when_waiting(False)
 
     def check_player_quit(self):
         while True:

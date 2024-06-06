@@ -31,29 +31,37 @@ class PlayThroughHandler:
     # The player's action choice is sent to the server and the updated board and pieces are received.
     def get_user_piece_act(self):
         # Get the selected square and the piece the player clicked on
-        selected_square, clicked_piece = self.player_handler.user_act(self.sprite_group)
+        result = self.player_handler.user_act(self.sprite_group)
+        if len(result) == 1:
+            result = result[0]
+            if result == "Opponent Quit":
+                return True, "winner"
+            else:
+                return True, "loser"
+        else:
+            selected_square, clicked_piece = result[0], result[1]
 
         # Send the piece action to the server
-        response = self.http_handler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
+            response = self.http_handler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
 
-        # If the response includes an attacked piece, show the attacked piece
-        if "attacked_piece" in response and response["attacked_piece"] is not None:
-            self.show_attacked_piece(response["attacked_piece"], selected_square)
-            time.sleep(1.5)
+            # If the response includes an attacked piece, show the attacked piece
+            if "attacked_piece" in response and response["attacked_piece"] is not None:
+                self.show_attacked_piece(response["attacked_piece"], selected_square)
+                time.sleep(1.5)
 
-        # Check if the response includes a winner
-        if "winner" in response:
-            if response["winner"] == self.player_id:
-                return True, "winner"
-            elif response["loser"] == self.player_id:
-                return True, "loser"
-            else:
-                return True, "tie"
+            # Check if the response includes a winner
+            if "winner" in response:
+                if response["winner"] == self.player_id:
+                    return True, "winner"
+                elif response["loser"] == self.player_id:
+                    return True, "loser"
+                else:
+                    return True, "tie"
 
-        # Update the board with the new state
-        response = self.http_handler.get_board(self.game_id)
-        self.board.piece_id_matrix = response["board"]
-        return False, None
+            # Update the board with the new state
+            response = self.http_handler.get_board(self.game_id)
+            self.board.piece_id_matrix = response["board"]
+            return False, None
 
     # Function sends GET request to server to check if it's the player's turn.
     def await_turn_request(self):
@@ -66,7 +74,7 @@ class PlayThroughHandler:
                     self.is_player_turn = True
                     return
                 else:
-                    time.sleep(2)
+                    time.sleep(5)
             except KeyError:
                 self.game_over = True
                 return
@@ -79,14 +87,18 @@ class PlayThroughHandler:
 
         # Function for handling pygame events while awaiting the server response.
         while (not self.is_player_turn) and (not self.game_over):
-            result = ScreenHandler.event_handling_when_waiting()
-            if not result:
+            result = self.screen_handler.event_handling_when_waiting(True)
+            if result == "Opponent Quit":
+                return True
+            if result is not None:
+                self.http_handler.quit_game(self.game_id, self.player_id)
                 return False
 
     # Function tasked with displaying the current board setup.
     # Request is sent to the server for the board setup and the response is shown to the user.
     def display_board(self):
         # Get the board state from the server
+        self.screen_handler.create_quit_button()
         response = self.http_handler.get_board(self.game_id)
         self.board.pieces = []
         self.board.piece_id_matrix = response["board"]
@@ -101,11 +113,13 @@ class PlayThroughHandler:
         self.board.draw_board()
         sprite_group.draw(self.screen_handler.screen)
 
-        self.screen_handler.draw_button("Quit Game",
-                                        pygame.font.Font(None, self.screen_handler.FONT_SIZE),
-                                        self.screen_handler.WHITE,
-                                        self.screen_handler.SCREEN_WIDTH // 2,
-                                        self.screen_handler.SCREEN_HEIGHT * 16 // 17, 200, 75)
+        self.screen_handler.present_quit_button()
+
+        # self.screen_handler.draw_button("Quit Game",
+        #                                 pygame.font.Font(None, self.screen_handler.FONT_SIZE),
+        #                                 self.screen_handler.WHITE,
+        #                                 self.screen_handler.SCREEN_WIDTH // 2,
+        #                                 self.screen_handler.SCREEN_HEIGHT * 16 // 17, 200, 75)
 
         pygame.display.flip()
 
@@ -131,26 +145,28 @@ class PlayThroughHandler:
         # Main loop for the play through
         self.display_board()
         result = self.await_my_turn()
-        if not result:
-            return False
+        if result is not None:
+            return False, True
         if self.game_over:
-            return False
+            return False, False
         running = True
         while running:
             try:
                 self.display_board()
             except TypeError:
-                return False
+                return False, True
             if self.is_player_turn:
                 game_ended, result = self.get_user_piece_act()
                 if game_ended:
-                    return result
+                    return result, False
                 self.is_player_turn = False
                 continue
             else:
                 if self.game_over:
                     return False
-                self.await_my_turn()
-                if not result:
-                    return False
+                result = self.await_my_turn()
+                if result:
+                    return True, True
+                if result is not None:
+                    return False, True
                 continue

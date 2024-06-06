@@ -12,7 +12,7 @@ class Game:
     def __init__(self, game_id=1, players=[], board=GameBoard(), pieces_dict=None, turn=0,
                  player_to_color_dict={},
                  turn_id=None, turn_color="red", game_state="Awaiting Opponent Player Connect",
-                 player_to_setup_pos_dict={}, two_players_connected=False, test=False):
+                 player_to_setup_pos_dict={}, two_players_connected=False, test=False, forfeited=False):
 
         if test:
             print("test")
@@ -30,6 +30,7 @@ class Game:
         self.game_state = game_state
         self.one_player_connected = False
         self.two_players_connected = two_players_connected
+        self.forfeited = forfeited
 
     # Function takes a color as a parameter and returns the initial list of pieces set with that color.
     def create_pieces_dict(self):
@@ -163,6 +164,9 @@ class Game:
     def get_piece_by_id(self, piece_id):
         return self.pieces_dict[str(piece_id)]
 
+    def check_game_has_been_forfeited(self):
+        return self.forfeited
+
     # Function returns true if game is running and false otherwise.
     def check_game_still_running(self):
         return (self.game_state == "Awaiting setups" or self.game_state == "Running" or
@@ -170,11 +174,12 @@ class Game:
 
     # Function ends the game. Removes the player that ended the game from the player list.
     # Updates the game state, and returns to the player that ended the game the result.
-    def end_game(self, winner, loser, is_quit=False):
+    def end_game(self, winner, loser, forfeited=False):
         self.players.remove(int(winner))
         self.game_state = "Awaiting opponent disconnect"
         self.winner = winner
         self.loser = loser
+        self.forfeited = forfeited
         return {"winner": winner,
                 "loser": loser, "game_state": self.game_state}
 

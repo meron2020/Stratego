@@ -10,16 +10,14 @@ class PlayerHandler:
         self.player_id = player_id
         self.board = board
         self.screen_handler = screen_handler
-        self.httpHandler = http_handler
+        self.http_handler = http_handler
         self.game_id = game_id
 
     def player_set_pieces(self, sprite_group):
+        self.screen_handler.create_quit_button()
         clicked_sprite = None
-        quit_button = pygame.Rect(
-            pygame.display.get_window_size()[0] / 2 - 85,
-            pygame.display.get_window_size()[1] - 65,
-            175, 50)
         setup_finished = False
+        self.screen_handler.present_quit_button()
         running = True
         while running:
             for event in pygame.event.get():
@@ -46,7 +44,7 @@ class PlayerHandler:
                     if finish_button_rect.collidepoint(event.pos) and setup_finished:
                         return True
 
-                    if quit_button.collidepoint(event.pos):
+                    if self.screen_handler.check_quit_button_pressed(event):
                         return False
 
                 elif event.type == pygame.MOUSEBUTTONUP:
@@ -86,20 +84,13 @@ class PlayerHandler:
             self.board.draw_board()
             sprite_group.draw(self.screen_handler.screen)
 
-            pygame.draw.rect(self.screen_handler.screen, (0, 0, 139), quit_button)
-            font = pygame.font.Font(None, 36)
-            text = font.render("Quit", True, (255, 255, 255))
-            text_rect = text.get_rect(center=quit_button.center)  # Center text within the button
-            self.screen_handler.screen.blit(text, text_rect)
+            self.screen_handler.present_quit_button()
 
             # Update the display
             pygame.display.flip()
 
     def user_act(self, sprite_group):
-        quit_button = pygame.Rect(
-            pygame.display.get_window_size()[0] / 2 - 85,
-            pygame.display.get_window_size()[1] - 65,
-            175, 50)
+        # self.screen_handler.create_quit_button()
         running = True
         possible_options = None
         clicked_piece = None
@@ -111,10 +102,11 @@ class PlayerHandler:
                     running = False
 
                 elif event.type == PLAYER_QUIT_EVENT:
-                    return "Opponent Quit"
+                    return ["Opponent Quit"]
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if quit_button.collidepoint(event.pos):
-                        return False
+                    # if self.screen_handler.check_quit_button_pressed(event):
+                    #     self.http_handler.quit_game(self.game_id, self.player_id)
+                    #     return [False]
                     selected_square = self.board.get_clicked_square(
                         event.pos)  # Implement this method to get the square position
                     if not possible_options:
@@ -124,7 +116,7 @@ class PlayerHandler:
                                 clicked_piece = piece
                     else:
                         if selected_square in possible_options:
-                            return selected_square, clicked_piece
+                            return [selected_square, clicked_piece]
                         else:
                             piece = Board.get_clicked_sprite_and_position(sprite_group, event.pos)
                             if piece:
@@ -137,11 +129,7 @@ class PlayerHandler:
             # Draw the pieces
             sprite_group.draw(self.screen_handler.screen)
 
-            pygame.draw.rect(self.screen_handler.screen, (0, 0, 139), quit_button)
-            font = pygame.font.Font(None, 36)
-            text = font.render("Quit", True, (255, 255, 255))
-            text_rect = text.get_rect(center=quit_button.center)  # Center text within the button
-            self.screen_handler.screen.blit(text, text_rect)
+            # self.screen_handler.present_quit_button()
 
             # Highlight possible moves if a piece is selected
             if clicked_piece:
@@ -153,7 +141,7 @@ class PlayerHandler:
     # Function that displays on the board the chosen piece's available spaces to move to.
     # Open spaces are displayed in light green.
     def display_piece_options(self, piece):
-        response = self.httpHandler.check_piece_options(self.game_id, piece.piece_id)
+        response = self.http_handler.check_piece_options(self.game_id, piece.piece_id)
         options = response["piece_options"]
         for option in options:
             self.board.color_square(option, (0, 255, 0))

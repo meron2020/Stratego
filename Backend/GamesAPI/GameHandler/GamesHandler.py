@@ -48,7 +48,7 @@ class GamesHandler:
         game = self.get_from_json(game_id)
         # If game is still running, the player is forfeiting.
         if game.check_game_still_running():
-            data_to_return = game.end_game(game.get_opposite_player(player_id), player_id)
+            data_to_return = game.end_game(game.get_opposite_player(player_id), player_id, True)
             self.turn_to_json(game)
             return data_to_return
         # This is in case the player has forfeited after the opposing player, so he still wins.
@@ -84,8 +84,7 @@ class GamesHandler:
             return {"setup_pos": game.player_to_setup_pos_dict}
 
         elif request_type == "game_ended":
-            print(game)
-            return {"game_ended": game.get_state() == "Awaiting opponent disconnect"}
+            return {"game_ended": game.check_game_has_been_forfeited()}
 
         elif request_type == "game_state":
             if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
@@ -97,7 +96,7 @@ class GamesHandler:
                 else:
                     return {"game_state": "Ended", "player_status": "Loser"}
 
-        elif request_type == "my_turn" and not game.check_game_still_running():
+        elif request_type == "my_turn" and not game.check_game_still_running() and not game.check_game_has_been_forfeited():
             self.delete_game(game_id)
             return {"game_state": "Ended", "player_status": "Loser"}
 
@@ -150,7 +149,8 @@ class GamesHandler:
                 return Game(json_object["game_id"], json_object["players"], game_board, pieces_dict,
                             json_object["turn"], json_object["player_to_color_dict"], json_object["turn_id"],
                             json_object["turn_color"], json_object["game_state"],
-                            json_object["player_to_setup_pos_dict"], json_object["two_players_connected"])
+                            json_object["player_to_setup_pos_dict"], json_object["two_players_connected"],
+                            json_object["forfeited"])
         except OSError:
             print("Os Error")
             return False
@@ -179,7 +179,7 @@ class GamesHandler:
         game = Game(game_id, [], GameBoard(), None, 0,
                     {},
                     None, "red", "Awaiting Opponent Player Connect",
-                    {}, False, False)
+                    {}, False, False, False)
         return game
 
     # Function iterates over database and checks for open name slot numbers.

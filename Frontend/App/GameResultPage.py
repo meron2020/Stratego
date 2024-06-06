@@ -10,6 +10,7 @@ class GameResultPage:
 
     # Main method to run the game result page
     def run(self, is_winner, forfeit=False):
+        self.screen_handler.quit_button_presented = False
         # Set the fonts for the title and info text
         title_font = pygame.font.Font(None, self.screen_handler.FONT_SIZE * 2)
         info_font = pygame.font.Font(None, self.screen_handler.FONT_SIZE)

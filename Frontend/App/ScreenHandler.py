@@ -1,17 +1,21 @@
 import sys
 
 import pygame
+
 from universals import PLAYER_QUIT_EVENT
+
 
 class ScreenHandler:
     def __init__(self):
         # Initialize screen properties and color definitions
+        self.quit_button = None
         self.screen = None  # This will hold the main display surface
         self.WHITE = (255, 255, 255)  # RGB color for white
         self.BLACK = (0, 0, 0)  # RGB color for black
         self.FONT_SIZE = 32  # Default font size
         self.SCREEN_WIDTH = 1920  # Default screen width
         self.SCREEN_HEIGHT = 1080  # Default screen height
+        self.quit_button_presented = False
 
     def draw_text(self, text, font, color, x, y):
         """
@@ -26,6 +30,12 @@ class ScreenHandler:
         text_rect = text_obj.get_rect()
         text_rect.center = (x, y)  # Position the text
         self.screen.blit(text_obj, text_rect)  # Blit the text onto the screen
+
+    def create_quit_button(self):
+        self.quit_button = pygame.Rect(
+            pygame.display.get_window_size()[0] / 2 - 85,
+            pygame.display.get_window_size()[1] - 65,
+            175, 50)
 
     def draw_button(self, text, font, color, x, y, width, height):
         """
@@ -43,6 +53,19 @@ class ScreenHandler:
         pygame.draw.rect(self.screen, color, button_rect, 2)  # Draw button outline
         self.draw_text(text, font, color, x, y)  # Draw text on button
         return button_rect
+
+    def present_quit_button(self):
+        pygame.draw.rect(self.screen, (0, 0, 139), self.quit_button)
+        font = pygame.font.Font(None, 36)
+        text = font.render("Quit", True, (255, 255, 255))
+        text_rect = text.get_rect(center=self.quit_button.center)  # Center text within the button
+        self.screen.blit(text, text_rect)
+        self.quit_button_presented = True
+
+    def check_quit_button_pressed(self, event):
+        if self.quit_button.collidepoint(event.pos):
+            return True
+        return False
 
     @classmethod
     def wrap_text(cls, font, content, max_width):
@@ -96,21 +119,25 @@ class ScreenHandler:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption("Stratego")
 
-    @classmethod
-    def event_handling_when_waiting(cls):
+    def event_handling_when_waiting(self, in_game):
         """
         Handle events while waiting for the player's turn.
         Processes events like quitting or mouse button down.
         """
+        if in_game:
+            self.present_quit_button()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.quit_button.collidepoint(event.pos) and self.quit_button_presented:
+                    return False
                 continue  # Placeholder to handle mouse button events
 
             elif event.type == PLAYER_QUIT_EVENT:
-                return False
+                return "Opponent Quit"
 
 
 if __name__ == "__main__":
