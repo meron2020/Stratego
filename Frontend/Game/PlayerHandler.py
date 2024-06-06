@@ -14,10 +14,10 @@ class PlayerHandler:
         self.game_id = game_id
 
     def player_set_pieces(self, sprite_group):
-        self.screen_handler.create_quit_button()
+        #self.screen_handler.create_quit_button()
         clicked_sprite = None
         setup_finished = False
-        self.screen_handler.present_quit_button()
+        #self.screen_handler.present_quit_button()
         running = True
         while running:
             for event in pygame.event.get():
@@ -44,8 +44,8 @@ class PlayerHandler:
                     if finish_button_rect.collidepoint(event.pos) and setup_finished:
                         return True
 
-                    if self.screen_handler.check_quit_button_pressed(event):
-                        return False
+                    # if self.screen_handler.check_quit_button_pressed(event):
+                    #     return False
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if clicked_sprite:
@@ -84,7 +84,7 @@ class PlayerHandler:
             self.board.draw_board()
             sprite_group.draw(self.screen_handler.screen)
 
-            self.screen_handler.present_quit_button()
+            # self.screen_handler.present_quit_button()
 
             # Update the display
             pygame.display.flip()

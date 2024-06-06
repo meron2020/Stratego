@@ -113,7 +113,7 @@ class PlayThroughHandler:
         self.board.draw_board()
         sprite_group.draw(self.screen_handler.screen)
 
-        self.screen_handler.present_quit_button()
+        # self.screen_handler.present_quit_button()
 
         # self.screen_handler.draw_button("Quit Game",
         #                                 pygame.font.Font(None, self.screen_handler.FONT_SIZE),

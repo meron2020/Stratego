@@ -124,8 +124,8 @@ class ScreenHandler:
         Handle events while waiting for the player's turn.
         Processes events like quitting or mouse button down.
         """
-        if in_game:
-            self.present_quit_button()
+        # if in_game:
+        #     self.present_quit_button()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
