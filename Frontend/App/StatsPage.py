@@ -1,5 +1,7 @@
 import sys
+
 import pygame
+
 from Frontend.App.ScreenHandler import ScreenHandler
 
 

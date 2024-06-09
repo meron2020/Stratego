@@ -1,8 +1,8 @@
 import unittest
 
+from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.Game.GameHandler import GameHandler
 from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
-from Frontend.App.ScreenHandler import ScreenHandler
 
 
 class MyTestCase(unittest.TestCase):

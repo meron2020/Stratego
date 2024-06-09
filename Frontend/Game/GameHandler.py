@@ -1,10 +1,7 @@
 import threading
 import time
 
-import pygame.event
-
 from Frontend.App.GameResultPage import GameResultPage
-from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.Game.Board import Board
 from Frontend.Game.PlayThroughHandler import PlayThroughHandler
 from Frontend.Game.PlayerHandler import PlayerHandler

@@ -3,7 +3,6 @@ import time
 
 import pygame
 
-from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.Game.PieceSprite import SpriteCreator
 
 
@@ -41,7 +40,7 @@ class PlayThroughHandler:
         else:
             selected_square, clicked_piece = result[0], result[1]
 
-        # Send the piece action to the server
+            # Send the piece action to the server
             response = self.http_handler.piece_act(self.game_id, clicked_piece.piece_id, selected_square)
 
             # If the response includes an attacked piece, show the attacked piece
@@ -98,7 +97,6 @@ class PlayThroughHandler:
     # Request is sent to the server for the board setup and the response is shown to the user.
     def display_board(self):
         # Get the board state from the server
-        self.screen_handler.create_quit_button()
         response = self.http_handler.get_board(self.game_id)
         self.board.pieces = []
         self.board.piece_id_matrix = response["board"]

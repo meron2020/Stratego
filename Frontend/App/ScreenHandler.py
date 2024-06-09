@@ -13,7 +13,6 @@ class ScreenHandler:
         self.FONT_SIZE = 32  # Default font size
         self.SCREEN_WIDTH = 1920  # Default screen width
         self.SCREEN_HEIGHT = 1080  # Default screen height
-        self.quit_button_presented = False
 
     def draw_text(self, text, font, color, x, y):
         """
@@ -28,12 +27,6 @@ class ScreenHandler:
         text_rect = text_obj.get_rect()
         text_rect.center = (x, y)  # Position the text
         self.screen.blit(text_obj, text_rect)  # Blit the text onto the screen
-
-    def create_quit_button(self):
-        self.quit_button = pygame.Rect(
-            pygame.display.get_window_size()[0] / 2 - 85,
-            pygame.display.get_window_size()[1] - 65,
-            175, 50)
 
     def draw_button(self, text, font, color, x, y, width, height):
         """
