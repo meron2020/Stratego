@@ -6,31 +6,6 @@ from Frontend.ServerCommunications.GameHTTPHandler import GameHTTPHandler
 
 
 class MyTestCase(unittest.TestCase):
-
-    #     def test_create_game(self):
-    #         game = Game(1, [1, 2])
-    #         GamesHandler.turn_to_json(game)
-    #         returned_game = GamesHandler.get_from_json(1)
-    #         self.assertEqual(
-    #             json.dumps(Game.object_to_dict(game), sort_keys=True) == json.dumps(Game.object_to_dict(returned_game),
-    # #                                                                                 sort_keys=True), True)
-    #
-    #     def test_delete_game(self):
-    #         self.assertEqual(GamesHandler.delete_game(1), True)
-    #
-    #     def test_post(self):
-    #         GamesHandler.delete_game(1)
-    #         GamesHandler.post(1)
-    #         self.assertEqual(GamesHandler.post(2), {"status": "game ready to play"})
-    #
-    #     def test_put(self):
-    #         httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
-    #         game_id = httpHandler.join_game(1)["game_id"]
-    #         httpHandler.join_game(2)
-    #         handler = GameHandler()
-    #         handler.game_id = game_id
-    #         handler.run_setup_loop()
-    #
     def test_put_action(self):
         httpHandler = GameHTTPHandler("http://127.0.0.1:5000")
         game_id = httpHandler.join_game(1)["game_id"]
@@ -54,7 +29,7 @@ class MyTestCase(unittest.TestCase):
                                              231: (3, 0), 232: (3, 1), 233: (3, 2), 234: (3, 3), 214: (0, 9),
                                              230: (0, 7), 220: (3, 6), 208: (3, 7), 210: (3, 8), 209: (3, 9)}, 2)
 
-    def test_get_board(self):
+    def test_player_one(self):
         screenHandler = ScreenHandler()
         screenHandler.setup_app_infrastructure()
         guiHandler = GameHandler(1, screenHandler, "http://127.0.0.1:5000", True)
@@ -77,12 +52,3 @@ class MyTestCase(unittest.TestCase):
                                              213: (2, 5), 217: (2, 6), 207: (2, 7), 218: (2, 8), 219: (2, 9),
                                              231: (3, 0), 232: (3, 1), 233: (3, 2), 234: (3, 3), 214: (3, 4),
                                              230: (3, 5), 220: (3, 6), 208: (3, 7), 210: (3, 8), 209: (3, 9)}, 2)
-#
-# async def test_get_board():
-#     guiHandler = GameHandler()
-#     guiHandler.game_id = 1
-#     await guiHandler.game_loop()
-#
-#
-# if __name__ == '__main__':
-#     asyncio.run(test_get_board())
