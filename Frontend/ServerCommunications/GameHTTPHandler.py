@@ -61,11 +61,6 @@ class GameHTTPHandler:
         json = {"game_id": game_id}
         return self.send_request(json, "game_ended", "g")
 
-    # Function to send a request to quit the game.
-    def quit_game(self, game_id, player_id):
-        json = {"game_id": game_id, "player_id": player_id}
-        return self.send_request(json, req_type="d")
-
     # Function that sends the server a request to set that player's pieces' starting positions.
     def send_starting_positions(self, game_id, pieces_to_pos_dict, player_id):
         json = {"player_id": player_id, "data": {"pieces_to_pos_dict": pieces_to_pos_dict},

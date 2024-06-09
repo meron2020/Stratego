@@ -2,8 +2,6 @@ import sys
 
 import pygame
 
-from universals import PLAYER_QUIT_EVENT
-
 
 class ScreenHandler:
     def __init__(self):
@@ -119,7 +117,7 @@ class ScreenHandler:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption("Stratego")
 
-    def event_handling_when_waiting(self, in_game):
+    def event_handling_when_waiting(self):
         """
         Handle events while waiting for the player's turn.
         Processes events like quitting or mouse button down.
@@ -131,13 +129,6 @@ class ScreenHandler:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if self.quit_button.collidepoint(event.pos) and self.quit_button_presented:
-                    return False
-                continue  # Placeholder to handle mouse button events
-
-            elif event.type == PLAYER_QUIT_EVENT:
-                return "Opponent Quit"
 
 
 if __name__ == "__main__":

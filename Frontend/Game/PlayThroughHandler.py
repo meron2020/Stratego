@@ -87,7 +87,7 @@ class PlayThroughHandler:
 
         # Function for handling pygame events while awaiting the server response.
         while (not self.is_player_turn) and (not self.game_over):
-            result = self.screen_handler.event_handling_when_waiting(True)
+            result = self.screen_handler.event_handling_when_waiting()
             if result == "Opponent Quit":
                 return True
             if result is not None:
@@ -146,9 +146,9 @@ class PlayThroughHandler:
         self.display_board()
         result = self.await_my_turn()
         if result is not None:
-            return False, True
+            return False
         if self.game_over:
-            return False, False
+            return False
         running = True
         while running:
             try:
@@ -166,7 +166,7 @@ class PlayThroughHandler:
                     return False
                 result = self.await_my_turn()
                 if result:
-                    return True, True
+                    return True
                 if result is not None:
-                    return False, True
+                    return False
                 continue

@@ -60,20 +60,3 @@ class GameResource(Resource):
             else:
                 return {"game_status": "Ended. You have lost."}
         return response
-
-    # HTTP Delete method. Handles deletion of a game and updates user information.
-    def delete(self, request_type):
-        # Parsing the incoming request data
-        http_request_data = GameResource.parser.parse_args()
-        # Calling GamesHandler to process the DELETE request and return the response
-        response = self.game_handler.delete(http_request_data["game_id"], http_request_data["player_id"])
-
-        # Updating user information based on game outcome
-        UserHandler.add_win_to_user(response["winner"])
-        UserHandler.add_loss_to_user(response["loser"])
-
-        # Handling game end state
-        if "game_status" in response:
-            return {"game_status": "Ended. You have won."}
-        else:
-            return {"game_status": "Ended. You have lost."}

@@ -31,10 +31,3 @@ class UserResource(Resource):
         else:
             # If username already exists, return error message
             return {"message": "Username already exists"}
-
-    @classmethod
-    def delete(cls):
-        # Parsing the incoming request data
-        arguments = UserResource.parser.parse_args()
-        # Calling UserHandler to delete the specified user
-        return UserHandler.delete_user(arguments["username"])

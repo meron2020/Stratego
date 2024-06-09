@@ -1,7 +1,6 @@
 import pygame
 
 from Frontend.Game.Board import Board
-from universals import PLAYER_QUIT_EVENT
 
 
 class PlayerHandler:
@@ -14,18 +13,16 @@ class PlayerHandler:
         self.game_id = game_id
 
     def player_set_pieces(self, sprite_group):
-        #self.screen_handler.create_quit_button()
+        # self.screen_handler.create_quit_button()
         clicked_sprite = None
         setup_finished = False
-        #self.screen_handler.present_quit_button()
+        # self.screen_handler.present_quit_button()
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
-                elif event.type == PLAYER_QUIT_EVENT:
-                    return "Opponent Quit"
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -101,8 +98,6 @@ class PlayerHandler:
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
 
-                elif event.type == PLAYER_QUIT_EVENT:
-                    return ["Opponent Quit"]
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     # if self.screen_handler.check_quit_button_pressed(event):
                     #     self.http_handler.quit_game(self.game_id, self.player_id)

@@ -55,13 +55,6 @@ class UserHTTPHandler:
 
         return response
 
-    def delete_user(self, username):
-        # Prepare JSON payload
-        json = {"username": username}
-
-        # Send DELETE request to delete the user
-        return self.send_request(json)
-
     def auth(self, username, password):
         # Set headers and address for the authentication request
         headers = {"Content-Type": "application/json"}

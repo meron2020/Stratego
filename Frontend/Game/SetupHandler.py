@@ -3,9 +3,7 @@ import time
 
 import pygame
 
-from Frontend.App.ScreenHandler import ScreenHandler
 from Frontend.Game.PieceSprite import SpriteCreator
-from universals import PLAYER_QUIT_EVENT
 
 
 class SetupHandler:
@@ -61,4 +59,4 @@ class SetupHandler:
 
         # Function for handling the pygame while awaiting the server response.
         while not self.opponent_finished_setup:
-            self.screen_handler.event_handling_when_waiting(True)
+            self.screen_handler.event_handling_when_waiting()

@@ -46,16 +46,3 @@ class UserHandler:
         user = User(username, password)
         user.save_to_db()
         return True
-
-    @classmethod
-    def find_by_id(cls, player_id):
-        # Retrieve a username based on a player ID.
-        user = User.find_by_id(player_id)
-        return user.username
-
-    @staticmethod
-    def delete_user(username):
-        # Delete a user and their associated JSON file.
-        user = User.find_by_username(username)
-        user.delete_from_db()
-        return True

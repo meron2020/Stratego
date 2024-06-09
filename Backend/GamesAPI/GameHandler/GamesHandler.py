@@ -69,7 +69,11 @@ class GamesHandler:
         else:
             connected = last_game.connect_to_game(player_id)
             if not connected:
-                new_game = self.create_game(game_amount + 1)
+                open_slot = self.check_for_open_game_slots(game_amount)
+                if open_slot:
+                    new_game = self.create_game(open_slot + 1)
+                else:
+                    new_game = self.create_game(game_amount + 1)
                 new_game.connect_to_game(player_id)
                 self.turn_to_json(new_game)
                 return {"status": "awaiting opposing player connection", "game_id": game_amount + 1}
@@ -82,9 +86,6 @@ class GamesHandler:
         game = self.get_from_json(game_id)
         if request_type == "setup_pos":
             return {"setup_pos": game.player_to_setup_pos_dict}
-
-        elif request_type == "game_ended":
-            return {"game_ended": game.check_game_has_been_forfeited()}
 
         elif request_type == "game_state":
             if game.check_game_still_running() or game.get_state() == "Awaiting Opponent Player Connect":
