@@ -97,7 +97,7 @@ class GamesHandler:
                 else:
                     return {"game_state": "Ended", "player_status": "Loser"}
 
-        elif request_type == "my_turn" and not game.check_game_still_running() and not game.check_game_has_been_forfeited():
+        elif request_type == "my_turn" and not game.check_game_still_running():
             self.delete_game(game_id)
             return {"game_state": "Ended", "player_status": "Loser"}
 
@@ -150,8 +150,7 @@ class GamesHandler:
                 return Game(json_object["game_id"], json_object["players"], game_board, pieces_dict,
                             json_object["turn"], json_object["player_to_color_dict"], json_object["turn_id"],
                             json_object["turn_color"], json_object["game_state"],
-                            json_object["player_to_setup_pos_dict"], json_object["two_players_connected"],
-                            json_object["forfeited"])
+                            json_object["player_to_setup_pos_dict"], json_object["two_players_connected"])
         except OSError:
             print("Os Error")
             return False
@@ -180,7 +179,7 @@ class GamesHandler:
         game = Game(game_id, [], GameBoard(), None, 0,
                     {},
                     None, "red", "Awaiting Opponent Player Connect",
-                    {}, False, False, False)
+                    {}, False, False)
         return game
 
     # Function iterates over database and checks for open name slot numbers.

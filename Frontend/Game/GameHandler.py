@@ -57,7 +57,6 @@ class GameHandler:
             result = self.play_through_handler.run_play_through_loop()  # Execute the main game play loop
         else:
             result = False
-            forfeited = True
         result_page = GameResultPage(self.screen_handler)
         result_page.run(result)  # Display the game result page
         return

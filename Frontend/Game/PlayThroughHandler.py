@@ -152,7 +152,7 @@ class PlayThroughHandler:
             try:
                 self.display_board()
             except TypeError:
-                return False, True
+                return False
             if self.is_player_turn:
                 game_ended, result = self.get_user_piece_act()
                 if game_ended:
